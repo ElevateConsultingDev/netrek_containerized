@@ -7,6 +7,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 EXPOSE 2592 2591 3521 2593 2596 4000 4566 4577 5000 2592
 
 # Install build-essential (C compiler, dev tools), vim, and other utilities
+# clone the netrek repo from quozl
+# Rename configure.in to configure.ac and create m4 directory
 RUN apt-get update && \
 apt-get install -y \
     atop \
@@ -35,54 +37,46 @@ apt-get install -y \
     vim \
     watch \
     wget \
-    xauth \
-    x11-apps && \
+    x11-apps \
+    xauth && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    git clone --recursive https://github.com/quozl/netrek.git /usr/local/src/netrek
+    git clone --recursive https://github.com/quozl/netrek.git /usr/local/src/netrek && \
+    mv /usr/local/src/netrek/netrek-server/configure.in /usr/local/src/netrek/netrek-server/configure.ac && \
+    mkdir -p /usr/local/src/netrek/netrek-server/m4
 
-# Copy custom configuration files
+# Copy custom configuration files to make my life easier
 COPY .bashrc /root/.bashrc
 COPY .vimrc /root/.vimrc
 
 # Enable X11 forwarding by exporting DISPLAY inside the container
 ENV DISPLAY=host.docker.internal:0
 
-# cd to netrek-server
-WORKDIR /usr/local/src/netrek/netrek-server
-
-# Rename configure.in to configure.ac
-RUN mv configure.in configure.ac
-
-# Create m4 directory
-RUN mkdir -p m4
-
-# Edit configure.ac, add AC_CONFIG_MACRO_DIRS([m4]) after AC_INIT
-RUN sed -i 's/AC_INIT/AC_INIT([netrek],[1.0],[netrek@netrek.org])\nAC_CONFIG_MACRO_DIRS([m4])/g' configure.ac
-
-# Create Makefile.am and add ACLOCAL_AMFLAGS = -I m4
-RUN echo "ACLOCAL_AMFLAGS = -I m4" > Makefile.am
-
-WORKDIR /usr/local/src/netrek/netrek-client-cow
-RUN sed -i '/AC_INIT/a AC_CONFIG_MACRO_DIRS([m4])\nLT_INIT' /usr/local/src/netrek/netrek-client-cow/configure.ac
-RUN echo "ACLOCAL_AMFLAGS = -I m4" > Makefile.am
-
-# cd to netrek
+# Make changes from this directory
 WORKDIR /usr/local/src/netrek
 
-#this should include #!/bin/bash
+#add some helper scripts
 COPY netrek-server/start_server.sh ./start_server.sh
 COPY netrek-server/start_client.sh ./start_client.sh
-COPY netrek-server/tweak_sysdef.sh ./tweak_sysdef.sh
+RUN chmod +x ./start_server.sh && chmod +x ./start_client.sh
 
-RUN chmod +x ./start_server.sh
-RUN chmod +x ./start_client.sh
-RUN chmod +x ./tweak_sysdef.sh
+#server changes to overcome discovered issues after running libtoolize
+RUN sed -i 's/AC_INIT/AC_INIT([netrek],[1.0],[netrek@netrek.org])\nAC_CONFIG_MACRO_DIRS([m4])/g' netrek-server/configure.ac && \
+    sed -i '/AC_INIT/a AC_CONFIG_MACRO_DIRS([m4])\nLT_INIT' netrek-client-cow/configure.ac && \
+    echo "ACLOCAL_AMFLAGS = -I m4" > netrek-client-cow/Makefile.am
+
+#client changes
+RUN sed -i 's/AC_INIT/AC_INIT([netrek],[1.0],[netrek@netrek.org])\nAC_CONFIG_MACRO_DIRS([m4])/g' netrek-client-cow/configure.ac
+RUN echo "ACLOCAL_AMFLAGS = -I m4" > netrek-client-cow/Makefile.am
 
 RUN ./build
+
+#add a config file for the client
 COPY .xtrekrc /usr/local/src/netrek/netrek-client-cow/
 
-RUN ./tweak_sysdef.sh
+#post build server changes
+#This uses localhost to spawn robots. For some reason 127.0.0.1 doesn't work.
+RUN sed -i 's/127.0.0.1/localhost/g' netrek-server/here/etc/sysdef
 
 # Ensure bash is the default shell
 CMD ["/bin/bash"]
