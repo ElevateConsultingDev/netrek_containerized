@@ -13,7 +13,7 @@ This setup allows you to run the Netrek client inside the container and view the
 ## Prerequisites
 
 - Docker installed on your machine.
-- XQuartz installed on your machine. (If you have brew: brew install xquartz)
+- XQuartz installed on your machine. (If you have brew: ```brew install xquartz```)
 
 ## To start everything
 
