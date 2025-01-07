@@ -12,6 +12,14 @@ This project is designed for MacOX hosts. It uses XQuartz and X11 forwarding to 
 
 This setup allows you to run the Netrek client inside the container and view the GUI directly on your macOS desktop.
 
+## But, why?
+
+You might be wondering why it’s worth the effort to run a Netrek server and forward the client GUI to your Mac. The answer is simple: I love this game. I’ve been playing Netrek since 2000, and I’ve never been satisfied with the clients available for modern Macs. The Linux and PC clients have received the most support and development over the years.
+
+I’ve used several Windows clients, and my favorite is [XPMod](https://www.netrek.org/downloads/clients/#xpmod). However, getting it to run on macOS is a real hassle. After some research, I discovered how to forward the Linux GUI to a Mac using a Docker container. With that knowledge, and by taking the time to read through the documentation to overcome the challenges of building the server and client, I was able to get everything up and running.
+
+So, if this setup allows other Netrek enthusiasts or newcomers to enjoy it, then I’m happy to share it!
+
 ## Prerequisites
 
 * Docker installed on your machine.
