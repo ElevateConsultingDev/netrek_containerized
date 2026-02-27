@@ -1,0 +1,41 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        
+        
+        {
+            "name": "Debug Local Program",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/netrek-server/here/bin/netrekd", // Update with your program's path
+            "args": [ "debug"], // Add any command-line arguments your program needs
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb", // Path to gdb on your local machine
+            "logging": {
+                "engineLogging": true,
+                "trace": true,
+                "traceResponse": true
+            },
+            "environment": [
+                { "name": "VAR_NAME", "value": "value" } // Add any necessary environment variables
+            ],
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set gdb to follow child processes",
+                    "text": "set follow-fork-mode child",
+                    "ignoreFailures": true
+                }
+            ]
+        }
+    ]
+}
