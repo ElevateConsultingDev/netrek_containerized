@@ -81,6 +81,10 @@ RUN sed -i 's/AC_INIT/AC_INIT([netrek],[1.0],[netrek@netrek.org])\nAC_CONFIG_MAC
     sed -i '/AC_INIT/a AC_CONFIG_MACRO_DIRS([m4])\nLT_INIT' netrek-client-cow/configure.ac && \
     echo "ACLOCAL_AMFLAGS = -I m4" > netrek-client-cow/Makefile.am
 
+# Enable Sturgeon mode (upgrade/special weapons system)
+# config.h.in is the template; configure generates config.h from it
+RUN sed -i 's|#undef STURGEON|#define STURGEON 1|' netrek-server/include/config.h.in
+
 #sed in newstartd.c change int debug = 0; to int debug = 1;
 # RUN sed -i 's/debug = 0/debug = 1/g' netrek-server/newstartd/newstartd.c
 
@@ -105,7 +109,9 @@ ENV SOUNDDIR=/usr/local/src/netrek/netrek-client-cow/sounds
 
 #post build server changes
 #This uses localhost to spawn robots. For some reason 127.0.0.1 doesn't work.
-RUN sed -i 's/127.0.0.1/localhost/g' netrek-server/here/etc/sysdef
+RUN sed -i 's/127.0.0.1/localhost/g' netrek-server/here/etc/sysdef && \
+    sed -i 's/BIND_UDP_PORT_BASE=0/BIND_UDP_PORT_BASE=2593/' netrek-server/here/etc/sysdef && \
+    sed -i 's/STURGEON=0/STURGEON=1/' netrek-server/here/etc/sysdef
 
 # Ensure bash is the default shell
 CMD ["/bin/bash"]

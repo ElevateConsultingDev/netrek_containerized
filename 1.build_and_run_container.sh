@@ -22,5 +22,6 @@ docker run -t -d \
     -v /tmp/.X11-unix:/tmp/.X11-unix \
     -v ~/.Xauthority:/root/.Xauthority \
     -p 2592:2592 \
+    -p 2593-2629:2593-2629/udp \
     --name netrek-server netrek-server-image \
     /bin/bash
