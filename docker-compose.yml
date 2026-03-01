@@ -8,8 +8,9 @@ services:
     ports:
       - "2692:2592"
       - "2693-2729:2593-2629/udp"
-    command: >
-      bash -c "./start_server.sh && sleep infinity"
+    entrypoint: ["/bin/bash", "/opt/netrek/server-entrypoint.sh"]
+    volumes:
+      - ./server/entrypoint.sh:/opt/netrek/server-entrypoint.sh:ro
     healthcheck:
       test: ["CMD", "pgrep", "-f", "netrekd"]
       interval: 10s
