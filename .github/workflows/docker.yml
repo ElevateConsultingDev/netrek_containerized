@@ -1,0 +1,57 @@
+name: Build Container Images
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build vanilla server image
+        run: docker build -t vanilla-netrek-image .
+
+      - name: Verify server starts
+        run: |
+          docker run -d \
+            --name test-server \
+            -v $(pwd)/server/entrypoint.sh:/opt/netrek/server-entrypoint.sh:ro \
+            --entrypoint /bin/bash \
+            vanilla-netrek-image \
+            /opt/netrek/server-entrypoint.sh
+          sleep 5
+          docker exec test-server pgrep -f netrekd
+          docker rm -f test-server
+
+  build-paradise:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build paradise server image
+        run: docker build -t netrek-paradise-server -f paradise-server/Dockerfile .
+
+      - name: Verify paradise server starts
+        run: |
+          docker run -d --name test-paradise netrek-paradise-server
+          sleep 5
+          docker exec test-paradise pgrep -f listen
+          docker rm -f test-paradise
+
+  build-pygame:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Build pygame client image
+        run: docker build -t netrek-pygame-client -f pygame-client/Dockerfile .
