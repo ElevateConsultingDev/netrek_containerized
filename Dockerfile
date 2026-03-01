@@ -95,7 +95,7 @@ RUN echo "ACLOCAL_AMFLAGS = -I m4" > netrek-client-cow/Makefile.am
 RUN ./build
 
 #add a config file for the client
-COPY .xtrekrc /usr/local/src/netrek/netrek-client-cow/
+COPY client-dev/config/.xtrekrc /usr/local/src/netrek/netrek-client-cow/
 
 # Download and install sound files from netrek.org
 RUN mkdir -p netrek-client-cow/sounds && \
