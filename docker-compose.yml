@@ -29,5 +29,7 @@ services:
       - PULSE_SERVER=tcp:host.docker.internal:4713
       - SDL_AUDIODRIVER=pulse
       - SOUNDDIR=/usr/local/src/netrek/netrek-client-cow/sounds
-    command: >
-      bash -c "cd /usr/local/src/netrek/netrek-client-cow && ./netrek-client-cow -h server"
+      - NETREK_SERVER=server
+    entrypoint: ["/bin/bash", "/opt/netrek/client-entrypoint.sh"]
+    volumes:
+      - ./client-dev/entrypoint.sh:/opt/netrek/client-entrypoint.sh:ro
