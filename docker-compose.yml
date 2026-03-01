@@ -34,6 +34,20 @@ services:
     volumes:
       - ./client-dev/entrypoint.sh:/opt/netrek/client-entrypoint.sh:ro
 
+  pygame-client:
+    build:
+      context: .
+      dockerfile: pygame-client/Dockerfile
+    image: netrek-pygame-client
+    container_name: netrek-pygame-client
+    depends_on:
+      server:
+        condition: service_healthy
+    environment:
+      - DISPLAY=host.docker.internal:0
+      - NETREK_SERVER=server
+      - NETREK_PORT=2592
+
   paradise-server:
     profiles:
       - paradise
