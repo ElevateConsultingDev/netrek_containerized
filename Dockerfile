@@ -57,9 +57,9 @@ apt-get install -y \
     pip3 install pygments
 
 # Copy custom configuration files to make my life easier
-COPY .bashrc /root/.bashrc
-COPY .vimrc /root/.vimrc
-COPY launch.json /usr/local/src/netrek/.vscode/launch.json
+COPY dev/.bashrc /root/.bashrc
+COPY dev/.vimrc /root/.vimrc
+COPY dev/launch.json /usr/local/src/netrek/.vscode/launch.json
 
 # Enable X11 forwarding by exporting DISPLAY inside the container
 ENV DISPLAY=host.docker.internal:0
@@ -72,8 +72,8 @@ ENV SDL_AUDIODRIVER=pulse
 WORKDIR /usr/local/src/netrek
 
 #add some helper scripts
-COPY netrek-server/start_server.sh ./start_server.sh
-COPY netrek-server/start_client.sh ./start_client.sh
+COPY dev/netrek-server-temp/start_server.sh ./start_server.sh
+COPY dev/netrek-server-temp/start_client.sh ./start_client.sh
 RUN chmod +x ./start_server.sh && chmod +x ./start_client.sh
 
 #server changes to overcome discovered issues after running libtoolize
