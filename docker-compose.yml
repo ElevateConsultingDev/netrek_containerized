@@ -1,0 +1,32 @@
+services:
+  server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: vanilla-netrek-image
+    container_name: vanilla-netrek-server
+    ports:
+      - "2692:2592"
+      - "2693-2729:2593-2629/udp"
+    command: >
+      bash -c "./start_server.sh && sleep infinity"
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "netrekd"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
+
+  client:
+    image: vanilla-netrek-image
+    container_name: vanilla-netrek-client
+    depends_on:
+      server:
+        condition: service_healthy
+    environment:
+      - DISPLAY=host.docker.internal:0
+      - PULSE_SERVER=tcp:host.docker.internal:4713
+      - SDL_AUDIODRIVER=pulse
+      - SOUNDDIR=/usr/local/src/netrek/netrek-client-cow/sounds
+    command: >
+      bash -c "cd /usr/local/src/netrek/netrek-client-cow && ./netrek-client-cow -h server"
