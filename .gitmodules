@@ -1,12 +1,12 @@
 [submodule "netrek-client-cow"]
 	path = submodules/netrek-client-cow
-	url = https://github.com/netrek/netrek-client-cow
+	url = git@github.com:netrek/netrek-client-cow
 [submodule "netrek-server"]
 	path = submodules/netrek-server
-	url = https://github.com/netrek/netrek-server
+	url = git@github.com:netrek/netrek-server
 [submodule "netrek-server-paradise"]
 	path = submodules/netrek-server-paradise
-	url = https://github.com/netrek/netrek-server-paradise
+	url = git@github.com:netrek/netrek-server-paradise
 [submodule "netrek-client-paradise"]
 	path = submodules/netrek-client-paradise
-	url = https://github.com/netrek/netrek-client-paradise
+	url = git@github.com:netrek/netrek-client-paradise
