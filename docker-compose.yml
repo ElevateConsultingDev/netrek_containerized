@@ -33,3 +33,21 @@ services:
     entrypoint: ["/bin/bash", "/opt/netrek/client-entrypoint.sh"]
     volumes:
       - ./client-dev/entrypoint.sh:/opt/netrek/client-entrypoint.sh:ro
+
+  paradise-server:
+    profiles:
+      - paradise
+    build:
+      context: .
+      dockerfile: paradise-server/Dockerfile
+    image: netrek-paradise-server
+    container_name: paradise-netrek-server
+    ports:
+      - "2692:2592"
+      - "2691:2591"
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "listen"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
