@@ -112,6 +112,5 @@ ENV SOUNDDIR=/usr/local/src/netrek/netrek-client-cow/sounds
 RUN sed -i 's/127.0.0.1/localhost/g' netrek-server/here/etc/sysdef && \
     sed -i 's/BIND_UDP_PORT_BASE=0/BIND_UDP_PORT_BASE=2593/' netrek-server/here/etc/sysdef && \
     sed -i 's/STURGEON=0/STURGEON=1/' netrek-server/here/etc/sysdef
-
 # Ensure bash is the default shell
 CMD ["/bin/bash"]
