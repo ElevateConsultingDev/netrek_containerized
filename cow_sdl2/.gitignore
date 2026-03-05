@@ -1,0 +1,14 @@
+build/
+config.h
+null
+*.o
+*.log
+*.bmp
+.DS_Store
+pixmaps
+sounds
+fonts
+5x10
+5x11
+6x12
+Log_me.txt
