@@ -8,13 +8,13 @@ Designed for macOS hosts using XQuartz for X11 forwarding.
 
 ```bash
 # Start the vanilla server + COW client
-./start-everything.sh
+./scripts/start-everything.sh
 
 # Or start just the server (headless)
-./start-server.sh
+./scripts/start-server.sh
 
 # Stop everything
-./stop.sh
+./scripts/stop.sh
 ```
 
 ## Prerequisites
@@ -26,20 +26,19 @@ Designed for macOS hosts using XQuartz for X11 forwarding.
 
 | Script | What it does |
 |--------|-------------|
-| `./start-server.sh` | Start vanilla server headless |
-| `./start-cow-client.sh` | Start COW client (opens XQuartz, needs running server) |
-| `./start-pygame-client.sh` | Start pygame client (opens XQuartz, needs running server) |
-| `./start-everything.sh` | Start server + COW client together |
-| `./start-paradise.sh` | Start Paradise server (alt game mode, same port) |
-| `./connect.sh` | Shell into the running server container |
-| `./stop.sh` | Stop all containers |
+| `scripts/start-server.sh` | Start vanilla server headless |
+| `scripts/start-cow-client.sh` | Start COW client (opens XQuartz, needs running server) |
+| `scripts/start-pygame-client.sh` | Start pygame client (needs running server) |
+| `scripts/start-everything.sh` | Start server + COW client together |
+| `scripts/start-paradise.sh` | Start Paradise server (alt game mode, same port) |
+| `scripts/connect.sh` | Shell into the running server container |
+| `scripts/stop.sh` | Stop all containers |
 
 ## Docker Compose (direct usage)
 
 ```bash
 docker compose up server -d              # Headless vanilla server
 docker compose up                         # Server + COW client
-docker compose up pygame-client           # Pygame client (needs running server)
 docker compose --profile paradise up paradise-server -d  # Paradise server
 docker compose down                       # Stop
 ```
@@ -48,17 +47,16 @@ docker compose down                       # Stop
 
 ```
 docker-compose.yml              # Service definitions
-Dockerfile                      # Base image (vanilla server + COW client)
-server/entrypoint.sh            # Server startup script
-client-dev/entrypoint.sh        # COW client startup script
-client-dev/config/.xtrekrc      # COW client configuration
-paradise-server/Dockerfile      # Paradise server image
-paradise-server/entrypoint.sh   # Paradise startup script
-pygame-client/Dockerfile        # Pygame client image
-pygame-client/entrypoint.sh     # Pygame startup script
-netrek_client_pygame/            # Pygame client source code
+docker/Dockerfile               # Base image (vanilla server + COW client)
+docker/server/entrypoint.sh     # Server startup script
+docker/cow-x11/entrypoint.sh    # COW client startup script
+docker/cow-x11/config/.xtrekrc  # COW client configuration
+docker/paradise-server/         # Paradise server image + entrypoint
+docker/dev/                     # Development configs (bashrc, vimrc, etc.)
+clients/cow-sdl2/               # Native macOS SDL2 client (C)
+clients/pygame/                 # Pygame client source code
+scripts/                        # All startup/stop scripts
 submodules/                     # Upstream Netrek source (git submodules)
-dev/                            # Development configs and legacy files
 .github/workflows/docker.yml   # CI: build all images on push
 ```
 
@@ -68,7 +66,6 @@ dev/                            # Development configs and legacy files
 |---------|-------------|---------|
 | `server` | Vanilla Netrek server (headless) | default |
 | `client` | COW client (X11 GUI) | default |
-| `pygame-client` | Pygame development client (X11 GUI) | default |
 | `paradise-server` | NetrekII Paradise server | `paradise` |
 
 ## Ports

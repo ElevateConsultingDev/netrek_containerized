@@ -2,7 +2,7 @@ services:
   server:
     build:
       context: .
-      dockerfile: Dockerfile
+      dockerfile: docker/Dockerfile
     image: vanilla-netrek-image
     container_name: vanilla-netrek-server
     ports:
@@ -10,7 +10,7 @@ services:
       - "2693-2729:2593-2629/udp"
     entrypoint: ["/bin/bash", "/opt/netrek/server-entrypoint.sh"]
     volumes:
-      - ./server/entrypoint.sh:/opt/netrek/server-entrypoint.sh:ro
+      - ./docker/server/entrypoint.sh:/opt/netrek/server-entrypoint.sh:ro
     healthcheck:
       test: ["CMD", "pgrep", "-f", "netrekd"]
       interval: 10s
@@ -32,14 +32,14 @@ services:
       - NETREK_SERVER=server
     entrypoint: ["/bin/bash", "/opt/netrek/client-entrypoint.sh"]
     volumes:
-      - ./client-dev/entrypoint.sh:/opt/netrek/client-entrypoint.sh:ro
+      - ./docker/cow-x11/entrypoint.sh:/opt/netrek/client-entrypoint.sh:ro
 
   paradise-server:
     profiles:
       - paradise
     build:
       context: .
-      dockerfile: paradise-server/Dockerfile
+      dockerfile: docker/paradise-server/Dockerfile
     image: netrek-paradise-server
     container_name: paradise-netrek-server
     ports:

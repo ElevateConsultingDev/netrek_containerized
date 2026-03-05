@@ -3,16 +3,17 @@
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-CLIENT_DIR="$SCRIPT_DIR/netrek_client_pygame"
+REPO_DIR="$SCRIPT_DIR/.."
+CLIENT_DIR="$REPO_DIR/clients/pygame"
 VENV_DIR="$CLIENT_DIR/.venv"
 SERVER_PORT=2692
 
 # Ensure the server is running
-if ! docker compose -f "$SCRIPT_DIR/docker-compose.yml" ps --status running server 2>/dev/null | grep -q server; then
+if ! docker compose -f "$REPO_DIR/docker-compose.yml" ps --status running server 2>/dev/null | grep -q server; then
     echo "Starting netrek server..."
-    docker compose -f "$SCRIPT_DIR/docker-compose.yml" up server -d
+    docker compose -f "$REPO_DIR/docker-compose.yml" up server -d
     echo "Waiting for server to be healthy..."
-    docker compose -f "$SCRIPT_DIR/docker-compose.yml" wait --condition service_healthy server 2>/dev/null || sleep 5
+    docker compose -f "$REPO_DIR/docker-compose.yml" wait --condition service_healthy server 2>/dev/null || sleep 5
 fi
 
 # Activate venv

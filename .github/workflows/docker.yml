@@ -15,13 +15,13 @@ jobs:
           submodules: recursive
 
       - name: Build vanilla server image
-        run: docker build -t vanilla-netrek-image .
+        run: docker build -t vanilla-netrek-image -f docker/Dockerfile .
 
       - name: Verify server starts
         run: |
           docker run -d \
             --name test-server \
-            -v $(pwd)/server/entrypoint.sh:/opt/netrek/server-entrypoint.sh:ro \
+            -v $(pwd)/docker/server/entrypoint.sh:/opt/netrek/server-entrypoint.sh:ro \
             --entrypoint /bin/bash \
             vanilla-netrek-image \
             /opt/netrek/server-entrypoint.sh
@@ -37,7 +37,7 @@ jobs:
           submodules: recursive
 
       - name: Build paradise server image
-        run: docker build -t netrek-paradise-server -f paradise-server/Dockerfile .
+        run: docker build -t netrek-paradise-server -f docker/paradise-server/Dockerfile .
 
       - name: Verify paradise server starts
         run: |

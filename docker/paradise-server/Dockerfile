@@ -35,7 +35,7 @@ ENV NETREKDIR=/usr/local/netrek
 
 RUN mkdir -p "${NETREKDIR}/logs"
 
-COPY paradise-server/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY docker/paradise-server/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
