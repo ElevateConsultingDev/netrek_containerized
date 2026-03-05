@@ -3,6 +3,7 @@ import time
 from dataclasses import dataclass, field
 from .constants import *
 from . import short_decode
+from .distress import decode_rcd
 
 
 @dataclass
@@ -54,6 +55,8 @@ class Player:
     render_y: float = 0.0
     render_dir: int = 0
     _update_time: float = 0.0
+    # Cloak animation phase: 0=fully visible, 7=fully cloaked
+    cloak_phase: int = 0
 
 
 @dataclass
@@ -134,23 +137,78 @@ class GameState:
         self.me_pnum = -1  # my player number
         self.team_mask = 0  # available teams from SP_MASK
         self.motd_lines = []
-        self.messages = []  # recent messages
+        self.messages = []  # recent messages: (text, m_flags, m_from) tuples
         self.warning = ""
         self.warning_timer = 0
+        self.features = {}  # negotiated features from SP_FEATURE
         self.login_accept = None  # None until SP_LOGIN received, then True/False
-        self.ship_cap = ShipCap()       # current ship capabilities from SP_SHIP_CAP
+        self.ship_caps = [ShipCap(s_type=i) for i in range(NUM_TYPES)]
+        # Galaxy status from SP_STATUS (used for rating calculations)
+        self.status_tourn = 0
+        self.status_armsbomb = 1  # init to 1 to avoid div-by-zero (COW enter.c:59)
+        self.status_planets = 1
+        self.status_kills = 1
+        self.status_losses = 1
+        self.status_time = 0
+        self.status_timeprod = 1
         # Short packets state
         self._short_winside = 0  # set by SP_S_REPLY
         self._short_gwidth = 0
         # Client-side lock targets (set when we send lock requests)
         self.lock_planet = -1   # planet pnum we locked onto
         self.lock_player = -1   # player pnum we locked onto
+        # Ping stats (SP_PING)
+        self.ping_lag = 0       # round-trip lag in ms
+        self.ping_tloss_sc = 0  # total loss server->client %
+        self.ping_tloss_cs = 0  # total loss client->server %
+        self.ping_iloss_sc = 0  # interval loss server->client %
+        self.ping_iloss_cs = 0  # interval loss client->server %
+        # Queue position (SP_QUEUE)
+        self.queue_pos = -1     # -1 = not in queue
+
+    def reset(self):
+        """Reset all transient state for reconnection. Preserves object identity."""
+        for i, p in enumerate(self.players):
+            self.players[i] = Player(pnum=i)
+        for i in range(len(self.torps)):
+            self.torps[i] = Torp()
+        for i in range(len(self.plasmas)):
+            self.plasmas[i] = Plasma()
+        for i in range(len(self.phasers)):
+            self.phasers[i] = Phaser()
+        # Keep planet names/positions — server will resend them
+        self.me_pnum = -1
+        self.team_mask = 0
+        self.motd_lines.clear()
+        self.messages.clear()
+        self.warning = ""
+        self.warning_timer = 0
+        self.features.clear()
+        self.login_accept = None
+        self.lock_planet = -1
+        self.lock_player = -1
+        self.ping_lag = 0
+        self.ping_tloss_sc = 0
+        self.ping_tloss_cs = 0
+        self.ping_iloss_sc = 0
+        self.ping_iloss_cs = 0
+        self.queue_pos = -1
+        self._short_winside = 0
+        self._short_gwidth = 0
 
     @property
     def me(self):
         if 0 <= self.me_pnum < MAXPLAYER:
             return self.players[self.me_pnum]
         return None
+
+    @property
+    def ship_cap(self):
+        """ShipCap for my current ship type."""
+        me = self.me
+        if me and 0 <= me.shiptype < NUM_TYPES:
+            return self.ship_caps[me.shiptype]
+        return self.ship_caps[0]
 
     def team_counts(self):
         """Count active players per team. Returns {FED: n, ROM: n, KLI: n, ORI: n}."""
@@ -218,8 +276,17 @@ class GameState:
         if not (0 <= pnum < MAXPLAYER):
             return
         p = self.players[pnum]
-        p.shiptype = pkt["shiptype"]
-        p.team = pkt["team"]
+        shiptype = pkt["shiptype"]
+        if 0 <= shiptype < NUM_TYPES:
+            p.shiptype = shiptype
+        # Don't overwrite a known team with NOBODY for alive players —
+        # the server briefly sends team=0 during slot transitions and the
+        # SP_S_PLAYER flag update can set PALIVE before the real team arrives.
+        new_team = pkt["team"]
+        if new_team not in (NOBODY, FED, ROM, KLI, ORI):
+            return
+        if new_team != NOBODY or p.status not in (PALIVE, PEXPLODE):
+            p.team = new_team
 
     def _handle_sp_kills(self, pkt):
         pnum = pkt["pnum"]
@@ -295,6 +362,8 @@ class GameState:
 
     def _handle_sp_you(self, pkt):
         pnum = pkt["pnum"]
+        if not (0 <= pnum < MAXPLAYER):
+            return
         if self.me_pnum < 0:
             self.me_pnum = pnum
         p = self.players[pnum]
@@ -314,10 +383,16 @@ class GameState:
         p.whodead = pkt["whodead"]
 
     def _handle_sp_queue(self, pkt):
-        pass  # could display queue position
+        self.queue_pos = pkt["pos"]
 
     def _handle_sp_status(self, pkt):
-        pass
+        self.status_tourn = pkt["tourn"]
+        self.status_armsbomb = max(1, pkt["armsbomb"])
+        self.status_planets = max(1, pkt["planets"])
+        self.status_kills = max(1, pkt["kills"])
+        self.status_losses = max(1, pkt["losses"])
+        self.status_time = pkt["time"]
+        self.status_timeprod = max(1, pkt["timeprod"])
 
     def _handle_sp_planet(self, pkt):
         pnum = pkt["pnum"]
@@ -411,22 +486,41 @@ class GameState:
         self.warning_timer = 90  # display for ~3 seconds at 30fps
 
     def _handle_sp_message(self, pkt):
-        self.messages.append(pkt["mesg"])
-        if len(self.messages) > 20:
+        mesg = pkt["mesg"]
+        flags = pkt["m_flags"]
+        m_from = pkt["m_from"]
+
+        # Decode RCD (binary distress) messages (COW dmessage.c)
+        if flags == (MTEAM | MDISTR | MVALID):
+            decoded = decode_rcd(mesg, m_from, self)
+            if decoded:
+                mesg = decoded
+                flags ^= MDISTR  # strip MDISTR, keep MTEAM|MVALID
+
+        self.messages.append((mesg, flags, m_from))
+        if len(self.messages) > 200:
             self.messages.pop(0)
 
     def _handle_sp_ping(self, pkt):
-        pass  # handled by network layer
+        self.ping_lag = pkt["lag"]
+        self.ping_tloss_sc = pkt["tloss_sc"]
+        self.ping_tloss_cs = pkt["tloss_cs"]
+        self.ping_iloss_sc = pkt["iloss_sc"]
+        self.ping_iloss_cs = pkt["iloss_cs"]
 
     def _handle_sp_feature(self, pkt):
-        pass
+        name = pkt["name"].strip('\x00')
+        self.features[name] = pkt["value"]
 
     def _handle_sp_badversion(self, pkt):
         print(f"SP_BADVERSION: why={pkt['why']}")
 
     def _handle_sp_ship_cap(self, pkt):
-        sc = self.ship_cap
-        sc.s_type = pkt["s_type"]
+        stype = pkt["s_type"]
+        if not (0 <= stype < NUM_TYPES):
+            return
+        sc = self.ship_caps[stype]
+        sc.s_type = stype
         sc.s_maxspeed = pkt["s_maxspeed"]
         sc.s_maxfuel = pkt["s_maxfuel"]
         sc.s_maxshield = pkt["s_maxshield"]
@@ -542,18 +636,36 @@ class GameState:
         if not me:
             return
         now = time.monotonic()
-        for tnum, dx, dy in pkt["torps"]:
-            if 0 <= tnum < len(self.torps):
-                t = self.torps[tnum]
-                game_x = me.x + (dx - SPWINSIDE // 2) * SCALE
-                game_y = me.y + (dy - SPWINSIDE // 2) * SCALE
-                t.prev_x = t.x
-                t.prev_y = t.y
-                t._update_time = now
-                t.x = game_x
-                t.y = game_y
+        bitset = pkt["bitset"]
+        base = pkt["whichtorps"] * MAXTORP
+
+        # Build lookup of decoded coords by tnum
+        coord_map = {tn: (dx, dy) for tn, dx, dy in pkt["torps"]}
+
+        # COW handleVTorp: iterate all 8 torp slots for this player.
+        # Bit set = alive (update position), bit clear = TFREE.
+        for i in range(8):
+            tnum = base + i
+            if not (0 <= tnum < len(self.torps)):
+                continue
+            t = self.torps[tnum]
+            if bitset & (1 << i):
+                # Torp present — update position
+                if tnum in coord_map:
+                    dx, dy = coord_map[tnum]
+                    game_x = me.x + (dx - SPWINSIDE // 2) * SCALE
+                    game_y = me.y + (dy - SPWINSIDE // 2) * SCALE
+                    t.prev_x = t.x
+                    t.prev_y = t.y
+                    t._update_time = now
+                    t.x = game_x
+                    t.y = game_y
                 if t.status == TFREE:
                     t.status = TMOVE
+            else:
+                # Bit not set — torp is gone (COW: "We got a TFREE")
+                if t.status and t.status != TEXPLODE:
+                    t.status = TFREE
 
     def _handle_sp_s_torp_info(self, raw):
         pkt = short_decode.decode_s_torp_info(raw)
@@ -561,11 +673,18 @@ class GameState:
             return
         me = self.me
         now = time.monotonic()
+        bitset = pkt.get("bitset", 0)
+        base = pkt.get("whichtorps", 0) * MAXTORP
+
         for tnum, dx, dy, war, status in pkt["torps"]:
             if not (0 <= tnum < len(self.torps)):
                 continue
             t = self.torps[tnum]
-            if dx is not None and dy is not None and me:
+            i = tnum - base
+            has_pos = bitset & (1 << i) if 0 <= i < 8 else False
+            has_info = status is not None
+
+            if has_pos and dx is not None and dy is not None and me:
                 game_x = me.x + (dx - SPWINSIDE // 2) * SCALE
                 game_y = me.y + (dy - SPWINSIDE // 2) * SCALE
                 t.prev_x = t.x
@@ -573,7 +692,17 @@ class GameState:
                 t._update_time = now
                 t.x = game_x
                 t.y = game_y
-            if status is not None:
+                # COW: position present but no info — guess TMOVE
+                if not has_info and t.status == TFREE:
+                    t.status = TMOVE
+            elif not has_pos and not has_info:
+                # COW: no position, no info — TFREE
+                if t.status and t.status != TEXPLODE:
+                    t.status = TFREE
+
+            if has_info:
+                if status == TEXPLODE and t.status == TFREE:
+                    continue  # COW: redundant explosion, skip
                 if status != t.status and status in (TEXPLODE, TDET):
                     t.fuse = 10
                 t.status = status
@@ -684,8 +813,18 @@ class GameState:
         pkt = short_decode.decode_s_message(raw)
         if pkt is None:
             return
-        self.messages.append(pkt["mesg"])
-        if len(self.messages) > 20:
+        mesg = pkt["mesg"]
+        flags = pkt["m_flags"]
+        m_from = pkt["m_from"]
+
+        if flags == (MTEAM | MDISTR | MVALID):
+            decoded = decode_rcd(mesg, m_from, self)
+            if decoded:
+                mesg = decoded
+                flags ^= MDISTR
+
+        self.messages.append((mesg, flags, m_from))
+        if len(self.messages) > 200:
             self.messages.pop(0)
 
     def _handle_sp_s_warning(self, raw):

@@ -76,7 +76,9 @@ def decode_packet(ptype, data):
     for i, fname in enumerate(fields):
         val = values[i]
         if isinstance(val, bytes) and fname in ("mesg", "line", "name", "monitor", "login", "data", "keymap", "s_name"):
-            val = val.split(b'\x00', 1)[0].decode('ascii', errors='replace')
+            # Use latin-1 for mesg to preserve binary RCD distress payload
+            enc = 'latin-1' if fname == 'mesg' else 'ascii'
+            val = val.split(b'\x00', 1)[0].decode(enc, errors='replace')
         result[fname] = val
     return result
 
@@ -179,6 +181,9 @@ def cp_feature(feature_type, arg1, arg2, value, name):
                        feature_type.encode('ascii'),
                        arg1, arg2, value,
                        name.encode('ascii')[:80].ljust(80, b'\x00'))
+
+def cp_dockperm(state):
+    return struct.pack("!bbxx", CP_DOCKPERM, state)
 
 def cp_practr():
     return struct.pack("!bxxx", CP_PRACTR)

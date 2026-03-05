@@ -12,20 +12,50 @@ DEFAULT_KEYMAP = {
     '4': 'speed_4', '5': 'speed_5', '6': 'speed_6', '7': 'speed_7',
     '8': 'speed_8', '9': 'speed_9',
     '%': 'max_speed', '#': 'max_speed',
+    '<': 'speed_down', '>': 'speed_up',
     'k': 'course',
     't': 'torp', 'p': 'phaser', 'f': 'plasma',
     'd': 'det_torps', 'D': 'det_own_torp',
     's': 'shields', 'c': 'cloak', 'r': 'repair', 'o': 'orbit',
     'b': 'bomb', 'z': 'beam_up', 'x': 'beam_down',
-    'e': 'practice',
+    'e': 'dock_perm', 'E': 'practice',
     'l': 'planet_lock', ';': 'player_lock',
     'T': 'tractor', 'y': 'pressor', 'Y': 'tractor', '_': 'tractor_off',
     'w': 'war', 'R': 'refit', '^': 'coup',
     'q': 'quit', 'Q': 'fast_quit',
     'V': 'cycle_local_planets', 'B': 'cycle_galactic_planets',
     ' ': 'det_own_torp',
+    'h': 'help',
     'i': 'info', 'I': 'info_ext',
     'm': 'message',
+    'X': 'macro',
+    'A': 'auto_aim',
+    'P': 'planet_list',
+    'U': 'rank_window',
+    'S': 'stat_window',
+    '/': 'sort_players',
+    # Ctrl+key distress calls (COW input.c RCD bindings)
+    '\x14': 'distress_take',        # Ctrl+T
+    '\x0f': 'distress_ogg',         # Ctrl+O
+    '\x02': 'distress_bomb',        # Ctrl+B
+    '\x03': 'distress_control',     # Ctrl+C
+    '\x05': 'distress_escorting',   # Ctrl+E
+    '\x10': 'distress_ogging',      # Ctrl+P
+    '\x0c': 'distress_controlling', # Ctrl+L
+    '\x06': 'distress_free_beer',   # Ctrl+F
+    '\x0e': 'distress_no_gas',      # Ctrl+N
+    '\x08': 'distress_crippled',    # Ctrl+H
+    # Ctrl+digit distress calls (COW input.c:2499-2616)
+    '\x80': 'distress_pop',          # Ctrl+0
+    '\x81': 'distress_save_planet',  # Ctrl+1
+    '\x82': 'distress_base_ogg',     # Ctrl+2
+    '\x83': 'distress_help1',        # Ctrl+3
+    '\x84': 'distress_help2',        # Ctrl+4
+    '\x85': 'distress_asw',          # Ctrl+5
+    '\x86': 'distress_asbomb',       # Ctrl+6
+    '\x87': 'distress_doing1',       # Ctrl+7
+    '\x88': 'distress_doing2',       # Ctrl+8
+    '\x89': 'distress_pickup',       # Ctrl+9
 }
 
 # COW default mouse button bindings: button number -> action name
@@ -47,11 +77,36 @@ class Config:
         self.planet_bitmap = 0
         self.planet_bitmap_galaxy = 0
 
+        # Tactical display settings (COW defaults)
+        self.show_stars = True          # showStars: background star dots
+        self.show_tractor_pressor = True  # showTractorPressor: tractor/pressor lines
+        self.extra_alert_border = True  # extraAlertBorder: colored border on alert
+        self.show_lock = 3              # showLock: 0=none 1=galactic 2=tactical 3=both
+        self.vary_shields = True        # varyShields: shield color varies with damage
+        self.show_army = 3              # showArmy: 0=none 1=local 2=galactic 3=both
+        self.det_circle = True          # detCircle: show det range circle
+
+        # Galactic display settings
+        self.owner_halo = True          # ownerhalo: planet owner halo circles
+        self.lock_line = True           # lockLine: dashed line to lock target
+        self.view_box = True            # viewBox: tactical extent rectangle
+        self.weapons_on_map = True      # weaponsOnMap: torps/phasers on galactic
+        self.show_visibility_range = True  # showVisRange: enemy scanner circles on galactic
+
+        # Sound
+        self.sound_enabled = True       # sound: enable sound output
+
+        # Info window
+        self.keep_info = 15             # keepInfo: info window duration (updates, 0=don't remove)
+
         # Keymap: char -> action (starts as copy of defaults)
         self.keymap = dict(DEFAULT_KEYMAP)
 
         # Buttonmap: button_number -> action
         self.buttonmap = dict(DEFAULT_BUTTONMAP)
+
+        # Macros: key -> {target_type: template} (from rc file mac.X.T lines)
+        self.macros = {}
 
         # Network settings
         self.try_udp = False
@@ -80,19 +135,23 @@ class Config:
                 value = line[colon + 1:].strip()
                 self._apply_setting(key, value)
 
+    @staticmethod
+    def _parse_bool(value):
+        return value.lower() in ('on', 'true', '1', 'yes')
+
     def _apply_setting(self, key, value):
         if key == 'keymap':
             self._parse_keymap(value)
         elif key == 'buttonmap':
             self._parse_buttonmap(value)
         elif key == 'showIND':
-            self.show_ind = value.lower() in ('on', 'true', '1', 'yes')
+            self.show_ind = self._parse_bool(value)
         elif key == 'showPlanetOwner':
-            self.show_planet_owner = value.lower() in ('on', 'true', '1', 'yes')
+            self.show_planet_owner = self._parse_bool(value)
         elif key == 'showPlanetNames':
-            self.namemode = value.lower() in ('on', 'true', '1', 'yes')
+            self.namemode = self._parse_bool(value)
         elif key == 'agriCAPS':
-            self.agri_caps = value.lower() in ('on', 'true', '1', 'yes')
+            self.agri_caps = self._parse_bool(value)
         elif key == 'planetBitmap':
             try:
                 self.planet_bitmap = int(value)
@@ -104,7 +163,57 @@ class Config:
             except ValueError:
                 pass
         elif key == 'tryUdp':
-            self.try_udp = value.lower() in ('on', 'true', '1', 'yes')
+            self.try_udp = self._parse_bool(value)
+        # Tactical display
+        elif key == 'showStars':
+            self.show_stars = self._parse_bool(value)
+        elif key == 'showTractorPressor':
+            self.show_tractor_pressor = self._parse_bool(value)
+        elif key == 'extraAlertBorder':
+            self.extra_alert_border = self._parse_bool(value)
+        elif key == 'showLock':
+            try:
+                self.show_lock = max(0, min(3, int(value)))
+            except ValueError:
+                pass
+        elif key == 'varyShields':
+            self.vary_shields = self._parse_bool(value)
+        elif key == 'showArmy':
+            try:
+                self.show_army = max(0, min(3, int(value)))
+            except ValueError:
+                pass
+        elif key == 'detCircle':
+            self.det_circle = self._parse_bool(value)
+        # Galactic display
+        elif key == 'ownerhalo':
+            self.owner_halo = self._parse_bool(value)
+        elif key == 'lockLine':
+            self.lock_line = self._parse_bool(value)
+        elif key == 'viewBox':
+            self.view_box = self._parse_bool(value)
+        elif key == 'weaponsOnMap':
+            self.weapons_on_map = self._parse_bool(value)
+        elif key == 'showVisRange':
+            self.show_visibility_range = self._parse_bool(value)
+        # Sound
+        elif key == 'sound':
+            self.sound_enabled = self._parse_bool(value)
+        # Info window
+        elif key == 'keepInfo':
+            try:
+                self.keep_info = max(0, int(value))
+            except ValueError:
+                pass
+        elif key.startswith('mac.') and len(key) >= 5:
+            # COW macro: mac.X.T: template  (X=trigger key, T=target type)
+            parts = key.split('.')
+            if len(parts) == 3 and len(parts[1]) == 1 and len(parts[2]) == 1:
+                macro_key = parts[1]
+                target_type = parts[2]
+                if macro_key not in self.macros:
+                    self.macros[macro_key] = {}
+                self.macros[macro_key][target_type] = value
 
     def _parse_keymap(self, s):
         """Parse COW keymap string: pairs of (new_key, old_key).

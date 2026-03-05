@@ -1,13 +1,16 @@
 """Keyboard + mouse -> protocol commands via configurable keymap."""
 import math
 import pygame
-from .constants import *
+from .constants import *  # includes MALL, MTEAM, MINDIV, TEAMLET, etc.
 from .config import STYLE_NAMES, DIRECTED_ACTIONS
 from .protocol import (cp_speed, cp_direction, cp_torp, cp_phaser, cp_plasma,
                        cp_shield, cp_cloak, cp_repair, cp_orbit, cp_bomb,
                        cp_beam, cp_det_torps, cp_det_mytorp, cp_practr,
                        cp_quit, cp_refit, cp_coup, cp_message, cp_war,
-                       cp_planlock, cp_playlock, cp_tractor, cp_repress)
+                       cp_planlock, cp_playlock, cp_tractor, cp_repress,
+                       cp_dockperm)
+from .distress import emergency, load_distress, makedistress
+from .autoaim import compute_intercept, find_target, torp_range
 
 # COW refit key -> ship type (input.c Key114 / refit switch)
 _REFIT_KEYS = {
@@ -104,6 +107,24 @@ class InputHandler:
         self.info_target = None   # ('player', pnum) or ('planet', pnum) or None
         self.info_extended = False # True for 'I' (extended stats), False for 'i'
         self.info_timer = 0       # auto-dismiss countdown (frames)
+        # Help overlay state
+        self.help_mode = False
+        # Macro mode state (COW macro.c: X key -> wait for trigger key)
+        self.macro_mode = False
+        # Det circle visual (COW local.c:466-479, input.c:2189)
+        self.det_circle = 0  # countdown frames; >0 means draw circle
+        # Auto-aim visual indicator (lead calculation for torpedoes)
+        self.auto_aim = False
+        self.aim_intercept = None   # (gx, gy) intercept point in game coords
+        self.aim_target = None      # target Player being tracked
+        # Information overlay toggles (COW planetlist.c, ranklist.c, stats.c)
+        self.planet_list_mode = False
+        self.rank_window_mode = False
+        self.stat_window_mode = False
+        # Player list sort mode (COW '/' key): 0=slot, 1=team, 2=kills, 3=name
+        self.sort_mode = 0
+        # Message review scroll offset (0 = bottom/newest)
+        self.msg_scroll = 0
         # Message input state (COW smessage.c: messageon, messpend, outmessage)
         self.messageon = False   # True when all keys route to smessage
         self.messpend = False    # True after recipient selected, typing body
@@ -132,11 +153,9 @@ class InputHandler:
         if state == State.TEAM_SELECT:
             return self._handle_team_input(event, tactical_offset, scale_info)
 
-        # Outfit waiting — no gameplay input, just quit
+        # Outfit waiting — allow re-selection in case server rejected silently
         if state == State.OUTFIT:
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_q:
-                return True
-            return False
+            return self._handle_team_input(event, tactical_offset, scale_info)
 
         # Normal gameplay
         if event.type == pygame.KEYDOWN:
@@ -144,6 +163,9 @@ class InputHandler:
 
         if event.type == pygame.MOUSEBUTTONDOWN:
             return self._handle_mouse(event, scale_info)
+
+        if event.type == pygame.MOUSEWHEEL:
+            return self._handle_wheel(event)
 
         return False
 
@@ -239,11 +261,16 @@ class InputHandler:
                 return False
 
             # Ship selection keys (COW newwin.c:1039-1081)
+            # If mouse is hovering over a team corner, also select that team
             if ch and ch in _OUTFIT_KEYS:
                 ship = _OUTFIT_KEYS[ch]
                 self.sm.chosen_ship = ship
-                self.gs.warning = f"Ship: {SHIP_NAMES.get(ship, '??')} — click a team to join"
-                self.gs.warning_timer = 150
+                team_bit = self._team_under_mouse(tactical_offset, scale_info)
+                if team_bit:
+                    self.sm.select_team(team_bit)
+                else:
+                    self.gs.warning = f"Ship: {SHIP_NAMES.get(ship, '??')} — click a team to join"
+                    self.gs.warning_timer = 150
                 return False
 
             return False
@@ -273,6 +300,24 @@ class InputHandler:
             return False
 
         return False
+
+    def _team_under_mouse(self, tactical_offset, scale_info):
+        """Return team bit if mouse is hovering over a team corner, else None."""
+        wx, wy = pygame.mouse.get_pos()
+        mx, my = _window_to_base(wx, wy, scale_info)
+        tx, ty = tactical_offset
+        rx, ry = mx - tx, my - ty
+        if not (0 <= rx < TWINSIDE and 0 <= ry < TWINSIDE):
+            return None
+        if rx < 120 and ry < 120:
+            return ROM
+        elif rx > 380 and ry < 120:
+            return KLI
+        elif rx < 120 and ry > 380:
+            return FED
+        elif rx > 380 and ry > 380:
+            return ORI
+        return None
 
     # --- Coordinate helpers ---
 
@@ -324,7 +369,24 @@ class InputHandler:
                 return True
             return False
 
+        # Message review scrolling (PgUp/PgDn) — works regardless of mode
+        if event.key == pygame.K_PAGEUP:
+            max_scroll = max(0, len(self.gs.messages) - 5)
+            self.msg_scroll = min(self.msg_scroll + 5, max_scroll)
+            return False
+        if event.key == pygame.K_PAGEDOWN:
+            self.msg_scroll = max(self.msg_scroll - 5, 0)
+            return False
+
         ch = event.unicode
+        # Synthesize control characters when Ctrl is held but event.unicode
+        # is empty (common on macOS).  Ctrl+A..Z map to '\x01'..'\x1a'.
+        # Ctrl+0..9 map to '\x80'..'\x89' (no standard ASCII, so use private range).
+        if not ch and (event.mod & pygame.KMOD_CTRL):
+            if pygame.K_a <= event.key <= pygame.K_z:
+                ch = chr(event.key - pygame.K_a + 1)
+            elif pygame.K_0 <= event.key <= pygame.K_9:
+                ch = chr(0x80 + event.key - pygame.K_0)
         if not ch:
             return False
 
@@ -339,6 +401,12 @@ class InputHandler:
                 self._smessage('\r')
             elif ch:
                 self._smessage(ch)
+            return False
+
+        # Macro mode: next key is the macro trigger (COW macro.c)
+        if self.macro_mode:
+            self.macro_mode = False
+            self._do_macro(ch, scale_info)
             return False
 
         # Refit mode: next key selects ship type (COW Key114 + refit switch)
@@ -362,13 +430,48 @@ class InputHandler:
     def _dispatch(self, action, scale_info):
         """Execute an action by name. Returns True only for fast_quit."""
 
-        if action.startswith('speed_'):
-            speed = int(action[6:])
-            self.conn.send(cp_speed(speed))
+        # Help overlay: 'help' toggles, any other key dismisses (consumed)
+        if self.help_mode:
+            self.help_mode = False
+            return False
+
+        # Info overlays: their own key toggles, any other key dismisses
+        if self.planet_list_mode:
+            if action != 'planet_list':
+                self.planet_list_mode = False
+                return False
+        if self.rank_window_mode:
+            if action != 'rank_window':
+                self.rank_window_mode = False
+                return False
+        if self.stat_window_mode:
+            if action != 'stat_window':
+                self.stat_window_mode = False
+                return False
+
+        if action == 'help':
+            self.help_mode = True
+            return False
+
+        if action == 'speed_down':
+            me = self.gs.me
+            if me and me.speed > 0:
+                self.conn.send(cp_speed(me.speed - 1))
+            return False
+
+        if action == 'speed_up':
+            me = self.gs.me
+            if me:
+                self.conn.send(cp_speed(me.speed + 1))
             return False
 
         if action == 'max_speed':
             self.conn.send(cp_speed(12))
+            return False
+
+        if action.startswith('speed_'):
+            speed = int(action[6:])
+            self.conn.send(cp_speed(speed))
             return False
 
         if action in DIRECTED_ACTIONS:
@@ -398,13 +501,23 @@ class InputHandler:
 
         elif action == 'det_torps':
             self.conn.send(cp_det_torps())
+            if not self.config or self.config.det_circle:
+                self.det_circle = 10  # show det range circle for ~10 frames
         elif action == 'det_own_torp':
-            # COW detmine(): send CP_DET_MYTORP for each of your live torps
+            # COW detmine(): with short packets, send one CP_DET_MYTORP
+            # and let the server det the rest.  Also set local status to
+            # TDET so torps don't freeze on screen waiting for a server
+            # status update that may never come individually.
             base = self.gs.me_pnum * MAXTORP
+            sent = False
             for i in range(MAXTORP):
                 t = self.gs.torps[base + i]
                 if t.status in (TMOVE, TSTRAIGHT):
-                    self.conn.send(cp_det_mytorp(base + i))
+                    if not sent:
+                        self.conn.send(cp_det_mytorp(base + i))
+                        sent = True
+                    t.status = TDET
+                    t.fuse = 10
 
         elif action == 'refit':
             me = self.gs.me
@@ -415,6 +528,16 @@ class InputHandler:
                 self.gs.warning = "s=scout, d=destroyer, c=cruiser, b=battleship, a=assault, g=galaxy, o=starbase"
             self.gs.warning_timer = 150
 
+        elif action == 'dock_perm':
+            me = self.gs.me
+            if me:
+                if me.flags & PFDOCKOK:
+                    self.conn.send(cp_dockperm(0))
+                    self.gs.warning = "Docking permission OFF"
+                else:
+                    self.conn.send(cp_dockperm(1))
+                    self.gs.warning = "Docking permission ON"
+                self.gs.warning_timer = 90
         elif action == 'practice':
             self.conn.send(cp_practr())
         elif action == 'coup':
@@ -467,38 +590,100 @@ class InputHandler:
         elif action == 'player_lock':
             self._lock_nearest_planet_or_base(scale_info)
 
+        elif action.startswith('distress_'):
+            dist_type = action[9:]  # e.g. "take", "ogg", "bomb"
+            emergency(self.gs, self.conn, dist_type)
+
+        elif action == 'auto_aim':
+            self.auto_aim = not self.auto_aim
+            state = "ON" if self.auto_aim else "OFF"
+            self.gs.warning = f"Auto-aim: {state}"
+            self.gs.warning_timer = 90
+            if not self.auto_aim:
+                self.aim_intercept = None
+                self.aim_target = None
+
+        elif action == 'planet_list':
+            self.planet_list_mode = not self.planet_list_mode
+            if self.planet_list_mode:
+                self.rank_window_mode = False
+                self.stat_window_mode = False
+
+        elif action == 'rank_window':
+            self.rank_window_mode = not self.rank_window_mode
+            if self.rank_window_mode:
+                self.planet_list_mode = False
+                self.stat_window_mode = False
+
+        elif action == 'stat_window':
+            self.stat_window_mode = not self.stat_window_mode
+            if self.stat_window_mode:
+                self.planet_list_mode = False
+                self.rank_window_mode = False
+
+        elif action == 'sort_players':
+            _SORT_NAMES = ['Slot', 'Team', 'Kills', 'Name']
+            self.sort_mode = (self.sort_mode + 1) % 4
+            self.gs.warning = f"Sort: {_SORT_NAMES[self.sort_mode]}"
+            self.gs.warning_timer = 60
+
+        elif action == 'macro':
+            self.macro_mode = True
+            self.gs.warning = "Macro: press trigger key..."
+            self.gs.warning_timer = 90
+
         return False
+
+    def _auto_aim_direction(self):
+        """Compute netrek direction (0-255) from ship to auto-aim intercept."""
+        me = self.gs.me
+        if not me or not self.aim_intercept:
+            return None
+        ix, iy = self.aim_intercept
+        dx = ix - me.x
+        dy = -(iy - me.y)
+        if dx == 0 and dy == 0:
+            return None
+        angle = math.atan2(dx, dy)
+        return int(angle / math.pi * 128) & 0xFF
 
     def _dispatch_directed(self, action, direction):
         """Execute a directed action (needs a direction toward mouse)."""
         if action == 'torp':
+            if self.auto_aim:
+                aim_dir = self._auto_aim_direction()
+                if aim_dir is not None:
+                    direction = aim_dir
             self.conn.send(cp_torp(direction))
-            if self.sound:
-                self.sound.play("fire_torp")
         elif action == 'phaser':
             self.conn.send(cp_phaser(direction))
-            # Phaser sound played from sound.tick() on phaser status change
         elif action == 'plasma':
             self.conn.send(cp_plasma(direction))
-            if self.sound:
-                self.sound.play("fire_plasma")
         elif action == 'course':
             self.conn.send(cp_direction(direction))
 
     def _do_tractor(self, scale_info, pressor=False):
         """Tractor or pressor nearest player under mouse (COW Key84/Key94).
 
-        If already tractoring/pressing, turn off first, then re-target.
+        Toggle behavior: if already tractoring/pressing with the same mode,
+        turn it off.  Otherwise engage on nearest target.
         """
         me = self.gs.me
         if not me:
             return
-        # Turn off existing tractor/pressor first (COW behavior)
+        # Toggle off if already active in the same mode
+        if pressor and (me.flags & PFPRESS):
+            self.conn.send(cp_repress(0, me.pnum))
+            return
+        if not pressor and (me.flags & PFTRACT):
+            self.conn.send(cp_tractor(0, me.pnum))
+            return
+        # Turn off the opposite mode if active
         if me.flags & (PFTRACT | PFPRESS):
             if pressor:
-                self.conn.send(cp_repress(0, me.pnum))
-            else:
                 self.conn.send(cp_tractor(0, me.pnum))
+            else:
+                self.conn.send(cp_repress(0, me.pnum))
 
         # Find nearest player to mouse (COW gettarget with TARG_PLAYER)
         gx, gy = self._mouse_to_game(scale_info)
@@ -644,7 +829,12 @@ class InputHandler:
         if best:
             self.info_target = best
             self.info_extended = extended
-            self.info_timer = 90  # ~3 seconds at 30fps (COW keepInfo=15 * ups/5)
+            # COW keepInfo is in updates (default 5/sec); convert to frames (30fps)
+            keep_info = self.config.keep_info if self.config else 15
+            if keep_info == 0:
+                self.info_timer = 999999  # 0 = don't auto-remove
+            else:
+                self.info_timer = keep_info * 6  # keepInfo * (30fps / 5ups)
 
     def tick_info(self):
         """Called each frame to auto-dismiss info window (COW opened_info countdown)."""
@@ -652,6 +842,30 @@ class InputHandler:
             self.info_timer -= 1
             if self.info_timer <= 0:
                 self.info_target = None
+
+    def tick_auto_aim(self, scale_info):
+        """Called each frame to update auto-aim visual indicator."""
+        if not self.auto_aim:
+            return
+        me = self.gs.me
+        if not me or me.status != PALIVE:
+            self.aim_intercept = None
+            self.aim_target = None
+            return
+        gx, gy = self._mouse_to_game(scale_info)
+        if gx is None:
+            self.aim_intercept = None
+            self.aim_target = None
+            return
+        torp_speed = self.gs.ship_cap.s_torpspeed
+        max_range = torp_range(torp_speed)
+        target = find_target(self.gs, gx, gy, max_range)
+        if target is None:
+            self.aim_intercept = None
+            self.aim_target = None
+            return
+        self.aim_target = target
+        self.aim_intercept = compute_intercept(me, target, torp_speed)
 
     # --- War window (COW war.c) ---
 
@@ -841,6 +1055,63 @@ class InputHandler:
             self.conn.send(cp_message(self._msg_group, self._msg_recip, text))
         self._message_off()
 
+    def _do_macro(self, key, scale_info):
+        """Execute a macro triggered by key (COW macro.c doMacro).
+
+        Looks up key in config.macros, determines recipient from the macro's
+        target type, expands template via makedistress(), and sends.
+        """
+        if not self.config or key not in self.config.macros:
+            self.gs.warning = f"No macro defined for '{key}'"
+            self.gs.warning_timer = 90
+            return
+
+        macro_defs = self.config.macros[key]
+        me = self.gs.me
+        if not me:
+            return
+
+        # COW macro target types: T=team, A=all, F/R/K/O=specific team
+        # Pick the first available target type
+        my_team_letter = TEAMLET.get(me.team, 'F')
+
+        # Priority: team-specific ('T'), then all ('A'), then individual letters
+        template = None
+        group = MTEAM
+        recip = me.team
+
+        if 'T' in macro_defs:
+            template = macro_defs['T']
+            group = MTEAM
+            recip = me.team
+        elif my_team_letter in macro_defs:
+            template = macro_defs[my_team_letter]
+            group = MTEAM
+            recip = me.team
+        elif 'A' in macro_defs:
+            template = macro_defs['A']
+            group = MALL
+            recip = 0
+        else:
+            # Take whatever is defined
+            for ttype, tmpl in macro_defs.items():
+                template = tmpl
+                if ttype in ('F', 'R', 'K', 'O'):
+                    group = MTEAM
+                    team_map = {'F': FED, 'R': ROM, 'K': KLI, 'O': ORI}
+                    recip = team_map.get(ttype, me.team)
+                else:
+                    group = MALL
+                    recip = 0
+                break
+
+        if template is None:
+            return
+
+        dist = load_distress(self.gs)
+        text = makedistress(dist, template, self.gs)
+        self.conn.send(cp_message(group, recip, text))
+
     def _handle_mouse(self, event, scale_info):
         """Handle mouse button clicks on tactical or galactic panels.
 
@@ -850,11 +1121,17 @@ class InputHandler:
         """
         from .statemachine import State
         if self.sm.state != State.ALIVE:
+            print(f"Mouse btn={event.button} ignored: state={self.sm.state}")
             return False
 
         # COW: any mouse event cancels message mode
         if self.messageon:
             self._message_off()
+
+        # Help overlay: any click dismisses
+        if self.help_mode:
+            self.help_mode = False
+            return False
 
         # War window click intercept (COW war.c waraction)
         if self.war_mode:
@@ -864,6 +1141,12 @@ class InputHandler:
 
         me = self.gs.me
         if not me:
+            return False
+
+        # Shift+click = info (COW MOUSE_AS_SHIFT)
+        mods = pygame.key.get_mods()
+        if mods & pygame.KMOD_SHIFT:
+            self._toggle_info(scale_info, extended=False)
             return False
 
         bx, by = _window_to_base(event.pos[0], event.pos[1], scale_info)
@@ -879,12 +1162,30 @@ class InputHandler:
             self._dispatch_directed(action, d)
         else:
             if event.button == 1:
+                if self.auto_aim:
+                    aim_dir = self._auto_aim_direction()
+                    if aim_dir is not None:
+                        d = aim_dir
                 self.conn.send(cp_torp(d))
-                if self.sound:
-                    self.sound.play("fire_torp")
             elif event.button == 2:
                 self.conn.send(cp_phaser(d))
             elif event.button == 3:
                 self.conn.send(cp_direction(d))
+            else:
+                print(f"Mouse btn={event.button} unmapped")
 
+        return False
+
+    def _handle_wheel(self, event):
+        """Mouse wheel adjusts speed (COW input.c wheel support)."""
+        from .statemachine import State
+        if self.sm.state != State.ALIVE:
+            return False
+        me = self.gs.me
+        if not me:
+            return False
+        if event.y > 0:
+            self.conn.send(cp_speed(min(me.speed + 1, 12)))
+        elif event.y < 0:
+            self.conn.send(cp_speed(max(me.speed - 1, 0)))
         return False

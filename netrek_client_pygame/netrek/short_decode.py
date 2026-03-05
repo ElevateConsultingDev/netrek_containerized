@@ -427,7 +427,8 @@ def decode_s_message(data):
     length = data[4]
     total = (length + 3) & ~3
     text = data[5:total]
-    mesg = text.split(b'\x00', 1)[0].decode('ascii', errors='replace')
+    # Use latin-1 to preserve binary RCD distress payload bytes
+    mesg = text.split(b'\x00', 1)[0].decode('latin-1')
     return {
         "type": data[0], "m_flags": m_flags, "m_recpt": m_recpt,
         "m_from": m_from, "mesg": mesg,
@@ -723,7 +724,7 @@ def decode_s_torp_info(data):
                 status = (b >> 4) & 0x0F
                 info_pos += 1
         torps.append((base_tnum + i, dx, dy, war, status))
-    return {"type": data[0], "whichtorps": whichtorps, "torps": torps}
+    return {"type": data[0], "whichtorps": whichtorps, "bitset": bitset, "torps": torps}
 
 
 def decode_s_player(data, my_x=0, my_y=0):

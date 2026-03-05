@@ -10,3 +10,6 @@
 [submodule "netrek-client-paradise"]
 	path = submodules/netrek-client-paradise
 	url = git@github.com:netrek/netrek-client-paradise
+[submodule "submodules/netrek-client-netrekxp"]
+	path = submodules/netrek-client-netrekxp
+	url = https://github.com/netrek/netrek-client-netrekxp

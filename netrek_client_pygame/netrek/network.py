@@ -2,7 +2,6 @@
 import socket
 import select
 import struct
-import sys
 import time
 
 from .constants import (
@@ -17,6 +16,11 @@ from .constants import (
 )
 from .protocol import PACKET_SIZES, decode_packet, cp_udp_req, cp_sequence
 from .short_decode import VARIABLE_PACKET_TYPES, get_variable_size
+
+
+class ServerDisconnected(Exception):
+    """Raised when the server drops the TCP connection."""
+    pass
 
 # Packet types that should be sent over UDP when the channel is active.
 # These are game-action packets where low latency matters more than
@@ -48,7 +52,6 @@ class Connection:
 
         # Desync detection state (persists across _parse_buffer calls)
         self._consecutive_unknown = 0
-        self._desync_logged = False
         self._total_packets = 0
         self._logged_summary = False
 
@@ -100,11 +103,9 @@ class Connection:
             except BlockingIOError:
                 data = b""
             except (ConnectionResetError, OSError):
-                print("Server disconnected.")
-                sys.exit(1)
+                raise ServerDisconnected("connection reset")
             if not data:
-                print("Server disconnected.")
-                sys.exit(1)
+                raise ServerDisconnected("server closed connection")
             self.buf += data
 
         # --- UDP ---
@@ -137,7 +138,6 @@ class Connection:
         """Parse complete packets from buf, append to packets list.
         Modifies self.buf or self.udp_buf in place via reassignment at the end."""
         pos = 0
-        unknown_run = 0  # count of consecutive unknown bytes in this call
         while pos < len(buf):
             ptype = buf[pos]
 
@@ -147,23 +147,11 @@ class Connection:
                 if pos + size > len(buf):
                     break
                 raw = buf[pos:pos + size]
-                pos += size
-                if unknown_run:
-                    # False sync — a garbage byte matched a valid type.
-                    # Don't reset, keep counting toward desync threshold.
-                    self._consecutive_unknown += size
-                    unknown_run += size
-                    if self._consecutive_unknown >= 32:
-                        if not self._desync_logged:
-                            print(f"Desync: flushing {len(buf) - pos} bytes "
-                                  f"(first unknown at byte {pos - size - unknown_run + size})")
-                            self._desync_logged = True
-                        pos = len(buf)
-                        break
-                    continue
                 decoded = decode_packet(ptype, raw)
                 if decoded is not None:
                     packets.append((ptype, decoded))
+                pos += size
+                self._consecutive_unknown = 0
 
             elif ptype in VARIABLE_PACKET_TYPES:
                 # Variable-length short packet — need at least 4 bytes for size calc
@@ -171,60 +159,104 @@ class Connection:
                     break
                 size = get_variable_size(buf[pos:])
                 if size == 0:
-                    self._consecutive_unknown += 1
-                    unknown_run += 1
-                    if self._consecutive_unknown >= 32:
-                        if not self._desync_logged:
-                            print(f"Desync: flushing {len(buf) - pos} bytes")
-                            self._desync_logged = True
-                        pos = len(buf)
-                        break
-                    pos += 1
-                    continue
+                    # Bad variable packet — treat as unknown byte
+                    pos = self._resync(buf, pos, is_udp)
+                    break
                 if pos + size > len(buf):
                     break
-                if unknown_run:
-                    self._consecutive_unknown += size
-                    unknown_run += size
-                    pos += size
-                    if self._consecutive_unknown >= 32:
-                        if not self._desync_logged:
-                            print(f"Desync: flushing {len(buf) - pos} bytes")
-                            self._desync_logged = True
-                        pos = len(buf)
-                        break
-                    continue
                 raw = buf[pos:pos + size]
                 pos += size
                 # Short packets are decoded by gamestate handlers directly
                 # from raw bytes — pass raw as the "decoded" value
                 packets.append((ptype, raw))
+                self._consecutive_unknown = 0
 
             else:
-                if not unknown_run and not is_udp:
-                    print(f"Unknown packet type {ptype} at pos {pos} "
-                          f"(buf {len(buf)} bytes, context: {list(buf[pos:pos+8])})")
-                self._consecutive_unknown += 1
-                unknown_run += 1
-                if self._consecutive_unknown >= 32:
-                    if not self._desync_logged:
-                        print(f"Desync: flushing {len(buf) - pos} bytes")
-                        self._desync_logged = True
-                    pos = len(buf)
-                    break
-                pos += 1
-                continue
-
-        # Reset desync state when we parsed cleanly (no unknowns)
-        if unknown_run == 0:
-            self._consecutive_unknown = 0
-            self._desync_logged = False
+                # Unknown packet type — attempt resync
+                pos = self._resync(buf, pos, is_udp)
+                break
 
         remainder = buf[pos:]
         if is_udp:
             self.udp_buf = remainder
         else:
             self.buf = remainder
+
+    def _resync(self, buf, pos, is_udp):
+        """Scan forward from pos to find the next valid packet boundary.
+
+        A candidate byte is considered a valid sync point if:
+        1. It matches a known fixed-size or variable-length packet type, AND
+        2. The byte immediately after that packet also matches a known type
+           (two-packet validation to avoid false positives from garbage bytes
+           that happen to equal a valid type number).
+
+        Returns the new position to resume parsing from.
+        If no sync point is found, returns len(buf) to discard everything.
+        """
+        self._consecutive_unknown += 1
+        if not is_udp and self._consecutive_unknown == 1:
+            print(f"Unknown packet type {buf[pos]} at pos {pos} "
+                  f"(buf {len(buf)} bytes, context: {list(buf[pos:pos+8])})")
+
+        scan_start = pos + 1
+        scan_end = len(buf)
+
+        for candidate in range(scan_start, scan_end):
+            ctype = buf[candidate]
+
+            # Must be a known packet type
+            if ctype not in PACKET_SIZES and ctype not in VARIABLE_PACKET_TYPES:
+                continue
+
+            # Compute the size of this candidate packet
+            if ctype in PACKET_SIZES:
+                csize = PACKET_SIZES[ctype]
+            else:
+                # Variable packet — need enough bytes to determine size
+                if candidate + 4 > scan_end:
+                    continue
+                csize = get_variable_size(buf[candidate:])
+                if csize == 0:
+                    continue
+
+            next_pos = candidate + csize
+            if next_pos > scan_end:
+                # Not enough data to validate — if this is the only candidate
+                # near the end of the buffer, keep from candidate onward so
+                # the next recv can complete it.
+                if candidate > pos + 1:
+                    skipped = candidate - pos
+                    print(f"Resync: skipped {skipped} bytes, "
+                          f"possible sync at type {ctype} (awaiting more data)")
+                    self._consecutive_unknown = 0
+                    return candidate
+                continue
+
+            # Validate: does the byte after this packet look like another valid type?
+            if next_pos < scan_end:
+                next_type = buf[next_pos]
+                if next_type in PACKET_SIZES or next_type in VARIABLE_PACKET_TYPES:
+                    skipped = candidate - pos
+                    print(f"Resync: skipped {skipped} bytes, "
+                          f"found valid boundary at type {ctype} "
+                          f"(next type {next_type})")
+                    self._consecutive_unknown = 0
+                    return candidate
+            else:
+                # candidate packet ends exactly at buffer end — plausible sync
+                skipped = candidate - pos
+                if skipped > 0:
+                    print(f"Resync: skipped {skipped} bytes, "
+                          f"found boundary at type {ctype} (end of buffer)")
+                    self._consecutive_unknown = 0
+                    return candidate
+
+        # No valid sync point found — discard everything
+        skipped = scan_end - pos
+        print(f"Resync: no valid boundary found, discarding {skipped} bytes")
+        self._consecutive_unknown = 0
+        return scan_end
 
     # ------------------------------------------------------------------
     # Internal: UDP receive
@@ -378,6 +410,14 @@ class Connection:
     # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------
+
+    def reset(self):
+        """Tear down everything and reset to initial state for reconnection."""
+        self.close()
+        self.buf = b""
+        self._consecutive_unknown = 0
+        self._total_packets = 0
+        self._logged_summary = False
 
     def close(self):
         self._udp_cleanup()

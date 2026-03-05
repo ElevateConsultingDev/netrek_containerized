@@ -61,6 +61,15 @@ def _tint(mask, color):
     return tinted
 
 
+def _scale_surface(surf, scale):
+    """Scale a surface by the given factor using smooth interpolation."""
+    if scale == 1.0:
+        return surf
+    w = max(1, int(surf.get_width() * scale))
+    h = max(1, int(surf.get_height() * scale))
+    return pygame.transform.smoothscale(surf, (w, h))
+
+
 class SpriteManager:
     def __init__(self):
         self._ship_frames = {}  # (team, shiptype) -> list of Surface
@@ -89,6 +98,8 @@ class SpriteManager:
 
         self._planet_tint_cache = {}  # (style, index_key, color) -> Surface
         self._loaded = False
+        self._raw_stored = False
+        self._pending_scale = 1.0
 
     def load(self):
         if self._loaded:
@@ -100,6 +111,77 @@ class SpriteManager:
         self._load_explosions()
         self._load_legacy_planet_icons()
         self._load_planet_bitmaps()
+        self._store_raw()
+
+    def _store_raw(self):
+        """Snapshot loaded frames as raw originals for later rescaling."""
+        self._raw_ship_frames = {k: list(v) for k, v in self._ship_frames.items()}
+        self._raw_torp_frames = {k: list(v) for k, v in self._torp_frames.items()}
+        self._raw_torp_det_frames = {k: list(v) for k, v in self._torp_det_frames.items()}
+        self._raw_plasma_frames = {k: list(v) for k, v in self._plasma_frames.items()}
+        self._raw_plasma_det_frames = {k: list(v) for k, v in self._plasma_det_frames.items()}
+        self._raw_explosion_frames = list(self._explosion_frames)
+        self._raw_sb_explosion_frames = list(self._sb_explosion_frames)
+        self._raw_cloak_frames = list(self._cloak_frames)
+        self._raw_tac_owner = dict(self._tac_owner)
+        self._raw_tac_standard = dict(self._tac_standard)
+        self._raw_tac_moo = dict(self._tac_moo)
+        self._raw_tac_rabbit = dict(self._tac_rabbit)
+        self._raw_tac_noinfo = self._tac_noinfo
+        self._raw_gal_owner = dict(self._gal_owner)
+        self._raw_gal_unknown = self._gal_unknown
+        self._raw_gal_standard = dict(self._gal_standard)
+        self._raw_gal_moo = dict(self._gal_moo)
+        self._raw_gal_rabbit = dict(self._gal_rabbit)
+        self._raw_stored = True
+        # Apply any rescale that was requested before load completed
+        if self._pending_scale != 1.0:
+            self.rescale(self._pending_scale)
+            self._pending_scale = 1.0
+
+    def rescale(self, scale):
+        """Scale all raw frames to display size and clear tint cache."""
+        if not self._raw_stored:
+            self._pending_scale = scale
+            return
+        self._planet_tint_cache.clear()
+
+        def scale_frame_dict(raw_dict):
+            return {k: [_scale_surface(f, scale) for f in v]
+                    for k, v in raw_dict.items()}
+
+        def scale_mask_dict(raw_dict):
+            return {k: _scale_surface(v, scale) for k, v in raw_dict.items()}
+
+        self._ship_frames = scale_frame_dict(self._raw_ship_frames)
+        # 10x torp size for god-mode visibility
+        torp_scale = scale * 10
+        def scale_frame_dict_custom(raw_dict, s):
+            return {k: [_scale_surface(f, s) for f in v]
+                    for k, v in raw_dict.items()}
+        self._torp_frames = scale_frame_dict_custom(self._raw_torp_frames, torp_scale)
+        self._torp_det_frames = scale_frame_dict_custom(self._raw_torp_det_frames, torp_scale)
+        self._plasma_frames = scale_frame_dict(self._raw_plasma_frames)
+        self._plasma_det_frames = scale_frame_dict(self._raw_plasma_det_frames)
+        self._explosion_frames = [_scale_surface(f, scale)
+                                  for f in self._raw_explosion_frames]
+        self._sb_explosion_frames = [_scale_surface(f, scale)
+                                     for f in self._raw_sb_explosion_frames]
+        self._cloak_frames = [_scale_surface(f, scale)
+                              for f in self._raw_cloak_frames]
+
+        self._tac_owner = scale_mask_dict(self._raw_tac_owner)
+        self._tac_standard = scale_mask_dict(self._raw_tac_standard)
+        self._tac_moo = scale_mask_dict(self._raw_tac_moo)
+        self._tac_rabbit = scale_mask_dict(self._raw_tac_rabbit)
+        self._tac_noinfo = (_scale_surface(self._raw_tac_noinfo, scale)
+                            if self._raw_tac_noinfo else None)
+        self._gal_owner = scale_mask_dict(self._raw_gal_owner)
+        self._gal_unknown = (_scale_surface(self._raw_gal_unknown, scale)
+                             if self._raw_gal_unknown else None)
+        self._gal_standard = scale_mask_dict(self._raw_gal_standard)
+        self._gal_moo = scale_mask_dict(self._raw_gal_moo)
+        self._gal_rabbit = scale_mask_dict(self._raw_gal_rabbit)
 
     def _load_ships(self):
         for team in (FED, ROM, KLI, ORI, NOBODY):
@@ -361,6 +443,14 @@ class SpriteManager:
             return frames[frame_tick % len(frames)]
         return None
 
+    def get_plasma_frame(self, team, frame_tick):
+        frames = self._plasma_frames.get(team, [])
+        if not frames:
+            frames = self._plasma_frames.get(FED, [])
+        if frames:
+            return frames[frame_tick % len(frames)]
+        return None
+
     def get_torp_det_frame(self, team, frame_tick):
         frames = self._torp_det_frames.get(team, [])
         if not frames:
@@ -368,6 +458,22 @@ class SpriteManager:
         if frames and frame_tick < len(frames):
             return frames[frame_tick]
         return None
+
+    def get_plasma_det_frame(self, team, frame_tick):
+        frames = self._plasma_det_frames.get(team, [])
+        if not frames:
+            frames = self._plasma_det_frames.get(FED, [])
+        if frames and frame_tick < len(frames):
+            return frames[frame_tick]
+        return None
+
+    @property
+    def num_explosion_frames(self):
+        return len(self._explosion_frames)
+
+    @property
+    def num_sb_explosion_frames(self):
+        return len(self._sb_explosion_frames)
 
     def get_explosion_frame(self, frame_tick):
         if frame_tick < len(self._explosion_frames):

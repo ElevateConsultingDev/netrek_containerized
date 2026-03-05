@@ -2,13 +2,14 @@
 import os
 import sys
 import argparse
+import time
 import pygame
 
 from .constants import TARGET_FPS
 from .config import Config
-from .network import Connection
+from .network import Connection, ServerDisconnected
 from .gamestate import GameState
-from .statemachine import StateMachine
+from .statemachine import StateMachine, State
 from .sprites import SpriteManager
 from .renderer import Renderer
 from .input_handler import InputHandler
@@ -71,8 +72,10 @@ def main():
     else:
         print("No netrek.rc found, using defaults")
 
-    sound = SoundManager()
-    sound.load()
+    sound = None
+    if config.sound_enabled:
+        sound = SoundManager()
+        sound.load()
 
     conn = Connection()
     gs = GameState()
@@ -91,21 +94,68 @@ def main():
     sprites.load()
 
     # Connect to server
-    print(f"Connecting to {args.server}:{args.port}...")
-    try:
-        conn.connect(args.server, args.port)
-    except OSError as e:
-        print(f"Connection failed: {e}")
+    def do_connect():
+        """Establish TCP connection and send handshake. Returns True on success."""
+        print(f"Connecting to {args.server}:{args.port}...")
+        try:
+            conn.connect(args.server, args.port)
+        except OSError as e:
+            print(f"Connection failed: {e}")
+            return False
+        print("Connected. Sending handshake...")
+        sm.start()
+        return True
+
+    if not do_connect():
         pygame.quit()
         sys.exit(1)
 
-    print("Connected. Sending handshake...")
-    sm.start()
-
-    # Main game loop
+    # Main game loop with reconnection
     running = True
+    reconnect_delay = 0.0
+    max_reconnect_delay = 10.0
+
     while running:
-        # Process pygame events
+        # --- Reconnection state ---
+        if sm.state == State.DISCONNECTED:
+            # Drain pygame events so the window stays responsive
+            for event in pygame.event.get():
+                if event.type == pygame.VIDEORESIZE:
+                    renderer.handle_resize(event)
+                elif event.type == pygame.QUIT:
+                    running = False
+                    break
+                elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                    running = False
+                    break
+            if not running:
+                break
+
+            # Show reconnecting message and render frame
+            renderer.render()
+            clock.tick(TARGET_FPS)
+
+            # Wait for reconnect delay
+            if reconnect_delay > 0:
+                time.sleep(min(reconnect_delay, 0.5))
+                reconnect_delay -= 0.5
+                continue
+
+            # Attempt reconnection
+            conn.reset()
+            gs.reset()
+            sm.reset_for_reconnect(conn)
+
+            if do_connect():
+                reconnect_delay = 0.0
+                print("Reconnected successfully.")
+            else:
+                sm.state = State.DISCONNECTED
+                reconnect_delay = min(reconnect_delay + 2.0, max_reconnect_delay)
+                print(f"Reconnect failed, retrying in {reconnect_delay:.0f}s...")
+            continue
+
+        # --- Normal game loop ---
         for event in pygame.event.get():
             if event.type == pygame.VIDEORESIZE:
                 renderer.handle_resize(event)
@@ -119,18 +169,29 @@ def main():
             break
 
         # Receive and process network packets
-        packets = conn.recv_packets(timeout=0.0)
+        try:
+            packets = conn.recv_packets(timeout=0.0)
+        except ServerDisconnected as e:
+            print(f"Disconnected: {e}")
+            sm.state = State.DISCONNECTED
+            reconnect_delay = 1.0
+            if sound:
+                sound.on_death()
+            continue
+
         for ptype, pkt in packets:
             sm.handle_packet(ptype, pkt)
 
         # Tick state machine timers
         sm.tick()
 
-        # Tick input handler timers (info window auto-dismiss)
+        # Tick input handler timers (info window auto-dismiss, auto-aim)
         input_handler.tick_info()
+        input_handler.tick_auto_aim(renderer.scale_info)
 
         # Tick sound state-change detection
-        sound.tick(gs, gs.me_pnum)
+        if sound:
+            sound.tick(gs, gs.me_pnum)
 
         # Interpolate positions for smooth rendering
         gs.interpolate()

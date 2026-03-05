@@ -4,15 +4,20 @@ Sound detection matches COW local.c:
   - Flag diffs (shield, cloak, red alert) compared each frame via sound_flags
   - Explosions detected on p_explode == 1 (COW local.c:518-532)
   - Phaser sounds on ph.sound_phaser flag (COW local.c:572-574)
+  - Torp/plasma sounds on server-confirmed launch (status transitions)
   - death.c resets sound_flags = PFSHIELD to avoid false triggers on respawn
   - enter_ship / self_destruct played directly from statemachine / input
-  - Weapon fire sounds (torp/phaser/plasma) triggered from input_handler
-    since we lack COW's p_ntorp/p_nplasmatorp per-player counts
 """
 import os
+import time
 import pygame
-from .constants import (PFSHIELD, PFCLOAK, PFRED, PFYELLOW,
-                        PEXPLODE, PALIVE, STARBASE, PHFREE)
+from .constants import (PFSHIELD, PFCLOAK, PFGREEN, PFYELLOW, PFRED,
+                        PFENG, PFWEP,
+                        PEXPLODE, PALIVE, STARBASE, PHFREE,
+                        TFREE, TMOVE, TSTRAIGHT, MAXTORP,
+                        PTFREE, MAXPLASMA)
+
+_ALERT_MASK = PFGREEN | PFYELLOW | PFRED
 
 
 class SoundManager:
@@ -20,9 +25,14 @@ class SoundManager:
         self._sounds = {}
         # COW: static unsigned int sound_flags = PFSHIELD (death.c resets to this)
         self._sound_flags = PFSHIELD
+        # COW data.c: int oldalert = PFGREEN (separate from sound_flags)
+        self._oldalert = PFGREEN
+        self._red_alert_time = 0.0   # last time klaxon played (cooldown)
         self._prev_status = {}
         self._prev_msg_count = 0
         self._prev_warning_timer = 0
+        self._prev_torp_count = 0    # my active torp count last frame
+        self._prev_plasma_count = 0  # my active plasma count last frame
 
     def load(self):
         """Load all WAVs from assets/sounds/. Mixer must already be init'd."""
@@ -51,9 +61,18 @@ class SoundManager:
         if snd:
             snd.play()
 
+    def stop(self, name):
+        """Stop a playing sound by name."""
+        snd = self._sounds.get(name)
+        if snd:
+            snd.stop()
+
     def on_death(self):
-        """Reset sound state on death (COW death.c: sound_flags = PFSHIELD)."""
+        """Reset sound state on death (COW death.c)."""
         self._sound_flags = PFSHIELD
+        # COW death.c: oldalert = PFGREEN + Abort_Sound(REDALERT_SOUND)
+        self._oldalert = PFGREEN
+        self.stop("red_alert")
 
     def tick(self, gs, me_pnum):
         """Detect state changes each frame and play sounds (COW local.c)."""
@@ -71,11 +90,14 @@ class SoundManager:
                 if old_st != PEXPLODE:
                     if p.pnum == me_pnum:
                         if p.shiptype == STARBASE:
-                            self.play("sbexplosion")
+                            self.play("base_explosion")
                         else:
                             self.play("explosion")
                     else:
-                        self.play("explosion_other")
+                        if p.shiptype == STARBASE:
+                            self.play("base_explosion")
+                        else:
+                            self.play("explosion_other")
             self._prev_status[p.pnum] = p.status
 
         # --- Phaser sounds (COW local.c:572-574) ---
@@ -91,6 +113,28 @@ class SoundManager:
             elif ph.status == PHFREE:
                 ph._sound_played = False
 
+        # --- Torp fire sound (detect new torps from server) ---
+        base = me_pnum * MAXTORP
+        torp_count = 0
+        for i in range(MAXTORP):
+            t = gs.torps[base + i]
+            if t.status in (TMOVE, TSTRAIGHT):
+                torp_count += 1
+        if torp_count > self._prev_torp_count:
+            self.play("fire_torp")
+        self._prev_torp_count = torp_count
+
+        # --- Plasma fire sound (detect new plasmas from server) ---
+        pbase = me_pnum * MAXPLASMA
+        plasma_count = 0
+        for i in range(MAXPLASMA):
+            p = gs.plasmas[pbase + i]
+            if p.status != PTFREE:
+                plasma_count += 1
+        if plasma_count > self._prev_plasma_count:
+            self.play("fire_plasma")
+        self._prev_plasma_count = plasma_count
+
         # --- Shield sound (COW local.c:400-407) ---
         if (self._sound_flags & PFSHIELD) and not (me.flags & PFSHIELD):
             self.play("shield_down")
@@ -103,17 +147,36 @@ class SoundManager:
         elif not (me.flags & PFCLOAK) and (self._sound_flags & PFCLOAK):
             self.play("uncloak")
 
-        # --- Alert sound (COW local.c:1205-1213) ---
-        if (me.flags & PFRED) and not (self._sound_flags & PFRED):
-            self.play("red_alert")
+        # --- Engine overheat sound (NetrekXP redraw.c:183-190) ---
+        if (me.flags & PFENG) and not (self._sound_flags & PFENG):
+            self.play("enginemelt")
+        elif not (me.flags & PFENG) and (self._sound_flags & PFENG):
+            self.play("engineok")
+
+        # --- Weapon overheat sound (NetrekXP, symmetric with engine) ---
+        if (me.flags & PFWEP) and not (self._sound_flags & PFWEP):
+            self.play("buzzer")
+
+        # --- Alert sound (COW local.c:1178-1215, data.c oldalert) ---
+        # Cooldown prevents retrigger when alert flickers at threshold distance.
+        new_alert = me.flags & _ALERT_MASK
+        if new_alert != self._oldalert:
+            self._oldalert = new_alert
+            if new_alert == PFRED:
+                now = time.monotonic()
+                if now - self._red_alert_time > 10.0:
+                    self.play("red_alert")
+                    self._red_alert_time = now
 
         # Update saved flags (COW local.c:1229)
         self._sound_flags = me.flags
 
-        # --- Warning onset ---
+        # --- Warning onset (COW BUZZER_SOUND) ---
+        # COW's BUZZER_WAV is never loaded in SDL builds, but we provide nt_buzzer.wav.
+        # nt_warning.wav is the klaxon (REDALERT_WAV) — do NOT use it here.
         wt = getattr(gs, 'warning_timer', 0)
         if wt > 0 and self._prev_warning_timer == 0:
-            self.play("warning")
+            self.play("buzzer")
         self._prev_warning_timer = wt
 
         # --- New messages (COW input.c:2294) ---

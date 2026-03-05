@@ -127,6 +127,7 @@ MINDIV = 0x02
 MTEAM = 0x04
 MALL = 0x08
 MGOD = 0x10
+MDISTR = 0xC0
 
 # Address header length (COW defs.h ADDRLEN)
 ADDRLEN = 10

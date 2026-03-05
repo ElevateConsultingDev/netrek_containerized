@@ -8,10 +8,12 @@ Login sub-states (matching COW getname.c):
   makepass2   — confirming new password
   login_wait  — sent actual login, waiting for SP_LOGIN + SP_MASK
 """
+import time as _time
 from enum import Enum, auto
 from .constants import *
 from .protocol import (cp_socket, cp_login, cp_updates, cp_outfit,
-                       cp_ping_response, cp_quit, cp_bye, cp_s_req)
+                       cp_ping_response, cp_quit, cp_bye, cp_s_req,
+                       cp_feature)
 
 
 class State(Enum):
@@ -23,6 +25,7 @@ class State(Enum):
     ALIVE = auto()
     EXPLODING = auto()
     DEAD = auto()
+    DISCONNECTED = auto()
 
 
 class StateMachine:
@@ -37,7 +40,10 @@ class StateMachine:
         self.login = login
         self.sound = sound
         self.login_sent = False
-        self.outfit_sent = False
+        # Outfit state (COW newwin.c: request_sent, request_time, chosen_team)
+        self.outfit_request_sent = 0       # COW request_sent counter
+        self.outfit_request_time = 0.0     # COW request_time (monotonic)
+        self.chosen_team = -1              # COW chosen_team (-1 = none)
         self.explode_timer = 0
         self.dead_timer = 0
 
@@ -57,8 +63,19 @@ class StateMachine:
         self.chosen_ship = CRUISER  # remembered across deaths (COW previous_ship)
 
     def start(self):
-        """Send the initial CP_SOCKET packet."""
+        """Send the initial CP_SOCKET packet and advertise features."""
         self.conn.send(cp_socket())
+        # Advertise client capabilities (COW feature.c sendFeature)
+        self.conn.send(cp_feature('S', 1, 0, 1, "FEATURE_PACKETS"))
+        self.conn.send(cp_feature('S', 1, 0, 1, "SHIP_CAP"))
+        self.conn.send(cp_feature('S', 1, 0, 1, "RC_DISTRESS"))
+        self.conn.send(cp_feature('S', 1, 0, 1, "NEWMACRO"))
+        self.conn.send(cp_feature('S', 1, 0, 1, "WHY_DEAD"))
+        # Full resolution: 256-direction ships + long weapon packets
+        self.conn.send(cp_feature('S', 1, 0, 1, "FULL_DIRECTION_RESOLUTION"))
+        self.conn.send(cp_feature('S', 1, 0, 1, "FULL_WEAPON_RESOLUTION"))
+        # Beeplite: RCD message highlighting (all flags enabled)
+        self.conn.send(cp_feature('C', 1, 0, 0x7F, "BEEPLITE"))
         self.state = State.WAIT_MOTD
 
     def handle_packet(self, ptype, pkt):
@@ -110,6 +127,8 @@ class StateMachine:
                     self.login_sent = False
                     self.state = State.WAIT_MOTD
             if ptype == SP_MASK and self.state == State.LOGIN:
+                if self.sound:
+                    self.sound.stop("intro")
                 self.state = State.TEAM_SELECT
 
         elif self.state == State.TEAM_SELECT:
@@ -125,6 +144,12 @@ class StateMachine:
             elif ptype == SP_PICKOK:
                 if pkt.get("state", 0) == 1:
                     self._enter_alive()
+                else:
+                    # COW newwin.c: rejection resets chosen_team and
+                    # request_sent, returning to team selection.
+                    self.chosen_team = -1
+                    self.outfit_request_sent = 0
+                    self.state = State.TEAM_SELECT
 
         elif self.state == State.ALIVE:
             if ptype == SP_PSTATUS:
@@ -133,6 +158,7 @@ class StateMachine:
                     if pkt["status"] == PEXPLODE:
                         self.state = State.EXPLODING
                         self.explode_timer = 30  # ~1 second at 30fps
+                        self._log_death_reason(me)
 
         elif self.state == State.EXPLODING:
             if ptype == SP_PSTATUS:
@@ -157,7 +183,12 @@ class StateMachine:
         the player is ALIVE.
         """
         self.state = State.ALIVE
-        self.outfit_sent = False
+        self.outfit_request_sent = 0
+        self.chosen_team = -1
+        # Remember confirmed ship type for next outfit (COW previous_ship)
+        me = self.gs.me
+        if me and 0 <= me.shiptype < 8:
+            self.chosen_ship = me.shiptype
         if self.sound:
             self.sound.play("enter_ship")
         # Start UDP on first entry (COW: isFirstEntry + tryUdp)
@@ -170,6 +201,28 @@ class StateMachine:
             self._short_requested = True
             print("Short packets: requested SPK_VON")
 
+    _DEATH_REASONS = {
+        KQUIT: "self-destructed", KTORP: "torpedoed", KPHASER: "phasered",
+        KPLANET: "killed by planet", KSHIP: "exploded",
+        KDAEMON: "killed by daemon", KWINNER: "winner kill",
+        KGHOST: "ghostbusted", KGENOCIDE: "genocided",
+    }
+
+    def _log_death_reason(self, me):
+        reason = self._DEATH_REASONS.get(me.whydead, f"unknown ({me.whydead})")
+        killer = ""
+        if me.whydead in (KTORP, KPHASER, KSHIP) and 0 <= me.whodead < MAXPLAYER:
+            k = self.gs.players[me.whodead]
+            kl = TEAMLET.get(k.team, 'I')
+            kn = k.pnum % 16
+            killer = f" by {kl}{kn:x}"
+        elif me.whydead == KPLANET and 0 <= me.whodead < MAXPLANETS:
+            pl = self.gs.planets[me.whodead]
+            killer = f" ({pl.name[:3]})" if pl.name else ""
+        print(f"Death: {reason}{killer}")
+        self.gs.warning = f"You were {reason}{killer}"
+        self.gs.warning_timer = 150
+
     def _enter_death_screen(self):
         """Transition to team select after death (COW death.c).
 
@@ -177,7 +230,8 @@ class StateMachine:
         on the next respawn.
         """
         self.state = State.TEAM_SELECT
-        self.outfit_sent = False
+        self.outfit_request_sent = 0
+        self.chosen_team = -1
         # Clear lock state on death
         self.gs.lock_planet = -1
         self.gs.lock_player = -1
@@ -187,6 +241,24 @@ class StateMachine:
     def tick(self):
         """Called each frame for timer-based transitions."""
         self.conn.check_udp_timeout()
+
+        # COW newwin.c outfit-request logic: send when team+ship chosen
+        # and no outstanding request; retry after 3 seconds with no reply.
+        if self.state in (State.TEAM_SELECT, State.OUTFIT):
+            now = _time.monotonic()
+            if (self.outfit_request_sent == 0
+                    and self.chosen_team != -1
+                    and self.chosen_ship != -1):
+                self.conn.send(cp_outfit(self.chosen_team, self.chosen_ship))
+                self.outfit_request_sent += 1
+                self.outfit_request_time = now
+                self.state = State.OUTFIT
+            elif (self.outfit_request_sent > 0
+                    and (now - self.outfit_request_time) > 3.0):
+                # COW: "Odd, server has not replied, sending it again ..."
+                self.conn.send(cp_outfit(self.chosen_team, self.chosen_ship))
+                self.outfit_request_sent += 1
+                self.outfit_request_time = now
 
         if self.state == State.EXPLODING:
             self.explode_timer -= 1
@@ -258,20 +330,34 @@ class StateMachine:
             self.login_state = "name"
 
     def select_team(self, team_bit):
-        """Send CP_OUTFIT for the chosen team + ship, transition to OUTFIT.
+        """Record the chosen team.  The actual CP_OUTFIT is sent from tick().
 
-        COW newwin.c:937-941: sends sendTeamReq(chosen_team, chosen_ship)
-        when both are set.
+        COW newwin.c: clicking a team window just sets chosen_team.  The
+        main loop checks (request_sent == 0 && chosen_team != -1 &&
+        chosen_ship != -1) and only then calls sendTeamReq().
         """
-        if self.outfit_sent:
-            return
         mask = self.gs.team_mask
         if not (mask & team_bit):
             return  # team not available
-        team_idx = {FED: 0, ROM: 1, KLI: 2, ORI: 3}[team_bit]
-        self.conn.send(cp_outfit(team_idx, self.chosen_ship))
-        self.outfit_sent = True
-        self.state = State.OUTFIT
+        self.chosen_team = {FED: 0, ROM: 1, KLI: 2, ORI: 3}[team_bit]
+
+    def reset_for_reconnect(self, conn):
+        """Reset state machine for a fresh connection attempt."""
+        self.conn = conn
+        self.state = State.CONNECTING
+        self.login_sent = False
+        self.outfit_request_sent = 0
+        self.outfit_request_time = 0.0
+        self.chosen_team = -1
+        self.explode_timer = 0
+        self.dead_timer = 0
+        self.login_ready = False
+        self.login_accepted = None
+        self.login_state = "name"
+        self.login_password_confirm = ""
+        self.login_error = ""
+        self.login_error_timer = 0
+        self._short_requested = False
 
     def quit(self):
         self.conn.send(cp_quit())
