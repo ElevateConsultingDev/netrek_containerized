@@ -18,33 +18,19 @@ services:
       retries: 3
       start_period: 5s
 
-  client:
-    image: vanilla-netrek-image
-    container_name: vanilla-netrek-client
-    depends_on:
-      server:
-        condition: service_healthy
-    environment:
-      - DISPLAY=host.docker.internal:0
-      - PULSE_SERVER=tcp:host.docker.internal:4713
-      - SDL_AUDIODRIVER=pulse
-      - SOUNDDIR=/usr/local/src/netrek/netrek-client-cow/sounds
-      - NETREK_SERVER=server
-    entrypoint: ["/bin/bash", "/opt/netrek/client-entrypoint.sh"]
-    volumes:
-      - ./docker/cow-x11/entrypoint.sh:/opt/netrek/client-entrypoint.sh:ro
-
   paradise-server:
-    profiles:
-      - paradise
     build:
       context: .
       dockerfile: docker/paradise-server/Dockerfile
     image: netrek-paradise-server
     container_name: paradise-netrek-server
     ports:
-      - "2692:2592"
-      - "2691:2591"
+      - "2792:2592"
+      - "2791:2591"
+      - "2793-2829:2593-2629/udp"
+    entrypoint: ["/bin/bash", "/opt/netrek/server-entrypoint.sh"]
+    volumes:
+      - ./docker/paradise-server/entrypoint.sh:/opt/netrek/server-entrypoint.sh:ro
     healthcheck:
       test: ["CMD", "pgrep", "-f", "listen"]
       interval: 10s

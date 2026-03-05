@@ -47,8 +47,8 @@ COW_SRC = \
     string_util.c tools.c udpopt.c util.c war.c warning.c \
     input.c redraw.c main.c
 
-# Sound uses SDL_mixer includes
-COW_SDL_SRC = sound.c
+# Sound is handled separately (patched at build time)
+COW_SDL_SRC =
 
 # ============================================================
 # Our SDL2 replacement files
@@ -62,7 +62,7 @@ COW_OBJ     = $(addprefix $(BUILD)/,$(COW_SRC:.c=.o))
 COW_SDL_OBJ = $(addprefix $(BUILD)/,$(COW_SDL_SRC:.c=.o))
 SDL2_OBJ    = $(addprefix $(BUILD)/,$(SDL2_SRC:.c=.o))
 
-ALL_OBJ = $(COW_OBJ) $(COW_SDL_OBJ) $(SDL2_OBJ)
+ALL_OBJ = $(COW_OBJ) $(COW_SDL_OBJ) $(BUILD)/sound.o $(SDL2_OBJ)
 
 TARGET = $(BUILD)/netrek-sdl2
 
@@ -93,6 +93,12 @@ $(COW_OBJ): $(BUILD)/%.o: $(COW)/%.c $(CONFIG_H) | $(BUILD)
 	$(CC) $(CPPFLAGS) $(CFLAGS) -c $< -o $@
 
 # Sound needs SDL2 mixer headers
+# Patch: stop intro sound when entering ship
+$(BUILD)/sound.o: $(COW)/sound.c $(CONFIG_H) | $(BUILD)
+	sed 's/void Play_Sound(int type) {/void Play_Sound(int type) { \
+	if (type == 15) Mix_HaltChannel(-1);/' $< > $(BUILD)/sound_patched.c
+	$(CC) $(CPPFLAGS) $(CFLAGS) $(SDL2_CFLAGS) -c $(BUILD)/sound_patched.c -o $@
+
 $(COW_SDL_OBJ): $(BUILD)/%.o: $(COW)/%.c $(CONFIG_H) | $(BUILD)
 	$(CC) $(CPPFLAGS) $(CFLAGS) $(SDL2_CFLAGS) -c $< -o $@
 

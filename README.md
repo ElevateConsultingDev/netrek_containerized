@@ -1,17 +1,19 @@
 # Netrek Containerized
 
-Dockerized Netrek server and client infrastructure using Docker Compose. Builds and runs [Netrek](https://www.netrek.org/) vanilla and Paradise servers, the COW client, and a pygame development client.
-
-Designed for macOS hosts using XQuartz for X11 forwarding.
+Dockerized Netrek server infrastructure using Docker Compose. Runs vanilla and Paradise servers simultaneously on separate ports, with native macOS clients.
 
 ## Quick Start
 
 ```bash
-# Start the vanilla server + COW client
-./scripts/start-everything.sh
+# Start both servers
+docker compose up -d
 
-# Or start just the server (headless)
+# Start just the vanilla server
 ./scripts/start-server.sh
+
+# Connect a client
+./scripts/start-vanilla-client.sh    # Vanilla (port 2692)
+./scripts/start-paradise-client.sh   # Paradise (port 2792)
 
 # Stop everything
 ./scripts/stop.sh
@@ -20,37 +22,46 @@ Designed for macOS hosts using XQuartz for X11 forwarding.
 ## Prerequisites
 
 - Docker and Docker Compose
-- XQuartz (for GUI clients): `brew install xquartz`
+- COW SDL2 client built (`clients/cow-sdl2/build/netrek-sdl2`)
+
+## Ports
+
+| Server | Host Port | Container Port | Protocol | Purpose |
+|--------|-----------|---------------|----------|---------|
+| Vanilla | 2692 | 2592 | TCP | Game server |
+| Vanilla | 2693-2729 | 2593-2629 | UDP | Per-player UDP channels |
+| Paradise | 2792 | 2592 | TCP | Game server |
+| Paradise | 2791 | 2591 | TCP | Secondary |
+| Paradise | 2793-2829 | 2593-2629 | UDP | Per-player UDP channels |
 
 ## Scripts
 
 | Script | What it does |
 |--------|-------------|
-| `scripts/start-server.sh` | Start vanilla server headless |
-| `scripts/start-cow-client.sh` | Start COW client (opens XQuartz, needs running server) |
-| `scripts/start-pygame-client.sh` | Start pygame client (needs running server) |
-| `scripts/start-everything.sh` | Start server + COW client together |
-| `scripts/start-paradise.sh` | Start Paradise server (alt game mode, same port) |
-| `scripts/connect.sh` | Shell into the running server container |
+| `scripts/start-server.sh` | Start vanilla server |
+| `scripts/start-paradise.sh` | Start Paradise server |
+| `scripts/start-vanilla-client.sh` | COW SDL2 client → vanilla (port 2692) |
+| `scripts/start-paradise-client.sh` | COW SDL2 client → Paradise (port 2792) |
+| `scripts/start-pygame-client.sh` | Pygame client → vanilla (port 2692) |
+| `scripts/connect.sh` | Shell into vanilla server container |
+| `scripts/connect-paradise.sh` | Shell into Paradise server container |
 | `scripts/stop.sh` | Stop all containers |
 
 ## Docker Compose (direct usage)
 
 ```bash
-docker compose up server -d              # Headless vanilla server
-docker compose up                         # Server + COW client
-docker compose --profile paradise up paradise-server -d  # Paradise server
-docker compose down                       # Stop
+docker compose up -d                          # Both servers
+docker compose up server -d                   # Vanilla only
+docker compose up paradise-server -d          # Paradise only
+docker compose down                           # Stop all
 ```
 
 ## Architecture
 
 ```
 docker-compose.yml              # Service definitions
-docker/Dockerfile               # Base image (vanilla server + COW client)
-docker/server/entrypoint.sh     # Server startup script
-docker/cow-x11/entrypoint.sh    # COW client startup script
-docker/cow-x11/config/.xtrekrc  # COW client configuration
+docker/Dockerfile               # Vanilla server image
+docker/server/entrypoint.sh     # Vanilla server startup script
 docker/paradise-server/         # Paradise server image + entrypoint
 docker/dev/                     # Development configs (bashrc, vimrc, etc.)
 clients/cow-sdl2/               # Native macOS SDL2 client (C)
@@ -62,30 +73,10 @@ submodules/                     # Upstream Netrek source (git submodules)
 
 ### Services
 
-| Service | Description | Profile |
-|---------|-------------|---------|
-| `server` | Vanilla Netrek server (headless) | default |
-| `client` | COW client (X11 GUI) | default |
-| `paradise-server` | NetrekII Paradise server | `paradise` |
-
-## Ports
-
-| Port (host) | Port (container) | Protocol | Purpose |
-|-------------|-----------------|----------|---------|
-| 2692 | 2592 | TCP | Netrek game server |
-| 2693-2729 | 2593-2629 | UDP | Per-player UDP channels |
-
-Any netrek client on your Mac or network can connect to `localhost:2692`.
-
-## Sound (macOS)
-
-To enable sound from the COW client, start PulseAudio before launching:
-
-```bash
-pulseaudio --load="module-native-protocol-tcp auth-anonymous=1" --exit-idle-time=-1 --daemon
-```
-
-The container routes audio via PulseAudio to the macOS host on port 4713.
+| Service | Description | Host Port |
+|---------|-------------|-----------|
+| `server` | Vanilla Netrek server | 2692 |
+| `paradise-server` | NetrekII Paradise server | 2792 |
 
 ## But, why?
 
