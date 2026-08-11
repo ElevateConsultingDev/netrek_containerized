@@ -1,0 +1,136 @@
+Instructions for installing the Vanilla Netrek Server from .tar.gz
+
+Summary
+-------
+
+	0)  decide where to install the server on your file system,
+	1)  type "./configure --prefix=path" replacing path with your choice,
+            (default path is /usr/local/games/netrek)
+	2)  type "make install",
+	3)  "cd" to the path you gave, or /usr/local/games/netrek,
+	4)  "bin/netrekd" to start the server,
+	5)  use a client to connect to the server.
+
+Details
+-------
+
+Edit the file config.h.in to meet your requirements.  You may choose to
+leave this as is for a pure Vanilla default server.
+
+To setup the server to your machine's architecture run the configure program. 
+This is a script that will check your system for system dependent differences
+and configure the server to deal with these.  It will accept an alternate path
+to the directory into which the server is to be installed.  This is called
+LIBDIR and defaults to /usr/local/games/netrek
+
+In some cases it has been reported that the configure script is unable to
+locate the GNU DBM library and development headers.  This is normally the
+case when the library and headers are installed in a non-standard location.
+To resolve this you must pass an additional set of arguments to the configure
+script; these arguments are specified as:
+
+CFLAGS=-I/path/to/gdbm/headers LDFLAGS=/path/to/gdbm/libs ./configure
+
+as always you can specify "--prefix=/path/to/install/to" or any other
+configure arguments to the end of the above line.
+
+Configure will make two files for the server to deal with the differences. 
+These are config.h and system.mk.  
+
+(If you intend to do any development work, consider typing at this stage "make
+depend".  This will add file dependencies to the Makefiles to optimize
+recompilation.  However, please "make rmdependencies" before submitting patches
+or changes back to CVS.)
+
+Now you're ready to make the server.  Type "make" in the source root
+directory.
+
+If everything is made okay then type "make install" to move the files to the
+installation directory.
+
+Once everything is compiled and installed you may wish to edit the server
+configuration files for your requirements.  Here are some of the files and what
+they do:
+
+	sysdef 		- tunable parameters
+	ports		- specifies ports used to connect to this server
+	time		- playable/clue hours in it
+	banned		- list of players that are banned from server
+	bypass		- deprecated
+	clue-bypass	- list of players that don't have to go through
+			  clue checking
+	conquer		- server's conquest stats output
+	features	- list of special features allowed at the server
+			  that some clients might have. Some of these
+			  features may be considered 'borgish'
+	motd		- this is the information about the server for the
+			  players
+	motd_clue	- another motd for clue playing hours
+	reserved	- deprecated
+
+Normally, these files are located in the "etc" sub-directory of the
+directory you installed the server into.  But you can also configure
+the source with --sysconfdir to place them somewhere else.
+
+If the install worked then go to the installation directory. There is
+one program that should be running all the time.  netrekd - waits
+around for a connection from a client. It then forks and execs an
+ntserv.  This also accepts connections from the metaserver and via
+telnet for the current player list.
+
+Start netrekd.  Once it is running try connecting to the server and
+check things out.  If there is a problem then check out the
+docs/DEBUG.HELP file for possible solutions.
+
+See docs/metaservers-HowTo for soliciting players via the metaservers.
+
+For assistance, write to netrek-dev@us.netrek.org.
+
+
+Running two servers on one host, same binaries
+----------------------------------------------
+
+1.  build the server as usual, to the point of "make install",
+
+2.  duplicate the etc/ and var/ tree, once per virtual server,
+
+	cd /usr/local/games/netrek
+	cp -pr etc etc.inl
+	cp -pr var var.inl
+
+3.  configure each etc tree to use separate IP addresses or port numbers,
+
+4.  start each server with a unique PKEY and SYSCONFDIR,
+
+	PKEY=128 netrekd
+	SYSCONFDIR=/usr/local/games/netrek/etc.inl \
+	LOCALSTATEDIR=/usr/local/games/netrek/var.inl \
+	PKEY=129 netrekd
+
+	
+Running two servers on one host, different binaries
+---------------------------------------------------
+
+1.  obtain another copy of the source tree,
+
+2.  re-run configure using different install paths, for example:
+
+	./configure --prefix=/usr/local/games/netrek-inl
+
+3.  edit include/defs.h and change the default PKEY to a different
+    value, so the servers operate in different shared memory segments.
+
+4.  edit docs/sample_ports file to use different ports or IP addresses
+    than the original server, (this becomes etc/ports),
+
+5.  change PORT in the robots/*defs.h files to match docs/sample_ports,
+
+6.  compile and install, for example:
+
+	make
+	make install
+
+7.  start, for example:
+
+	cd /usr/local/games/netrek-inl
+	bin/netrekd

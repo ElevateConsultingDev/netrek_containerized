@@ -1,0 +1,8 @@
+1.  Should it be run as root?
+
+	No.  Run as a non-privileged user.
+
+2.  How do we get client keys?
+
+	crontab updated
+	But this is deprecated, the metaserver does not provide the keys.

@@ -1,0 +1,14 @@
+#!/usr/bin/perl
+
+open(PS, "/bin/ps ax|grep metaserverII |/bin/grep -v grep|") || die "Error starting ps!\n";
+
+if($ps = <PS>)
+{
+   exit;
+}
+else
+{
+  print("Starting metaserver\n");
+  chdir("/home/unbelver/src/metaserver");
+  exec("./metaserverII -d");
+}

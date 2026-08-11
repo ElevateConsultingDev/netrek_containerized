@@ -1,0 +1,68 @@
+#
+# DO NOT EDIT- ../system.mk file should set everything up
+# See specifically X11LIB and X11INCLUDE
+#
+CONFIG = system.mk
+VPATH = @srcdir@
+srcdir = @srcdir@
+
+include ../$(CONFIG)
+
+INSTALL = @INSTALL@
+INSTALLPROG = @INSTALL_PROGRAM@
+INSTALLDATA = @INSTALL_DATA@
+
+TARGET = xsg
+
+HEADERS =		Wlib.h bitmaps.h copyright.h copyright2.h data.h \
+			defs.h oldbitmaps.h patchlevel.h struct.h version.h \
+			localdata.h
+
+SRCS =	${srcdir}/colors.c ${srcdir}/defaults.c \
+	${srcdir}/dmessage.c \
+	${srcdir}/inform.c ${srcdir}/input.c ${srcdir}/main.c \
+	${srcdir}/modify.c ${srcdir}/newwin.c ${srcdir}/option.c \
+	${srcdir}/planetlist.c ${srcdir}/planets.c ${srcdir}/playerlist.c \
+	${srcdir}/redraw.c ${srcdir}/robotwin.c ${srcdir}/shmem.c \
+	${srcdir}/sintab.c ${srcdir}/smessage.c ${srcdir}/stats.c \
+	${srcdir}/util.c ${srcdir}/war.c ${srcdir}/warning.c \
+	${srcdir}/x11window.c ${srcdir}/localdata.c
+
+OBJS = colors.o defaults.o dmessage.o inform.o input.o localdata.o \
+	main.o modify.o newwin.o option.o planetlist.o planets.o playerlist.o \
+	redraw.o robotwin.o shmem.o sintab.o smessage.o stats.o util.o war.o \
+	warning.o x11window.o ../ntserv/libnetrek.a
+
+LIBS = $(X11LIB) $(EXTRALIBS)
+INCS = $(EXTRAINCS)
+
+CFLAGS = $(EXTRACFLAGS) $(FLAGS) ${INCS} -I../include
+
+all: xsg
+
+xsg: $(OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o $@ $(OBJS) $(LIBS)
+
+clean:
+	/bin/rm -f *.o make.out core
+
+reallyclean:  clean 
+	/bin/rm -f xsg #* *~
+
+install: xsg
+	$(INSTALLPROG) $(INSTALLOPTS) xsg $(DESTDIR)$(LIBDIR)/xsg
+
+uninstall:
+	-cd $(LIBDIR); rm -f xsg 
+
+dist: ../name
+	tar cvf - `cat Manifest` | gzip - > xsg2.1-`../name`.tar.gz
+
+rmdependencies:
+	rm -f .depend
+
+depend::
+	${CC} -M $(CFLAGS) $(SRCS) > .depend
+
+sinclude .depend
+# DO NOT DELETE

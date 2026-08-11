@@ -1,0 +1,1032 @@
+2.19.0: released 2016-12-06
+
+  See git log.
+
+2.18.0: released 2011-06-18
+
+  by Karthik Arumugham, John R. Dennison, and James Cameron.
+
+  * Christmas holiday theme for robots,
+  * Revise tips,
+  * Fix inability to rejoin after a timercide,
+  * Stop ejected pre-t bots from damaging players,
+  * NOPICK team vote and related support, carrying status query,
+  * Remove ONCHECK
+  * SELF_RESET/RESETGALAXY cleanup
+  * Add additional offense restrictions
+  * remove many conditionals
+
+2.17.0: released 2010-09-02
+
+  * better describe need for define for newbie server
+  * df_planets -> recreational_dogfight_mode change
+  * df announce winner / repair
+  * admin df-friendly reset
+  * df_planets oversight
+  * df-friendly galaxy generation
+  * autogen.sh, remove mktrekon reference
+  * better document torp packet
+  * asstorp_modifiers (Ben Dehner)
+  * rework netrek protocol definition
+  * fix link creation of netrekd in cmake build
+  * encourage cmake to place files in a build specific location
+  * ntpasswd and lt_dump_html require crypt libraries under linux.
+  * indentation of error macro
+  * etc/og/og bug note
+  * review var/planets handling
+  * remove planets file
+  * remove duplicate sample_sysdef
+  * deprecate trekon
+  * space in the blosxom.conf path fixed.
+  * sa_sigaction usage correction, daemon manager restart
+  * remove superfluous robot message from ERRORS
+  * change daemonII to daemon
+  * adopt line buffered output
+  * add cmake documentation
+
+2.16.0: released 2009-09-01
+
+  Note: the change to enable LTD_STATS in config.h.in must be
+  carefully considered by anybody upgrading a server from the previous
+  release, as the binary player database file will become unusable.
+
+  * Add ADMIN_EXEC to sample_sysdef.in
+  * Fix multi-line config.h.in comments
+  * Allow variable forced-quit-on-geno behavior
+  * Add sys/time.h to fix OS X compile failure
+  * define DESTDIR in tools/, fixes LP #276625
+  * fix install target for tools/admin, LP #276631
+  * remove RSA from robotd, LP #384896
+  * remove support for less than C89
+  * swap args for MCOPY to memcpy transition
+  * fix version defines, remove warnings
+  * clean-up-in-source-detection-of-rsa.patch
+  * LTD_STATS-linker-errors-linux.patch
+  * cmake-build-ALONG-SIDE-autotools.patch
+  * fix compilation warnings
+  * remove load check
+  * port to Mac OS X
+  * solicit, metaservers file change detection
+  * change variable name to ease comprehension
+  * fix stack smashing exception
+  * trivial whitespace fix on sysdef documentation
+  * code review, style, indentation, pret.c
+  * exit on cleanup
+  * trivial style fix, rmove.c
+  * REPO update
+  * F_sp_rank, fix logic in sndLogin resend
+  * remove cygwin implied support, confusing
+  * fix race condition with F_tips
+  * tips, do not refuse command now that message mode available
+  * compile error fix
+  * tips, also include message method for old clients
+  * warn user if tips command tried without support
+  * enable TIPS
+  * enable tips if client has feature
+  * add TIPS feature
+  * tips, enable sooner, trip newlines
+  * tips, add temporary test mode command, default off
+  * experimental contextual tips
+  * remove config define UDP_PORTSWAP, peer review
+  * remove config define UDP_PORTSWAP
+  * remove config define SHORT_PACKETS from documentation
+  * remove config define SHORT_PACKETS
+  * remove config define FEATURE_PACKETS
+  * remove config define FEATURES
+  * remove config define CHECKMESG
+  * remove config define RCD
+  * remove config define PING
+  * SP_LTD, rework for network byte order, add non-t
+  * sndLogin, restructure, reindent, review
+  * SP_RANK, resend SP_PL_LOGIN if feature turns on
+  * SP_LTD, provide packet to client on death
+  * SP_LTD, add feature packet, default on
+  * SP_LTD, initial draft
+  * revise metaserver configuration instructions
+  * remove gum
+  * LTD stats query, move to var/www/stats
+  * warn about long passwords being irrelevant
+  * res-rsa removal
+  * final, addition of LTD stats query
+  * LTD_STATS enabling, BREAKS PLAYER DATABASE
+  * SP_RANK, include maximum rank number
+  * review, SP_RANK further edits
+  * RANK_ADMIRAL, use for draft captains
+  * SP_RANK, manually round
+  * SP_RANK, fix max rank sent to client
+  * SP_RANK, fix limited packet initialization
+  * Newbie, fix compiler warning
+  * SP_RANK, round() values for decimal precision
+  * SP_RANK, fix string length
+  * Self destruct credit, int overflow fix
+  * review, SP_RANKS
+  * Newbie, adopt PRETKEEPALIVE to keep robots full-time
+  * Robotd server name, change to localhost
+  * SP_RANKS, don't send ranks over admiral to old clients
+  * SP_RANKS, increase char size
+  * SP_RANKS, send to client
+  * SP_RANKS, add support for offense_rating
+  * SP_RANKS, fix variable type, add feature check
+  * SP_RANKS, new server packet
+  * Rank structure, add cname
+  * Sturgeon, update server name
+  * Feature packet, SP_RANKS
+  * solicit, reindent
+  * solicit, trailing whitespace
+  * etc/metaservers, add comment line handling
+  * update repository address
+  * Feature packet, AUTO_WEAPONS
+  * whitespace fixes and RSA comment
+  * fix for deprecated RSA, remove references to CVS
+  * newstartd, whitespace cleanup
+  * report client identification and allow user query
+  * autogen.sh, reduce noise
+  * dns, meta2 change
+  * fix configure substitution
+  * adopt pickled defaults for most items except DNS blocks
+  * autogen fix for ubuntu jaunty
+  * include client version in metaserver query
+  * remove old feature support, simplify client ident
+  * add client version part of protocol
+  * add client name to version packet and log
+  * deprecate RSA infrastructure
+  * report only t-mode surrender countdowns
+  * suppress time to die for kathy
+  * add ten second timeout to metaget
+  * move keys from metaserver to server source kit
+  * dns, inclusion of dns/dns2.gerdesas.com as slaves
+  * typo, orbitting -> orbiting
+  * DNS, rename wiki to old-wiki, add new wiki
+  * DNS, added new-wiki.us.netrek.org
+  * draft, addition of LTD stats query
+  * add metaserver1, rm ftp, rm cvs
+  * us.netrek.org-zonefile
+  * add missing libs
+  * ltd dump html, by player name
+  * db.c, add fast search capability
+  * ltd_dump_html added
+  * merge cow
+  * inl, allow admin commands and prevent info leak
+  * bring back downstream packaging for ubuntu
+  * fix compile error when PRETKEEPALIVE is not set
+
+2.15.0: released 2008-09-30
+
+  * factorise killer credit
+  * self destruct credit
+  * removal of etc/access references
+  * rework file head, add hint to developers
+  * admin/ban, fixes
+  * remove /og/
+  * decimal precision conformance for displayed stats
+  * self destruct, move from ntserv to daemon
+  * deprecate debug documentation in usage
+  * pret, reduce ghostbust during termination probability
+  * metaserver advisory political
+  * pret, flatten kills at start of t-mode
+  * is_idle, not if torps in flight
+  * xtkill, add (f)latten
+  * openmem, test program
+  * RSA does not mean trusted, reported by zelchenko
+  * experimental, clue game substitution
+  * experimental, WHY_DEAD_2 fix
+  * trivial packet doc fix
+  * trimscores, add trim by zero stats
+  * p_disconnect support for xtkill F
+  * fix comment on SP_GENERIC_32, add bug
+  * pret, conquer parade honors pre-t idlers
+  * SP_GENERIC_32, version 'b', fix byte swapping
+  * pl_reset, sanity of loop
+  * SP_GENERIC_32 version 'b' packet support
+  * inl, fix for 50 fps, add context-> fields
+  * features, begin to use arg1
+  * remove old fixme now done
+  * packets, remove unnecessary ifdef lines and blanks
+  * util, s2du
+  * fix missing end of line
+  * SP_GENERIC_32, only send when it changes
+  * RCD bomb, show planet name regardless
+  * SP_GENERIC_32, fix structure definition
+  * rcd, bring in changes from netrek-client-cow
+  * pl_pick_home, pathological case fix
+  * CP_SOCKET denial of service, security update
+  * SP_SHIP_CAP, add py-struct documentation
+  * SP_BADVERSION, compile fixes
+  * multiplexor design idea 2007-10
+  * SP_BADVERSION, use for eject, ban, free
+  * SP_BADVERSION, renumbering
+  * SP_BADVERSION, avoid leak, symbolise
+  * pret, code formatting
+  * note bug in clue game re captaincy on draft
+  * add py-struct to UDP packets for pygame client
+  * include call graph
+  * REPOSITORIES, update of darcs link
+  * pret, fix for save_armies_carried()
+  * pl_info, better documentation
+  * doxygen, add robotd
+  * pret, round win parade, tested
+  * is_robot_by_host, enables testing of pret locally
+  * forgotten, move common shmget usage to openmem.c
+  * review, t-mode duration logging
+  * pret, win parade, experimental
+  * daemon, add t-mode duration logging
+  * glog, add timestamps
+  * doxygen, struct.h incomplete documentation
+  * configure, remove X libraries
+  * inl, report who freed a slot, it can be ambiguous
+  * doxygen, daemon (1)
+  * doResources change to pl_reset
+  * pret.c, 80 column re-indentation
+  * newbie.c, 80 column re-indentation
+  * various spelling fixes
+  * doxygen, add documentation
+  * doxygen, add configuration and build target
+  * post release notes
+  * fix configure, relied on name.c
+  * deprecate name.c
+  * fix release date
+  * add metaserver delist tool
+
+2.14.0: released 2008-02-27
+
+  - volunteer welcome to classify the list below, it is merely a "darcs
+    changes" since last release with peer review patches removed.
+
+  * Feature packet, F_WHY_DEAD_2, extra p_whydead states
+  * Feature packets, lame_*refit conditions
+  * Fix default UPS if no client request was sent
+  * Modify updatePlayerStats() behavior
+  * Default SHORT_THRESHOLD to off
+  * Remove resurrection code
+  * Fix plural player is/players/are for ignoring/ignoredby
+  * Fix NAME_MAX to FNAMESIZE
+  * pret, repair/refuel slots on switch to real t-mode
+  * pret, fixed "1 armies" issue
+  * pret, bot name fixes
+  * Fix confine after a draft has occurred
+  * review LTD_STATS conversion procedure
+  * pet peeve, fix all occurrences of "1 minutes"
+  * add ignoring/ignoredby commands
+  * util.h - missing function declaration
+  * util.c - add find_slot_by_ip function
+  * Turn off visibility range
+  * Fix to allow admin observers to rejoin any team after a team-change xtkill
+  * Fix "20 minutes left when T mode resumes" on geno countdown in T mode
+  * pret - save armies on pre-t start fix
+  * Do not allow self-ejects
+  * Restrict SB offense outside T mode, except in pre-T
+  * Create muteall directory on install
+  * Fix comment typo
+  * Add etc/ip/muteall support to mute only ALL messages from an IP/IP block
+  * Let 0.00 offense players fly DDs with min offense set to 0
+  * Fix compiler warnings in newscores/trimscores
+  * Make 8x Captain requirement match comments for non-LTD
+  * Fix warnings, old variables not removed
+  * Merge interface.c patches
+  * lame refit
+  * Delay end of pre-T until T mode actually starts
+  * Blow up bases when pre-T ends if offense requirement are not met
+  * Clean up SB/DD offense patch, ignore SB offense requirement outside T mode
+  * Fix OFFENSE_RANK
+  * remove lockout()
+  * dd+sb stats restrictions
+  * Obey ignoreTMode setting (-I flag) in robotd
+  * Default CLOAK_MAXWARP to off
+  * Fix itourn og command for robots
+  * Compile under Mac OS X 10.5 (Leopard)
+  * inl, trade restriction
+  * docs, add DDRANK/GARANK to CUSTOMIZATION
+  * transwarp, equity vs lockBase
+  * transwarp, change sysdef names
+  * Don't clear p_inl_captain on enter(), part 2
+  * Don't clear p_inl_captain on enter()
+  * Warnings cleanup, part 3
+  * Clean up warnings, part 2
+  * Clean up compiler warnings
+  * Suppress "Not an INL command" on passing cluecheck
+  * Update clue check questions
+  * Remove fprintf() of home/away team to INL_log
+  * Increase MAXUPLINK to 64
+  * Update statsindex.py
+  * Print INL game starting messages to the log
+  * Improve is_robot() logic
+  * Close directory in flag_test_cidr() on successful return
+  * Create etc/ip/deny on make install
+  * Add CIDR netmask support to ip-checking code
+  * Increase MAXUPLINK from 10 to 20
+  * Fix cambot.pkt file name in end_tourney.pl
+  * Allow admin observers to join any team
+  * Let admin observers rejoin after quitting
+  * Don't kick admin observers if on wrong team when T ends
+  * Don't kill admin observers on geno
+  * end_tourney.pl updates
+  * Add trailing linefeed to statsindex.py
+  * Stats Index script
+  * basep/pret, add setbuf
+  * base-practice, restrict bots from turning into bases
+  * base-practice, enable faster weapon cooldown
+  * pret, save carried armies at start of pre-t mode
+  * base-practice, force moderation bot into slot g
+  * removal of blame
+  * Allow admins to execute shell commands
+  * Default TURN_KEYS to OFF
+  * message serialisation, inl regression fix, fix fix
+  * message serialisation, inl regression fix
+  * misc diagrams
+  * message serialisation, major rewrite
+  * messages, fix for short packets, pret
+  * messages, factorise
+  * pret, fix compilation warnings
+  * p_heal, adopt
+  * inl draft, heal ships after a draft
+  * inl draft, do not touch ranks in pickup
+  * p_heal, add
+  * inl draft, documentation update
+  * inl draft, add command to clear drafted flag
+  * cambot, allow recording at a lower update rate
+  * socket.c, superfluous parentheses
+  * bind udp port predictably
+  * metaget, add premature exit capability
+  * inl draft, add manual mode commands
+  * scripts for t-mode start and end
+  * remove dumpshmem debug command
+  * Fix god() calls that should be godf()
+  * compile warnings in ping.c fix
+  * Document GHOSTBUST_TIMER in CUSTOMIZATION
+  * Configurable ghostbust timer in sysdef
+  * Allow players to explode and die during a pause
+  * Restore ghostbust timers to 30/32 seconds
+  * inl draft, message cleanup, dead trout easter egg
+  * inl draft, confine disabled
+  * inl draft, decloak all ships
+  * inl draft, merge karthik, rename gameup bits
+  * Kill the GU_INL_DRAFTGAME flag on game end
+  * setship, add fuel, shields and damage setting
+  * Increase MAXMETASERVERS from 4 to 8
+  * Captain clearing bugfix
+  * Retain rank when INL draft game starts
+  * Move draft completion message
+  * Increase ghostbust timers
+  * Allow trade during the game
+  * Free team captain flag if captain disappears
+  * Don't solicit an INL server without 2 captains present
+  * Archive player.CHANGES into docs
+  * Suppress rank message in an INL draft game
+  * Rank drafted players based on pick position
+  * Place unpicked players on the independent team
+  * removal of FASTER_SB_MAXUPDATES
+  * inl draft, rework contributions
+  * inl draft, style
+  * daemon, avoid t-mode scum check during INL game
+  * compiler warning, incorrect code
+  * inl draft, merge with karthik
+  * Clean up end-of-draft movement
+  * Warp players home after a draft
+  * Misc cleanup in draft.c
+  * Move ships home after the draft finishes
+  * Exclude observers from the draft
+  * inl draft, simplify variable names
+  * inl draft, merge with rich
+  * Signal Active Draft Selector by Ship Type
+  * Fix Orbit Bug and Change Selection Msg for Draft
+  * INL Draft-- Spinning Fix, Text Mods
+  * Modify_Top_To_Bottom_Placement
+  * bounce() rename to god() and godf()
+  * Fix format string vulnerability in whois command
+  * Don't force obs to exit on geno when there is a queue
+  * inl draft, further testing
+  * inl draft, tested styles 0 and 1
+  * inl draft, fixes after testing
+  * inl draft, rework after testing
+  * inl draft, fix tractor and pressor selection
+  * inl draft, add style to sysdef
+  * sysdef, change of maintenance policy, gum deprecated
+  * inl draft, merge
+  * draft.c, player positioning modified
+  * bugs, new INL ones
+  * inl draft, merge
+  * DraftPlacementMod
+  * INL guest MOTD fix, part 3
+  * INL guest MOTD fix, part 2
+  * Remove INL guest MOTD
+  * Add metaserver3 to sample_metaservers
+  * Change default INL starting armies to 12
+  * Fix segfault in 'players r' if observers present
+  * Show ploss to 1 decimal place in 'players v'
+  * T-mode end message too long
+  * inl draft, change minidraft to draft
+  * MinidraftVotePatch
+  * inl draft, documentation
+  * Minor fixes to allow building under Cygwin
+  * inl draft, through to completion
+  * do_message, usable now from daemon, ntserv and tools
+  * daemon, indent message_flag function
+  * inl draft, test script
+  * inl, add test script
+  * setship, add support to change player to observer and back
+  * build environment setup documentation
+  * inl draft, use change_team
+  * xtkill, use new change_team function
+  * inl draft, merge with rich, add documentation
+  * mdPlayerCapnPositioning
+  * mdvote
+  * inl draft, pick order, pick delegation
+  * add debian virtual appliance instructions
+  * inl draft, animation and pick logic
+  * replace p_inlcaptain with p_inl_captain
+  * inl draft, restrict navigation and add hooks
+  * fix formatting and return syntax
+  * inl draft, add task specific sources
+  * inl draft, add structures and constants
+  * use hex values for gameup flags
+  * Properly enforce mutes
+  * fix players v segfault
+  * sysdef, comment spacing
+  * fix ntserv core dump on messages sent by whitelist ip
+  * Surrender message wording
+  * Warn about broken stats in end_tourney.pl
+  * surrender detail, and struct teams prefix change
+  * server to server advertising test code
+  * docs, add REPORT_USERS option to CUSTOMIZATION
+  * Round packet loss on transmission to client
+  * Report packet loss to 1 decimal place
+  * Help target change
+  * docs, document required change to docs/CUSTOMIZATION
+  * allow whitelist to override ignores
+  * fix compilation warning, is_idle
+  * pret, plasma reset fix
+  * Remove . for playercounts of home/away teams
+  * robots, ignore commands fix
+  * sysdef, 80 col fix
+  * Compile with base-practice, newbie, and pre-T off
+  * pret, display proper win condition
+  * Add PRETKEEPALIVE define
+  * CPPFLAGS fixes
+  * pret, save galaxy/saved galaxy lifetime sysdef configurable
+  * security fix, fix padding of feature packet
+  * add further py-structs
+  * security fix, information leak
+  * Check against null variables in ban_noconnect check
+  * further py-struct adjustments
+  * pret, sysdef configurable win condition
+  * docs, add missing server mode writeups
+  * add CLASSICTOURN writeup
+  * robots can ignore commands
+  * Allow pre-T dropping on your own homeworld
+  * pret, pret mode status fix
+  * 64-bit server fixes for 32-bit player/globals
+  * BUGS/PROJECTS updates
+  * pret, saved galaxy expiration
+  * sysdefaults.h gum entries
+  * Robot manager move, update sysdefaults
+  * Move robot debugging to sysdef
+  * Newstartd deny, pass IP address
+  * Newbie.c, start_a_robot, typo fix, add more debug output
+  * Minor spacing fix, comment for ip free duplicates
+  * Newbie stop_a_robot, logic fix
+  * free_duplicate_ips, don't free if pid 0
+  * DENY_DUPLICATES, free processes with same ip
+  * Logic fix for metaserver player count/queue display
+  * Sysdef option, DENY_DUPLICATES
+  * Add newbie queues to duplicates check
+  * Timercide tournamentMask() fix
+  * Reset the T Mode galaxy after a Pre-T victory
+  * add protocol state description
+  * further py-struct annotation, move CP_PLANET
+  * further py-struct annotation
+  * further py-struct annotation
+  * new feature, get server version script
+  * move ip deny set to better place
+  * Add ip_deny_set to header
+  * denial of service protection, excess duplicates
+  * change checksafe to is_idle
+  * Fix slot count for metaserver solicit
+  * relax message restrictions for whitelisted entries
+  * Remove undeclared time_in_pre_T in pret.c
+  * Save T-mode Galaxy
+  * Mask fix on genocided teams
+  * SYSDEF to require offense for higher ranks
+  * Prevent homeworld dropping in pre-T
+  * Don't set alert status due to idle ships
+  * Foreign spelling
+  * pret, fix potential reset during t-mode
+  * tournamentMask() fixes
+  * pret, introductory text
+  * Add CLASSICTOURN gum reminder line
+  * Add CLASSICTOURN sysdef entry
+  * Correct sysdef.in 3RD_DROP setting
+  * Configure user count reporting to metaservers
+  * Add CLASSICTOURN sysdef to emulate old tournamentMask()
+  * Rewrite of tournamentMask()
+  * Observer bust army-drop fix
+  * remove is_observer
+  * Pre-T Idle Mode updates
+  * Changes to IP hide/whitelist behavior
+  * Pre-T entry reset fix, obliterate plasma/torps fix
+  * Show lack of RSA if SHOW_RSA is enabled
+  * Exclamatory WARMONGER
+  * Obliterate option to reset ship
+  * Count bots in pre T for tournmask and bot entry team
+  * Increase UDP buffer size
+  * Additional PFOBSERV code
+  * Make use of PFOBSERV flag
+  * Pre-T bug fixes and queue logic change
+  * Change INL_log and ltd_dump to non-compressed format
+  * Keep cambot file extension as .pkt
+  * SP_FLAGS_ALL, observer case
+  * bugs reported during a game
+  * Don't kill robots on geno
+  * Fix default LOCALSTATEDIR
+  * pret, fixed at-war status during kathy termination
+  * UpdateFlagsAll bug fix, match offset to what client expects
+  * updateFlagsAll, pass offset, support high player slots numbers
+  * Xtkill, lower player's shields
+  * setgalaxy, removal of non-INL galaxy reset, cleanup
+  * pret, prevent kathy from exiting
+  * pret, remove references to PRET queues
+  * Fix very minor IP_CHECK_DNS typo in sysdef patch
+  * Move IP_CHECK_DNS* to sysdef
+  * virtual servers, environment variables
+  * Allow robots to exit if server is dead
+  * pret, fixed queue status during real-t transition
+  * Re-add crypt.h under linux
+  * Remove crypt.h
+  * crypt, isolate to db.c, remove include in getname
+  * Remove INL_RESOURCES
+  * Remove Dynix parallel compile refs
+  * Player stats update, prevent counter overflow
+  * Bug fix, full direction resolution, cloak/shield flags
+  * INL start armies changed from 17 to 12
+  * Add Heiko's Short packets writeup to README.SHORT
+  * Full weapon resolution, reduce bandwidth use
+  * Add full weapon resolution exception to UDP packet size check
+  * Clarify SP_FLAGS_ALL in sample_features
+  * ip duplicates, create configuration directory entry
+  * ultrix, remove support
+  * crypt, isolate to db.c
+  * compiler warnings, fix anzac 1
+  * SP_NEWFLAGS -> SP_FLAGS_ALL
+  * UpdateFlags, adds functionality to SP_NEWFLAGS
+  * New feature packet, SP_NEWFLAGS
+  * * pret, real-t startup changes
+  * * pret, proper galaxy reset functionality
+  * * pret, informational messages updated
+  * Compiler warning fix, lastudpsize
+  * Fix wrong comment on sp version
+  * UDPStats fixes
+  * Account for generic32 packets in UDP packet size restrictions
+  * Allow client to track UDP packet size
+  * Give obliterated ships more time to rejoin
+  * Feature packets, TURN_KEYS and SHOW_VISIBILITY_RANGE
+  * Shorter robot exit wait
+  * SHOW_ARMY_COUNT OFF
+  * docs, updated INSTALL
+  * xtkill, added repair option
+  * getpath, added --help
+  * addfile, Addition of INSTALL.GNU document
+  * pret, case change to enforce message consistancy
+  * ip, duplicates permission
+  * daemon, make ERROR output more consistent
+  * daemon, manager robot variable name changes
+  * pret, defer robot start until player has ship
+  * pret, move lib/og/og to etc/og/og
+  * pret, bug fix, died to torps (ERROR: Kathy died??)
+  * pret, bug fix, kathy was not tiring
+  * remove OBSERVERS, feature is now accepted fully
+  * remove CHAIN_REACTION
+  * trivial debian rules fixes
+  * remove showgalaxy from build, reduce dependencies
+  * remove xsg and pledit from build, bug fix, put back in  dist
+  * safe idle, extend
+  * Send phaser end coord on PHMISS, sturgeon only
+  * Sysdef option, STURGEON_SPECWEAP
+  * nit, remove setjmp.h includes
+  * pret, when removing a robot, prefer a non-carrier
+  * change default host for running robots
+  * explain features, misc fixes
+  * Bug fixes, CHECK_PLANET
+  * CHECK_PLANET, add flags
+  * Ignore CP_PLANET for self-destruct purposes
+  * Feature packet, CHECK_PLANET, protocol change
+
+2.13.0: released 2007-04-03
+
+summary
+- core change from 10 to 50 frames per second
+- refinements made as a result of clue games
+- increase in weapon and ship direction information given to clients
+- fix transwarp at one update per second bug
+- fix several race conditions
+
+clue game support
+- updates and fixes for pwstats [arumugham]
+- add TRADE command [arumugham]
+- fix admin commands [arumugham]
+- add INL guest motd [arumugham]
+
+messaging
+- allow muting of any slot, not just observers [arumugham]
+- allow excessive messaging from captains [arumugham]
+- fix mute for unresolved IP addresses [balcerski]
+
+game design
+- fix spelling of Cassiopeia as pointed out by pog [arumugham]
+- fix transwarp at one update per second bug [cameron]
+- option to restrict dropping on unrepresented third space [balcerski]
+- ships enter facing enemy team [balcerski]
+- option to allow bases to orbit enemy planets [balcerski]
+- practice robot torps made safe for other practice robots [cameron]
+
+core
+- change from 10 to 50 simulation frames per second [cameron, north, et al]
+- fix race condition on slot allocation [cameron]
+- fix race condition on queue entry allocation [cameron]
+- fix race condition on player database growth [cameron]
+- add option to terminate game if only observers present [cameron]
+- fix restart feature [cameron]
+
+infrastructure
+- generic lock implementation using semaphores [cameron]
+- add setship test script support program [cameron]
+- add orbit entry, orbit path, ship and torp flight test scripts [cameron]
+- add simulation single-step feature in setgame test program [cameron]
+
+client protocol changes
+- FULL_DIRECTION_RESOLUTION [balcerski]
+- FULL_WEAPON_RESOLUTION [balcerski]
+- GENERIC_32 [cameron, balcerski]
+- reverse host name checking against DNS [arumugham]
+- ip address checking against block lists [arumugham]
+- FPS [cameron]
+- UPS [cameron]
+
+metaserver protocol changes
+- report correct player count [arumugham]
+
+packaging
+- debian build test scripts [cameron]
+- debian build fixes [tanner]
+- remove files before running libtoolize [thorne]
+- fix maintainer-clean target [arumugham]
+- MAC OS X compile fix [arumugham]
+
+2.12.1: released 2007-03-02
+
+- fixes format string security vulnerability when EVENTLOG=1
+
+2.12.0: released 2006-12-27
+
+Summary
+
+- newbie and pre-t robot changes [Balcerski]
+- sturgeon mode [Balcerski]
+- full direction resolution feature packet [Balcerski]
+- repair time estimate feature packet [Balcerski]
+- INL style clue game fixes [Balcerski]
+- per-slot transwarp permission [Balcerski]
+- truth in server to metaserver reporting [Mondor, Cameron, Balcerski]
+- support running server behind a NAT implementation [Mondor]
+- defer reverse host name lookup [Cameron]
+- server admin ignore, mute, and hide by ip [Cameron]
+- per-ip ignore [Cameron]
+- daemon restart feature [Cameron]
+- server activity blog [Cameron]
+
+Details
+
+- ut06 packaging fixes [Cameron]
+- ut06 exclude darcs from build of package [Cameron]
+- sysdef options for DD and GA ranks (DDRANK, GARANK) [Balcerski]
+- remove unnecessary ??rank for sysdef options [Cameron]
+- newbie bots exit from team with more humans [Balcerski]
+- pret improved robot starting and tracking [Balcerski]
+- kathy robot responds to help [Balcerski]
+- newbie sysdef option to balance # humans per side [Balcerski]
+- debian build, add libgmp build deps [Cameron]
+- bugs update for inl stat script [Cameron]
+- fix so proper robotd function readFromServer is called [Balcerski]
+- prevent blank login names from SndLogin function [Balcerski]
+- fix for cambot output file path [Balcerski]
+- fix to avoid reporting slots of local players or bots to metaserver [Mondor]
+- add support for binding to any IP address, useful for NAT'd servers [Mondor]
+- add quiet flag to robotII (unwanted msgs blocked for practice bot) [Mondor]
+- conq to rss, daemon changes (files created to enable blog content) [Cameron]
+- conq to rss, lib/conquer (server blog refreshed with blosxom) [Cameron]
+- conq to rss, generalisation [Cameron]
+- conq to rss, allow other content from server [Cameron]
+- daemon, reap child processes [Cameron]
+- conq to rss, blogging enable flag [Cameron]
+- conq to rss, adjust game over message, remove game begin [Cameron]
+- conq to rss, add blog-refresh [Cameron]
+- conq to rss, fix starbase loss blog event [Cameron]
+- add quorum, easier identification of t-mode teams [Cameron] 
+- conq to rss, edits to blogged messages [Cameron]
+- conq to rss, blog scripts review [Cameron]
+- conq to rss, further message adjustments [Cameron]
+- set PATH within netrekd [Cameron]
+- conq to rss, blog game over, edits [Cameron]
+- conq to rss, documentation updates [Cameron]
+- conq to rss, prevent alarm inheritance [Cameron]
+- pret, avoid /bin/sh when starting robots [Cameron]
+- pret, mark robots as robots [Cameron]
+- newbie, avoid /bin/sh when starting robots [Balcerski]
+- newbie, alternative method to build argument list [Cameron]
+- pret, add sysdef option to use guest for bots [Cameron]
+- daemon, exclude PFBPROBOTs from t-mode scum check [Cameron]
+- Pret, add sysdef option to use guest for bots [Cameron]
+- tools/ban, only dump ban records with data [Cameron]
+- blog-refresh, do not ignore errors [Cameron]
+- blog, add rss flow diagram and docs [Cameron]
+- Update PROJECTS [Cameron]
+- blog, fix bans reporting [Cameron]
+- newstartd, note point of delay per PROJECTS [Cameron]
+- blog, daemon, edit racial messages further [Cameron]
+- blog, redesign of script naming [Cameron]
+- netrekd, rewrite access checks to avoid DNS (faster login) [Cameron]
+- conq to rss, fix surrender timeout messages [Cameron]
+- ntserv, resolve ip to host name asynchronous (faster login) [Cameron]
+- blog, suppress blog-update output [Cameron]
+- ntserv, FULL_HOSTNAMES removal, ignore, mute and hide by ip [Cameron]
+- solicit, reduce compiler warnings [Cameron]
+- ip, remove from proto.h to speed compiles [Cameron]
+- ntserv, fix unregistered ip addresses handling [Cameron]
+- blog, add minimal support for inl link to stats [Cameron]
+- solicit, reduce excess messages [Cameron]
+- add tcsh compatible setpath [Cameron]
+- setpath, add tcsh and bash support, remove bangs [Cameron]
+- Sepath.csh command fix [Balcerski]
+- daemon, add SIGHUP handler to restart during play [Cameron]
+- newstartd, compile fix [Cameron]
+- fix path for INL generated files [Balcerski]
+- daemonII defines moved to top of file [Balcerski]
+- fix path for INL players file generated by end_tourney.pl script [Balcerski] 
+- newbie server, minimum player count option [Balcerski]
+- sturgeon, framework merged with Vanilla (vars and sysdef defines) [Balcerski]
+- renamed p_refitting [Balcerski]
+- openmem, fix spurious removemem error [Cameron]
+- blog, pickup game full, add hysteresis, not-full if >= 8 free slots [Cameron]
+- daemon, torps track practice robots [Balcerski]
+- sturgeon, extrakills sysdef option [Balcerski]
+- sturgeon, initialize special weapons [Balcerski]
+- sturgeon, toggle special weapons using coup key (shift-c) [Balcerski]
+- expire torps 5 second max after death [Balcerski]
+- sturgeon, torp spinspeed for mines and initialization [Balcerski]
+- sturgeon, det own torp for damage support [Balcerski]
+- sturgeon, nukes add explosion damage [Balcerski]
+- sturgeon, fire while cloaked support [Balcerski]
+- sturgeon, new message commands added [Balcerski]
+- sturgeon, socket commands compile fix [Balcerski]
+- sturgeon, nuke effects [Balcerski]
+- sturgeon, nuke gu_inrobot fix [Balcerski]
+- sturgeon, compile fix [Balcerski] 
+- sturgeon, unused plasma settings fix [Balcerski]
+- ntserv, plasma pseudo-debugging code formatting fix [Balcerski]
+- sturgeon, formalize ship cap function [Balcerski]
+- sturgeon,  apply/unapply upgrade functions [Balcerski]
+- sturgeon, free planet upgrades sysdef option [Balcerski]
+- sturgeon, refit and upgrade, the core of sturgeon [Balcerski]
+- sturgeon, order of shipcap in enter() fixed [Balcerski]
+- sturgeon, special weapon + plasma
+- INL bugs fixed, sturgeon bugs introduced (doh) [Balcerski]
+- newbie server, improve messages (NEWBIEMSG) [Balcerski] 
+- add blosxom script to source [Balcerski] 
+- ntserv, remove repetitive plasmacost code [Balcerski] 
+- merged sturgeon mods [Cameron]
+- sturgeon, coup, isolation [Cameron]
+- sturgeon, set speed, isolation [Cameron]
+- sturgeon, enter, isolation [Cameron]
+- sturgeon, refit, isolation [Cameron]
+- sturgeon, ship cap improvements - xtkill, observer support [Balcerski] 
+- sturgeon, bugs update [Balcerski] 
+- sturgeon, ship cap, review [Cameron]
+- sturgeon, struct, review [Cameron]
+- sturgeon, redesign ship cap sending [Cameron]
+- bans.c remove unused variable [Balcerski] 
+- compile fixes: pledit/edit.c, keycomp, roboshar.c, keyman.c [Balcerski]  
+- compile fixes: showgalaxy.c, robots, plasma.c, ip.c, setplanet.c [Balcerski] 
+- compile fix: robotd/main.c [Balcerski] 
+- ntserv, allow bombing of all planets in t-mode opponent space [Balcerski] 
+- merge Bill's server buglist [Balcerski] 
+- clarify docking/twarp procedure [Balcerski] 
+- transwarp command - allow individual toggles [Balcerski]
+- sysdef, add starbase rebuild time [Cameron]
+- sturgeon, plasma, isolation [Balcerski]
+- configure, x includes fix attempt [Cameron]
+- ignore, persistent, new feature (persistent ignore by IP address) [Cameron]
+- add list of repos [Cameron]
+- bans age, reality fix [Balcerski]
+- metaservers howto fix [Balcerski]
+- INL metaservers howto update [Balcerski]
+- new feature packets, full direction resolution and generic [Balcerski]
+- ntserv, Gener32packet generation, repair time calculated [Balcerski]
+- ntserv, Generic_32, add packet size, version, planet orbit [Balcerski]
+- full direction resolution, flag bug fixt [Balcerski]
+- repair time calculation, bug fixt [Balcerski]
+- resolve conflict, repair time calculation, bug fix [Cameron]
+- Shicap fix, initialize packet memory size [Balcerski] 
+- resolve conflict, Shicap fix, initialize packet memory size [Cameron]
+- F_full_direction_resolution, ignore packet size restrictions [Balcerski] 
+- robotd, re-order option parsing [Cameron]
+- typo fix in end_tourney.pl [Balcerski]
+- update projects list with ip resolution changes [Cameron]
+- blog, game over, change ticks to hours [Cameron]
+- ip, propogate deferred lookup to queue hosts [Cameron]
+- cambot, audit trail scripts [Cameron]
+- persistent ignore, clean up old entries in database [Cameron]
+- pret, centralise check for is_robot [Cameron]
+- entry, if only one ship type allowed, use it [Cameron]
+- players, report server type and player count fixes udp [Cameron]
+- PROJECTS, review and purge [Cameron]
+- debian, change compatibility level [Cameron]
+- BUGS, updated [Cameron]
+- INSTALL.INL updates [Balcerski]
+- RSS documentation update [Balcerski]
+- xsg, fix debian build failure [Cameron]
+- debian, update build dependencies based on tests [Cameron]
+
+2.11.2: released 2006-09-17
+
+- fix robotd to allow debugging using SIGINT
+- remove unnecessary delay in conquer test
+- fix tests to use shell path
+- fix xtkill exit status
+- fix robots to obey GU_GAMEOK termination
+- add path tools
+- Fix for long names with scores tools
+- Add README.ban
+- Sysdef option for admin password
+- Perm banned doc fix
+- Sysdef option for noconnect for perm bans
+- Fixes for observer muting
+- Sysdef option for preT idling
+- fix ghostbust no ping alive response
+- document getpath
+- fix army rescue on observ ghostbust
+- Addendum to multi install instructions
+- Robot server spam reduction
+- Install directions on running multiple servers
+- Pret enhancements part1 - cleanup, debug
+- Newbie enhancements part1 - cleanup, debug
+- Basepractice unused variable removed
+- fix attempt for pret hang on bsd
+- fix bsd socket include
+- fix signal build errors on bsd
+- remove old policy, add libnetrek and sysdef hints
+- Merlin responds to help
+- Move newbie slot control to sysdef
+- Sysdefault instructions correction
+- Increase newbie slots from 8 to 16
+- Ingame admin tool fixes
+- Pret queue renumbering
+- Standardize planet locs for basepractice
+- add setgame wait-for-terminate command
+- disable ban pre-queue for observers
+- remove ban vote expiry by login, add ban queue
+- adopt sigpipe implementation for ntserv
+- fix fix use of unsafe functions in signal handler, robots
+- add sigpipe implementation
+- Fix so basepractice bots don't get ip blocked by duplicate sysdef option
+- fix use of unsafe functions in signal handler, daemon, basep
+- Basepractice server improvements
+- Addition of missing options to sample sysdef
+- Adding vote tag to voting command structure
+- Remove ability to vote if VOTING=0
+- Dogfight map file fix
+- Ban vote duration in sample sysdef
+- Improved tracking of server modes
+- Newbie server documentation update2
+- comindico whitelist removal, quozl specific
+- noted new bug, signal handler calls unsafe functions
+- initial design of checkpointing
+- add ban tools
+- add ban vote duration
+- add live daemon release target
+- fix test to correctly reproduce parade ring overlap
+- fix for conquer parade alignment, alternate
+- add test for conquer parade slot alignment bug
+- add planet orbit and take test scripts
+- Semi-critical update fix
+- Show geno messages for observers
+- Formatting fix for if statement in interface.c
+- Command file for PreT robots
+- adjust test scripts for xtkill changes
+- Xtkill settable kills
+- Xtkill bug fixes
+- robotd-carriage-return-added-to-death-messages.dpatch
+- freebsd compilation fix, missing header
+- avoid lies to metaserver due pre-t robots
+- further-fixes-to-war-decs.dpatch
+- continuum ghostbust diagnostics
+- untabify daemon main
+- newbie robots war declarations test
+- Newbie robots now declare war properly in pickup games
+- continuum ban vote tweaks 2006-06
+- xtkill ship change fixes
+- newbie-observer-ports.dpatch
+- Chaos mode starbase enhancements
+- Twarp message fix
+- ATT and invalid ship fixes
+- null-terminate-mapchars-indentfix
+- null-terminate-mapchars
+- robotd-improved-army-tracking.dpatch
+- Cross-transwarp check
+- post 2.11.1 release process notes
+- include config.guess in make dist
+- include config.sub in make dist
+
+2.11.1: released 2006-06-01
+
+- fix CHAOS torp detonation which was allowing wtemp [Balcerski}
+- add experimental future support for slot number change [Cameron]
+- added toggle switches to new ogging and carrier tracking logic [Huang]
+- remove res-rsa/configure [Piepho]
+- help bot deal with ping-pong plasma [Piepho]
+- help client with plasma war in ping-pong mode [Piepho]
+- deprecate dan quayle in t-mode messages [Balcerski]
+- server sends torp direction, robots dodge better [Piepho]
+- make robots cloak near enemy home planets due res danger [Piepho]
+- make robots take neut planets once there are no enemy planets [Piepho]
+- make robots recognise planet situational change while assaulting [Piepho]
+- various robot fixes that triggered comprehensive work by others [Huang]
+- fix lack of shields shown on practice robots and iggies [Cameron]
+- fix two second delay on client connection if daemon not running [Cameron]
+- add game pause/resume/terminate tool, setgame [Cameron]
+- add max duplicate ip count for pickup play [Cameron]
+- add install-ntserv target for live updates [Cameron]
+- mute banned observers [Cameron]
+- add team configuration tool, setteam [Cameron]
+- prevent hung slots by changing ghostbust timer reset method [Cameron]
+- newbie random games against any non-diagonal team combination [Huang]
+- enable CONTINUOUS_MOUSE by default [Cameron]
+
+2.11.0: released 2006-05-15
+
+- fix practice robots to cloak when bombing near home planet [Huang]
+- fix INL confine to knock ships out of orbit [Cameron]
+- describe a local unnamed server as "server on this computer" [Cameron]
+- fix cambot regression [Cameron]
+- convert voting, ejecting and banning to site policy in sysdef [Cameron]
+- add vote to temporarily ban a player [Cameron]
+- change to conquest sequence to add a parade [Cameron]
+- fix unrealistic robot boredom timer [Cameron]
+- add galaxy configuration tool, setplanet [Cameron]
+- move common code into a libnetrek [Cameron]
+- lesser lights minimal compilation target [Cameron]
+- factorise god log access functions [Cameron]
+- fix valgrind detected heap leaks [Cameron]
+- compilation fixes for GCC 4.0.3 [Cameron]
+- remove some crud from tar.gz [Cameron]
+- add coding STYLE file [Cameron]
+- fix client/server error over army capacity of AS in certain cases [Balcerski]
+- use IP addresses only for t-mode scum test [Cameron]
+- compilation fix for FreeBSD [O'Conner]
+
+2.10.2: released 2006-02-22
+
+- add documentation to debian packaging [cameron]
+- fix signal function in configure test [anonymous]
+- add reload option to netrekd for use by init.d scripts [cameron]
+- add tool for dumping metaserver or multicast server state [cameron]
+- remove robots from metaserver report [cameron]
+- fix refit to enable docking and restrict speed [shadow hunter]
+- add multicast server discovery [cameron]
+- fix leak of active process count in newstartd [cameron]
+- change file .metaservers to metaservers [cameron]
+
+2.10.1: released 2005-09-30
+
+- add missing build dependency on debian package [cameron]
+- fix compilation on GCC 4.0.1 [cameron]
+- fix compilation on GCC 3.4.3 [thorne]
+
+2.10.0: released 2005-09-30
+
+- GNU standards for Makefile [cameron]
+- change version number format from 2.9pl8 to 2.10.0 [cameron]
+- find .metaservers file in SYSCONFDIR not default directory [cameron]
+- split into multiple directories per LSB, avoid dot files [cameron]
+- compilation fixes for Debian Sarge and Fedora Core 3 [cameron]
+- varargs to stdargs conversion [rekless]
+
+- newbie robot entry queue fix [cameron/southall]
+- fix INL free army clone bug [pog]
+- fix crash on conq, if conqfile not writeable, redirect to stderr [cameron]
+- fix database corruption caused by system shutdown during kill [cameron]
+- fix practice robots not firing at enemy [piepho]
+- fix visible tractors for observers [pirogov]
+- fix slot t avoidance check [larimda]
+
+- observer muting support [cameron]
+- observer message throttling [cameron]
+- admin command (free and ban while god observing) [cameron]
+- began support for whitelisting [cameron]
+- began support for user registration [cameron]
+- hide hostname for whitelisted slots [cameron]
+- NO_DUPLICATE_HOSTS feature to reduce scumming and DoS [cameron]
+- NO_HOSTNAMES feature to reduce player to player DoS [cameron]
+- player database index and access timing [cameron]
+- galactic collapse mode for setgalaxy [cameron]
+- avoid slot t [cameron]
+- run puck before player and faceoff, ex psychosis [villapando]
+
+2.9pl8: released 2002-12-06

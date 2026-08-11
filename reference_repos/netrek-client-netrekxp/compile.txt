@@ -1,0 +1,87 @@
+This source tree was tested with Borland C Builder 5.5, and Microsoft Visual C++ 2010
+Express Edition.  The client can also be compiled with MS Visual C++ 6.0, and the instructions
+below explain how to do so.  However, this compiler is no longer supported by the Netrek
+XP 2009 author as it is not free software (everything else needed for compiling is free).
+
+I'd like however to discourage you from using Borland's compiler unless you know how
+to debug its binaries. The output is also slower even though speed optimizations
+are used.
+
+Step 1:
+--------
+Edit build.cmd to set following variables:
+
+Compiler = VCC or BCC (default VCC)
+InstCWD = path to folder to copy files to (default \netrek_files)
+HelpCompiler = path to hhc.exe from Microsoft's HTML Help Workshop (available from microsoft.com)
+
+Step 2:
+--------
+
+First off, you will need the development package for SDL, as well as SDL-mixer.
+Refer to the SDL website for how to install it with your compiler/IDE.
+
+You will also need zlib, get the compiled DLL, lib, and headers here at:
+http://www.zlib.net/zlib125-dll.zip
+and follow the USAGE.txt for installation instructions for your compiler
+Note: Version number of zlib file may need to be changed, check web site for most recent version.
+Note: Zdll.lib beyond version 1.2.3 gives a linker warning which states
+  LNK4078: multiple '.text' sections found with different attributes
+Netrek still works ok, and using version 1.2.3 of Zdll.lib made the warning disappear.  Do not
+know how to fix with most recent pre-compiled zdll.lib.  Did not attempt to compile zdll.lib
+from scratch.
+
+If you're building with MS Visual C++:
+
+- Edit clientr.dsp and change \netrek_files to be same as InstCWD
+- Edit src\cursors\curslib.dsp and change \netrek_files to be same as InstCWD
+- Edit src\winkey\winkey.dsp and change \netrek_files to be same as InstCWD
+
+If you're building with Borland C Builder:
+
+Make sure you have configuration set correctly for the builder itself.
+Follow setup instructions from builder readme file to create proper configuration
+files. Otherwise the compiler and linker won't find the correct paths.
+
+If you're building with Microsoft Visual Studio 2005
+
+This is no longer supported.  You will need the SDK from the web, as the software
+doesn't come with the necessary files.  Additionally, DirectX SDK is probably needed too,
+for the SDL support.  You will also need the HTML help workshop (from Microsoft) to 
+compile the help file.  If you use the studio files that come with the source,
+it should already have most of the proper configuration set up, such as links to the
+lib files and using the proper resource files.  The following webpage indicates how
+to properly install the Microsoft SDK.  The name of the article on this webpage is
+"Using Visual C++ 2005 Express Edition with the Microsoft Platform SDK"
+http://msdn.microsoft.com/vstudio/express/visualc/usingpsdk/
+Especially important are steps 3 and 4.  Step 4 was necessary to get winkey to compile.
+Versions up to Netrek XP 2010 v1.0 were developed with Visual Studio 2005.  In September
+2010 the build environment was changed to Visual Studio 2010.  Upgrading wizard converted
+vcproj files to vcxproj files, which are not backwards compatable with Studio 2005.  Using
+old version of clientr.sln in the repository allows for project to be built under Studio
+2005.
+
+If you're building with Microsoft Visual Studio 2010
+
+This is a preferred compiler.  The SDK that comes with the compiler apparently has the
+necessary files unlike with 2005.   Additionally, DirectX SDK is probably needed too,
+for the SDL support.  You will also need the HTML help workshop (from Microsoft) to 
+compile the help file.
+
+Step 3:
+--------
+Open command prompt in the source tree directory and run build.cmd.  Note that this build
+script must use borland make, not GNU make, so don't try and run it under cygwin.  Also
+note that since the script is run in DOS, it can't handle directory names with spaces or
+quotations.  Highly recommend having netrekxp folder in root, i.e. c:\netrekxp
+
+If everything is correct and working then after a couple of minutes you will have compiled
+a working client under InstCWD\netrek.
+If you were compiling with Visual C++ you will also have a InstCWD\tmp folder containing
+lots of objects.  Just delete it.
+
+That's pretty much all.
+
+Stas Pirogov (keyos@keyos.org)
+
+Instructions modified by Bill Balcerski 

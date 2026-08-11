@@ -1,0 +1,69 @@
+Banning players
+
+There are two methods implemented which can hinder players from
+connecting.  They use IP address, host name, or username.  They cannot
+prevent players from connecting who know how to use a tunnel to change
+their IP address and host name.
+
+Note: this document duplicates the functionality of the source, and
+may lag behind development.  References are included.
+
+1.  etc/banned
+
+Created empty at installation time.
+[docs/Makefile.in target install]
+
+Uses wildcard matches for both login and host name.
+[ntserv/bans.c function bans_check_permanent]
+
+When a player is affected by this, they will see the message of the
+day, be able to choose a team, but when they enter the game their ship
+will explode, and be forced to quit.  If etc/bypass has an entry for
+the host, this check of etc/banned is skipped.
+[ntserv/main.c function main]
+
+If BAN_NOCONNECT is set, they will not enter the game, and their
+client will be given the "You cannot play now" SP_BADVERSION packet.
+The etc/bypass file is not checked in this case.
+[ntserv/main.c function main]
+
+Changes to the file are effective on the next client connection or
+ship entry from the message of the day or team selection window.
+
+To ban everyone, add a line:
+*@*
+
+To ban a subdomain, add a line:
+*@usc.edu
+
+To ban a specific username at a domain, add a line:
+Bozo@troublemaker.net
+
+The in-game admin command "ban" adds to this file.
+[ntserv/ntscmds.c function do_admin]
+
+The in-game ban vote does NOT add to the file.  Instead it maintains a
+list in memory.  The list is lost when the daemon exits.
+[ntserv/bans.c function bans_add_temporary_by_player]
+
+
+2.  etc/ip/deny/
+
+Directory created empty at installation time.
+
+When a client connects, the IP address is checked for as a file in the
+etc/ip/deny directory.
+
+If such a file exists they are not placed on queue, they do not see
+the message of the day, they will not appear on the player list,
+instead their client will be given the "You cannot play now"
+SP_BADVERSION packet.  The etc/bypass file is ignored.
+[newstartd/newstartd.c function deny]
+
+Creation of a file takes effect on the next client connection.
+There is no need to restart newstartd.
+[newstartd/ip_deny() function call]
+
+The in-game admin command "ban" creates a file in this directory using
+the players IP address.
+[ntserv/ntscmds.c function do_admin]

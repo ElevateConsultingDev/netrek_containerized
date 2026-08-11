@@ -1,0 +1,217 @@
+# Change CONFIG to the .mk file that matches your system
+
+CONFIG = system.mk
+VPATH = @srcdir@
+srcdir = @srcdir@
+DESTDIR = @prefix@
+
+# Do Not Change anything below this line. It should be setup in config
+
+include ../$(CONFIG)
+
+INSTALL = @INSTALL@
+INSTALLPROG = @INSTALL_PROGRAM@
+INSTALLDATA = @INSTALL_DATA@
+
+CFLAGS = $(EXTRAINCS) $(FLAGS) @CPPFLAGS@ -I../include
+
+LIBS = $(EXTRALIBS)
+
+TOOLDIR= $(LIBDIR)/tools
+
+LINTFLAGS = -habxc $(EXTRAINCS) $(FLAGS)
+
+OBJS = ../ntserv/libnetrek.a
+
+SRCS = ${srcdir}/ban.c ${srcdir}/getpath.c \
+	${srcdir}/blotpassword.c ${srcdir}/mess.c \
+	${srcdir}/mergescores.c \
+	${srcdir}/newscores.c ${srcdir}/planets.c ${srcdir}/players.c \
+	${srcdir}/scores.c ${srcdir}/setgalaxy.c \
+	${srcdir}/stat.c ${srcdir}/trimscores.c ${srcdir}/watchmes.c \
+	${srcdir}/fun.c ${srcdir}/xtkill.c ${srcdir}/keyman.c \
+	${srcdir}/nuke.c ${srcdir}/metaget.c \
+	${srcdir}/update.c \
+	${srcdir}/sortdb.c \
+	${srcdir}/ntpasswd.c \
+	${srcdir}/setgame.c ${srcdir}/setplanet.c ${srcdir}/setteam.c \
+	${srcdir}/setship.c ${srcdir}/delist.c
+
+EXECS =	ban getpath blotpassword mess message newscores planets players \
+	scores \
+        setgalaxy stat trimscores watchmes xtkill \
+        mergescores keyman updated fun sortdb cambot \
+        ntpasswd ltd_dump ltd_dump_html ltd_convert nuke metaget \
+	setgame setplanet setteam setship delist
+
+all: $(PMAKE) $(EXECS)
+
+clean: rmdependencies
+	rm -f *.o *.ln
+
+reallyclean: clean
+	rm -f $(EXECS) *~ #*#
+
+
+install: $(EXECS) 
+	mkdir -p $(DESTDIR)$(LIBDIR)/tools
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/daemon
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/queue
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/racial
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/bans
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/blog/inl
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/www
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/www/blog
+	mkdir -p $(DESTDIR)$(LOCALSTATEDIR)/www/stats
+	$(INSTALLPROG) $(INSTALLOPTS) ${srcdir}/updatekeys $(DESTDIR)$(LIBDIR)/tools/updatekeys
+	$(INSTALLPROG) $(INSTALLOPTS) blosxom $(DESTDIR)$(LIBDIR)/blosxom
+	$(INSTALLPROG) $(INSTALLOPTS) blog $(DESTDIR)$(LIBDIR)/blog
+	$(INSTALLPROG) $(INSTALLOPTS) blog-file $(DESTDIR)$(LIBDIR)/blog-file
+	$(INSTALLPROG) $(INSTALLOPTS) blog-update $(DESTDIR)$(LIBDIR)/blog-update
+	$(INSTALLPROG) $(INSTALLOPTS) blog-update-all $(DESTDIR)$(LIBDIR)/blog-update-all
+	$(INSTALLPROG) $(INSTALLOPTS) blog-purge-old $(DESTDIR)$(LIBDIR)/blog-purge-old
+	$(INSTALLPROG) $(INSTALLOPTS) blotpassword $(DESTDIR)$(LIBDIR)/tools/blotpassword
+	$(INSTALLPROG) $(INSTALLOPTS) mess $(DESTDIR)$(LIBDIR)/tools/mess
+	$(INSTALLPROG) $(INSTALLOPTS) message $(DESTDIR)$(LIBDIR)/tools/message
+	$(INSTALLPROG) $(INSTALLOPTS) newscores $(DESTDIR)$(LIBDIR)/tools/newscores
+	$(INSTALLPROG) $(INSTALLOPTS) planets $(DESTDIR)$(LIBDIR)/tools/planets
+	$(INSTALLPROG) $(INSTALLOPTS) players $(DESTDIR)$(LIBDIR)/tools/players
+	$(INSTALLPROG) $(INSTALLOPTS) nuke $(DESTDIR)$(LIBDIR)/tools/nuke
+	$(INSTALLPROG) $(INSTALLOPTS) scores $(DESTDIR)$(LIBDIR)/tools/scores
+	$(INSTALLPROG) $(INSTALLOPTS) setgalaxy $(DESTDIR)$(LIBDIR)/tools/setgalaxy
+	$(INSTALLPROG) $(INSTALLOPTS) stat $(DESTDIR)$(LIBDIR)/tools/stat
+	$(INSTALLPROG) $(INSTALLOPTS) trimscores $(DESTDIR)$(LIBDIR)/tools/trimscores
+	$(INSTALLPROG) $(INSTALLOPTS) watchmes $(DESTDIR)$(LIBDIR)/tools/watchmes
+	$(INSTALLPROG) $(INSTALLOPTS) xtkill $(DESTDIR)$(LIBDIR)/tools/xtkill
+	$(INSTALLPROG) $(INSTALLOPTS) mergescores $(DESTDIR)$(LIBDIR)/tools/mergescores
+	$(INSTALLPROG) $(INSTALLOPTS) keyman $(DESTDIR)$(LIBDIR)/tools/keyman
+	$(INSTALLPROG) $(INSTALLOPTS) fun $(DESTDIR)$(LIBDIR)/tools/fun
+	$(INSTALLPROG) $(INSTALLOPTS) sortdb $(DESTDIR)$(LIBDIR)/tools/sortdb
+	$(INSTALLPROG) $(INSTALLOPTS) ntpasswd $(DESTDIR)$(LIBDIR)/tools/ntpasswd
+	$(INSTALLPROG) $(INSTALLOPTS) ltd_dump $(DESTDIR)$(LIBDIR)/tools/ltd_dump
+	$(INSTALLPROG) $(INSTALLOPTS) ltd_dump_html $(DESTDIR)$(LIBDIR)/tools/ltd_dump_html
+	$(INSTALLPROG) $(INSTALLOPTS) updated $(DESTDIR)$(LIBDIR)/updated
+	$(INSTALLPROG) $(INSTALLOPTS) cambot $(DESTDIR)$(LIBDIR)/cambot
+	$(INSTALLPROG) $(INSTALLOPTS) metaget $(DESTDIR)$(LIBDIR)/tools/metaget
+	$(INSTALLPROG) $(INSTALLOPTS) setgame $(DESTDIR)$(LIBDIR)/tools/setgame
+	$(INSTALLPROG) $(INSTALLOPTS) setplanet $(DESTDIR)$(LIBDIR)/tools/setplanet
+	$(INSTALLPROG) $(INSTALLOPTS) setteam $(DESTDIR)$(LIBDIR)/tools/setteam
+	$(INSTALLPROG) $(INSTALLOPTS) setship $(DESTDIR)$(LIBDIR)/tools/setship
+	$(INSTALLPROG) $(INSTALLOPTS) delist $(DESTDIR)$(LIBDIR)/tools/delist
+	$(INSTALLPROG) $(INSTALLOPTS) ban $(DESTDIR)$(LIBDIR)/tools/ban
+	$(INSTALLPROG) $(INSTALLOPTS) getpath $(DESTDIR)$(LIBDIR)/tools/getpath
+	$(INSTALLPROG) $(INSTALLOPTS) setpath $(DESTDIR)$(LIBDIR)/tools/setpath
+	$(INSTALLPROG) $(INSTALLOPTS) cambot-cyclic $(DESTDIR)$(LIBDIR)/
+	$(INSTALLPROG) $(INSTALLOPTS) cambot-clean $(DESTDIR)$(LIBDIR)/
+	$(INSTALLPROG) $(INSTALLOPTS) ignore-clean $(DESTDIR)$(LIBDIR)/
+
+cambot: cambot.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} cambot.o $(OBJS) $(RSA_LIB) $(LIBS)
+
+sortdb: sortdb.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} sortdb.o
+
+ntpasswd: ntpasswd.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ntpasswd.o $(OBJS) $(LIBCRYPT) -lgdbm
+
+mess: mess.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} mess.o $(OBJS) $(LIBS)
+
+message: message.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} message.o $(OBJS) $(LIBS)
+
+mergescores: mergescores.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} mergescores.o $(OBJS) $(LIBS)
+
+newscores: newscores.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} newscores.o $(OBJS) $(LIBS)
+
+planets: planets.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} planets.o $(OBJS) $(LIBS)
+
+players: players.o $(OBJS) $(RANDOMO)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} players.o $(OBJS) $(RANDOMO) $(LIBS)
+
+nuke: nuke.o $(OBJS) $(RANDOMO)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} nuke.o $(OBJS) $(RANDOMO) $(LIBS)
+
+scores: scores.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} scores.o $(OBJS) $(LIBS)
+
+setgalaxy: setgalaxy.o $(RANDOMO) $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setgalaxy.o $(RANDOMO) $(OBJS) $(LIBS)
+
+showgalaxy: showgalaxy.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} showgalaxy.o $(OBJS) $(LIBS) $(LIBCURSES) $(LIBTERMCAP)
+
+stat: stat.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} stat.o $(OBJS) $(LIBS)
+
+blotpassword: blotpassword.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} blotpassword.o $(OBJS) $(LIBS)
+
+trimscores: trimscores.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} trimscores.o $(OBJS) $(LIBS)
+
+watchmes: watchmes.o $(OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} watchmes.o $(OBJS) $(LIBS) -o $@
+
+xtkill: xtkill.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} xtkill.o $(OBJS) $(LIBS)
+
+keyman: keyman.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} keyman.o $(OBJS) $(LIBS)
+
+fun: $(RANDOMO) fun.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} fun.o $(RANDOMO) $(OBJS) $(LIBS)
+
+updated: update.o $(OBJS)
+	$(CC) $(CFLAGS) ${LDFLAGS} -o updated update.o $(OBJS) $(EXTRALIBS)
+
+ltd_dump: ltd_dump.o
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_dump ltd_dump.o $(OBJS)
+
+ltd_dump_html: ltd_dump_html.o
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_dump_html ltd_dump_html.o $(OBJS) $(LIBCRYPT) -lgdbm
+
+ltd_convert: ltd_convert.o
+	$(CC) $(CFLAGS) ${LDFLAGS} -o ltd_convert ltd_convert.o $(OBJS)
+
+metaget: metaget.o
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} metaget.o $(EXTRALIBS)
+
+setgame: setgame.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setgame.o $(OBJS) $(LIBS)
+
+setplanet: setplanet.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setplanet.o $(OBJS) $(LIBS)
+
+setteam: setteam.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setteam.o $(OBJS) $(LIBS)
+
+setship: setship.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} setship.o $(OBJS) $(LIBS)
+
+delist: delist.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} delist.o $(OBJS) $(LIBS)
+
+ban: ban.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} ban.o $(OBJS) $(LIBS)
+
+getpath: getpath.o $(OBJS)
+	$(CC) -o $@ $(CFLAGS) ${LDFLAGS} getpath.o $(OBJS)
+
+lint: $(SRCS)
+	lint $(LINTFLAGS) -u $?
+	touch lint
+
+depend::
+	touch .depend
+	${CC} -M $(CFLAGS) $(SRCS) > .depend
+
+rmdependencies:
+	rm -f .depend
+
+sinclude .depend
+# DO NOT DELETE THIS LINE -- make depend depends on it.

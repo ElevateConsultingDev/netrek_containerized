@@ -1,0 +1,44 @@
+#!/bin/sh
+set -e
+
+# activated by user to blog an event
+
+# $1 is the class of the event
+# $2 is the title of the event
+# $3 and onwards are text to further explain the event
+
+# Note: this script assumes you have the netrek server binary
+# directories in your shell path, so you should source setpath before
+# calling this, for example:
+# . /usr/local/games/netrek-server-vanilla/lib/tools/setpath
+
+# determine where to put the file
+# this must be the same as $datadir in etc/blosxom.conf
+BLOG=`getpath --localstatedir`/blog
+
+# set full path to blosxom script
+BLOSXOM=`getpath --libdir`/blosxom
+
+# consume the class argument
+CLASS=${1}
+shift
+
+# if the class directory does not exist, assume god does not want it logged
+if test ! -d ${BLOG}/${CLASS}; then
+    echo "blog: class ${CLASS} is not enabled" 1>&2
+    exit 1
+fi
+
+# create a file with the text from remainder of command line
+FILE=${BLOG}/${CLASS}/`date +%s`.txt
+while test -f ${FILE}; do
+    sleep 0.5
+    FILE=${BLOG}/${CLASS}/`date +%s`.txt
+done
+TITLE=${1}
+shift
+( echo ${TITLE} && echo "" && echo $* ) > ${FILE}
+
+blog-update
+
+echo "blog: to add more to this item, edit ${FILE} and run blog-update." 1>&2

@@ -1,0 +1,110 @@
+The Netrek Metaservers are a group of systems behind the
+metaserver.netrek.org alias, which list current games available.
+
+Netrek clients contact the metaservers during startup.
+
+Games can occur without being listed on a metaserver, the metaserver
+only helps players find games.
+
+You may wish to list your server on the metaservers.  This is
+technically simple, but may have political implications, and if done
+wrongly may cause unnnecessary reaction.
+
+Communicate your intention with other server owners, through the
+mailing lists, or the IRC channel, or the netrek infrastructure team.
+
+--
+
+For small group servers that you don't need to be listed publically,
+you can have the users add the server name to their metaservers list,
+and configure the multicast discovery feature, see 3521u in
+sample_ports and tools/metaget for testing.
+
+--
+
+Date: Wed, 15 April 1998 09:06:09 +0000 (edited by many since)
+From: James Cameron <cameron@stl.dec.com>
+Subject: Metaservers File Format
+
+This is the documentation for how to have a new server solicit the
+metaserver for players.
+
+It works like this;
+
+	- you set up an etc/metaservers file with the addresses of the
+	  metaservers that should be kept informed,
+
+	- when new players arrive on your server, a packet is sent to
+	  the metaservers informing them of the current player count,
+
+	- periodically, the metaservers are told about current status.
+
+The format of the file is a series of space delimited fields
+interpreted using fscanf().  Very primitive.  The code looks for the
+file in the configuration directory SYSCONFDIR, which by default is
+etc/.  The file name is metaservers.
+
+The order and format of the fields is described in ntserv/solicit.c
+
+    /* data items derived from metaservers file */
+    char host[32];          /* address of metaserver (DNS)          */
+    int port;               /* port of metaserver                   */
+    int minimum;            /* minimum update time                  */
+    int maximum;            /* maximum update time                  */
+    char ours[32];          /* DNS address of server                */
+    char type[2];           /* server type code (B/P/C/H/?)         */
+    int pport;              /* server main player port (e.g. 2592)  */
+    int oport;              /* server observer player port          */
+    char comment[32];       /* comment string                       */
+
+The first address should be a numeric IP address in order to avoid DNS
+lookup delay on every new player or solicitation update.  Or place a
+host name in your /etc/hosts file that corresponds to the metaservers.
+
+Here is the sample_metaservers file ...
+
+metaserver.netrek.org 3521 60 120 this.host.name B 2592 2593 open
+
+Replace "this.host.name" with the DNS host name that you want the
+metaservers to list the server under.  If you have a name within the
+netrek.org domain, use that.  If the metaserver already lists your
+server; use the name that the metaserver has for you.
+
+This will cause the metaservers to be updated with game status
+information every minute, subject to the limits in the code.
+
+Beware: informing the metaserver more frequently than the limits define
+will cause your server to be delisted from the metaserver automatically.
+This is handled by program code at the metaserver.
+
+To remove your server from metaserver listing, delete or rename the
+metaservers file.  After a while, the metaserver will remove the
+entry.  To force a delisting sooner, see the tools/delist program.
+
+--
+James Cameron                                    (cameron@stl.dec.com)
+Digital Equipment Corporation (Australia) Pty. Ltd. A.C.N. 000 446 800
+
+
+--
+
+
+INL Metaservers HOWTO
+by James Cameron <quozl@us.netrek.org>
+from work by "E. Hietbrink" <Shadow.Hunter@netrek.org> on 7th June 2004
+
+a) list your server twice each time, with "home." and "away." in front
+of the host name (these names need not be registered, as the server
+will strip the name before sending the host name to the metaserver,
+see ntserv/solicit.c for the check),
+
+b) set the server type to I,
+
+c) list the appropriate ports.
+
+For example;
+
+metaserver.us.netrek.org 3521 60 120 home.nl.netrek.org I 4566 4000 open
+metaserver.us.netrek.org 3521 60 120 away.nl.netrek.org I 4577 5000 open
+metaserver2.us.netrek.org 3521 60 120 home.nl.netrek.org I 4566 4000 open
+metaserver2.us.netrek.org 3521 60 120 away.nl.netrek.org I 4577 5000 open

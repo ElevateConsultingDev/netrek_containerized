@@ -1,0 +1,7 @@
+#!/bin/sh
+echo "`date` $1 `basename $0` $3 ($2)" >> $LOCALSTATEDIR/admin.log
+mail -s "ban: $3" `whoami` << EOF
+God observer: $1
+Banned host : $3 ($2)
+EOF
+touch $SYSCONFDIR/ip/deny/$2

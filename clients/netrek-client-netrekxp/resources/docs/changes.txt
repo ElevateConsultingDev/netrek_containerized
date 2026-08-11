@@ -1,0 +1,1082 @@
+Netrek XP 2010, Version 1.1: (Released xxxx)
+
+General bug fixes:
+1) Fixed bug where tips text sometimes remained on tactical window after
+reentry into game.
+2) Fixed bug where beeplite circle on tactical around ships that enter
+cloak phase did not disappear if display of cloakers on tactical was enabled.
+
+Netrek XP 2010, Version 1.0: (Released July-2009)
+
+General bug fixes:
+1) Many paradise bugs fixed.
+2) Many cambot bugs fixed.
+3) Fixed phaser draw bug with weaponsOnMap:off.
+4) Fixed double buffering bug which was causing performance issues on certain
+hardware configurations.
+5) Fix bug with custom color palette (forcedisplay = 2) which caused local
+window to have a red background.
+6) Fixed bug causing ship values on dashboard to not display properly when
+upgrades were bought in sturgeon.
+7) Fixed bug where font size was not saving properly.
+
+New features:
+1) Warning messages are no longer logged.  Cuts down on logfile spam.
+2) Add hint about options menu to the startup hint list.
+3) Cambot playback now works for paradise recordings made by paradise clients.
+4) Removed RSA verification as this is now deprecated server side.  Using new
+client identification method as defined in server.
+5) Added netrekrc option "autoPhaser" to phaser exact location of enemy target
+(enemy ship or enemy plasma) closest to cursor.  Can target cloaked ships.
+Enemy must be within phaser range of your ship.  Only works if server has
+feature packet F_auto_weapons enabled.
+6) Added support for server feature packet SP_RANK.  This allows the rank
+table to be dynamic rather than static.  In short, it allows servers to
+have more or less ranks than normal.  Practical application - grand admiral
+rank on sturgeon now displays correctly in player list and rank window.  And
+rank window now properly displays offense requirements for rank.
+7) Added support for server feature packet SP_LTD.  This allows detailed stats
+to be sent to the client.
+8) Added netrekrc option "metaBroncoOnly" to only list Bronco/INL servers in
+the list of servers provided by the aggregate metaservers.
+9) Added support for server feature packet TIPS.  This clears the MOTD window
+and provides tips on how to improve your play based on data the server records
+of your current session.
+10) Added netrekrc option "showTips" to choose whether or not to display the
+server tip messages supplied by TIPS.
+11) Client version info now has 1 letter identifier to show where client was
+downloaded from (p = playnetrek.org, n = netrek.org, d = download.com).
+
+
+Netrek XP 2009, Version 1.0: (Released July-2008)
+
+General bug fixes:
+1) Fix to cloak bug where ships would briefly be seen to flash when entering
+tactical.
+2) Various bug fixes for play on a paradise server.
+
+New features:
+1) Addition of 3rd metaserver to the metaserver list.
+2) Added support for new server feature packets (lame_refit, whydead_2,
+generic_32_b).
+3) Added new timerType option for displaying useful game-related timers like
+surrender, sb reconstruct, INL, and t mode duration.
+4) Added game paused message to local window (at TTS location) if server is
+paused, such as during an INL timeout.
+
+General changes:
+1) Removed option for ship specific netrekrc file (rcfile-<ship>).  Still can
+use ship specific keymaps and buttonmaps.
+
+
+Netrek XP 2006, Version 1.3: (Released July-2007)
+
+User interface:
+1) War window now says "Re-program" instead of "Save" for changing war settings.
+2) The planet list window can now be used with info, lock and certain RCDs.  In
+other words, you can lock onto planets through the planet list window, and send
+planet-related RCDs through the window as well.
+3) New Options menus for Hockey and Weapons.
+4) Added ability to update buttonmap through the options menu.
+5) Restored ability for middle and right mouse clicks to raise the current
+window to the top, helps with overlapped windows.
+6) Added new function keys, control-z and control-a, for zooming.  Control-z
+zooms in, and control-a zooms out.  As part of the benefit of having all
+graphics scale, ALL ship bitmap sets can now show ships to 256 positions.
+7) Left clicking on message window will either a) start a new message to all
+board or b) continue current pending message.
+8) Message window will now say "Click here to send a message to ALL" until any
+message is sent, then it will be blank as usual.  Mostly to help newbies
+figure out how to send a message.
+9) Rank window now shows DI needed for next rank.
+10) Added the ability to change the size of the local or map windows!  This is a
+huge improvement, and is probably the most often requested feature.  There
+really is no limit on how big or small you can make the windows.  As you
+increase local window size, you can see further, giving somewhat of a gameplay
+advantage - you can see ships, shields, explosions, but not weapons fire other
+than your own torps.  Just as important, you can now choose a different size for
+local vs map window.  A typical user may want a 750x750 local but only a 400x400
+map.  The upper pixel limit is 5000x5000 for either map or local window, but I
+don't expect anyone has a monitor to support even close to that limit.
+11) Most netrekrc window's geometries are now commented out (all except map and
+local), this is because adjusting the size of local or map will now do a pretty
+good job of autoplacing all the other windows for you.
+12) Default mouse wheel action is now zoom in and out, scroll up to zoom in,
+scroll down to zoom out.
+13) Added richtext message windows, which allow stuff like cut and paste from
+within the message windows, and clickable URLs.  Richtext message windows are
+both resizeable and moveable.  Moving them works a little different than moving
+other windows.  Instead of clicking on the border, you click on the body of the
+window, hold down left mouse button, and move the window.  This only works if
+the richTextMove option is on.
+14) The mainResizeable netrekrc option now allows map/local to be resizeable.
+Note that resizing local and map windows only lets you size them as squares.
+Some windows (team select, quit) will resize properly to match new local size,
+others (position of options menu, dashboard, etc.) will not move.  Interesting
+sidenote: resizing local window will reinitialize background star positions.
+To resize the local/map/richtext windows, right click on window border to
+activate sizing border, resize the window as you want, then right click again
+to deactivate sizing border. The reason the procedure is a little complicated is
+because having a border which can resize the window requires a larger border,
+which cuts into precious screen space.  So this sizing border needs to be
+activated first, then deactivated when the window is done sizing.
+15) The ' key (single quote) is now the default key for toggling on and off the
+expanded playerlist window.
+16) Color settings are now all listed in netrekrc, and a list of valid colors is
+now found at the end of the netrekxp manual.
+17) You now get a popup box when client receives a game shutdown message from
+server, indicating that the game has been terminated and to try again later.
+18) Main title bar now defaults to on.
+19) Can now change login name via options menu (don't forget to save if you want
+to make it permanent).
+20) The left and right arrow keys are now mapped to turn left and turn right,
+they execute a turn request for a 1/16 turn in the desired direction.  I
+personally find it awkward but if someone is playing without a mouse for
+whatever reason, it allows them to move at least.  Since using the arrow pad
+requires a keyboard equivalent key, and these are new keyactions, there are now
+2 less available key sequences.  Control+[ is now mapped to turn left, and
+control+] is turn right, these keys were selected to be as out of the way as
+possible to avoid conflicts with existing keymaps.  Turn keys are controlled
+server side via the TURN_KEYS feature packet, so they will only work if the
+server allows it.
+21) The up and down arrow keys now are mapped to accelerate and deccelerate.
+22) The console window is now on by default.  To hide it, use the -n option,
+which was previously used to turn console window on (it now turns it off).
+23) Cambot playback, cambot record, and console window symbolic links are no
+longer included in the distribution.  Cambot is most easily played/recorded
+with the cambot utility, and console window is now default to on.
+24) Cambot playback speed key 9 is now not quite the fastest speed, it's twice
+as fast as speed 8, but the fastest speed key is now !.
+25)
+                            *** Important ***
+The default configuration file filename has been changed from netrekrc to
+netrekrc.txt.  This is so that opening the netrekrc can be done with any text
+editor.  The convention of having a config file without a file extension dates
+back to the unix root of the client, and while previous client maintainers have
+danced around the issue by allowing support for either netrekrc or netrekrc.txt,
+none took the plunge and changed the default naming to be Windows friendly.
+Well, we have now took the plunge!  The config utility AND in game save key will
+now modify netrekrc.txt.
+                          *** End Important ***
+
+Graphics:
+1) New graphics for the team select windows, and new option
+"newTeams: (on)/off" whether to use these graphics or the old team windows.
+2) Fixed flicker experienced sometimes seen with stationary ships near a planet
+on the galactic map.
+3) The old mono torps are now default.  Big torps are nice and all, but I think
+there is a loss in dodging ability with the bigger torps.
+
+Sound:
+1) Added new sounds for when engine melt, and then for when they are unmelted.
+2) Sound can now be initialized via sound menu if program starts with sound off.
+3) Start music will no longer play if you connect to a server and wind up on a
+wait queue, the music will instead play once you reach the login screen.
+  
+General bug fixes:
+1) Fixed bug with metaserver not sorting correctly sometimes, and some server
+entries not having their metaping field initialized.
+2) Fixed bug where alert border was not working right upon death with old ship
+bitmaps.
+3) Fixed error messages with cambot and beeplite.
+4) Fixed music playback with cambot so it stops playing on entry properly.
+5) Several fixes to BRMH shrink phasers - they now can shrink on miss, and
+enemy phasers also shrink properly.
+6) Planet window no longer gets unmapped on death.
+7) Fixed macro crash bug with sending macros to invisible players on the
+playerlist.
+8) Fixed annoying bug where tactical would sometimes seem to disappear on
+reentry into game after death, was due to losing your position packet and not
+requesting a new one (you now WILL request a position update if alive but
+seemingly off the map).
+9) Fixed bug with self phasers where they would sometimes stretch across the
+screen upon death.
+10) Dist.taking (used in older netrekrc files) will now work, though dist.take
+is still the preferred name for that distress call.
+11) Changed how message HUD works, it now is refreshed during the redraw of the
+local map rather than updated independently, should fix some redraw bugs with
+message HUD.
+12) Enemy torps which are off local screen are no longer automatically freed
+(since this data is now sent for observers).  Also fixed an issue with exploding
+torps that would not clear properly.
+13) Fixed a bug with RCM kill messages when kills were higher than 255 but less
+than 320.
+14) Bomb RCD used on an unknown planet or planet with 4 or less armies will now
+say "bomb <planetname>" instead of the more useless, unspecific "bomb".
+15) Fixed galactic and tactical planet names so they are centered on planets.
+16) Phaser misses on sturgeon servers now show proper phaser length based on
+how many phaser upgrades the ship has.
+17) Certain abnormal game terminations (such as caused by a server exiting
+the daemon) will no longer crash the client, instead client will just exit.
+This fixes the last known "crash bug".  There still may exist times when the
+client is seen to freeze, such as upon ghostbust or slot being freed in INL,
+as the client hopes to re-establish a connection and thus doesn't exit.
+18) Cambot playback now recognizes the framerate that the game was recorded at,
+and adjusts default playback speed accordingly.
+19) Cambot now uses double buffering during playback, so that everything looks
+smoother.
+20) Fixed bug with mono torps and plasmas that was causing final animation frame
+to not draw on servers running 10 FPS.
+
+New features:
+1) Main window titlebar now shows your loginname and slot number, in addition
+to showing the servername.
+2) New dashboard message for warp 0 ("Stopped") instead of saying "Impulse"
+3) Added "autoSetWar: (0-2)" netrekrc option that controls declare war settings
+with enemy races when you first join.  Can now automatically declare peace on
+3rd space races, for example.
+4) Improved explanation of keymap/buttonmap in the netrekrc.
+5) Support for AT ship in playerlist and info window (shows 'AT' instead of
+'??').
+6) The "Flags" text on COW and KRP dashboards will now turn red if your ship is
+weapon temped or engine temped.
+7) Added "lockLine: (on)/off" to draw a dashed green line on the galactic map
+between your ship and the target you are locked on to, whether it be a player or
+a planet.
+8) Added "tractorID: (on)/off" to draw the player number of the person you are
+tractoring or pressoring below and to the left of your ship.  Continues to
+display who you are tractor/pressoring even if they cloak.
+9) Added "puckArrow: (on)/off" option to draw a tic mark on the puck in hockey
+to indicate puck direction.
+10) Added "sortPlanets: (on)/off" to sort the planet list, with your planets
+first, then the planets of the other teams, starting with the team with the most
+players.  Within a team, planets are sorted from low to high army count. Left
+clicking the planet list window will toggle between a sorted and unsorted planet
+list, right clicking will close the planet window.  Team's starting planets are
+separated by a white line.
+11) Added "headingTic: on/(off)" to draw a tick mark indicating your ship's
+heading, as well as a smaller secondary mark indicating where you are turning
+to, or in the case of when you are locked on to a player/planet, indicating the
+direction to that player/planet.  This option helps with aiming in hockey and
+hitting cloaked ships you are locked on to.
+12) Added "weaponsOnMap: (on)/off" to show torps, plasmas and phasers on the
+galactic map.
+13) Removed the netrek.w32caption option that was undocumented and has since
+been replaced by the mainTitleBar option.
+14) Added "viewRange: (0-3)" option to draw a dashed circle on the map showing
+the range at which enemies can see you.  You can choose to draw it at all times,
+only when you are cloaked, only when carrying, or not at all.  If orbiting a
+foreign planet, no circle is drawn, as you are visible to all.  View range is
+disabled if your ship is a starbase.  Cloaked view range will also show on the
+tactical map if tactical is resized large enough.  Showing view range circles on
+the galactic map is controlled server side via the SHOW_VISIBILITY_RANGE feature
+packet, so this option will only work for the most part if the server allows it.
+15) Added support for feature packet FULL_WEAPON_RESOLUTION, this means that
+observers can see all weapons on the galaxy map, yay!  It also means you can see
+your torps on the galaxy map beyond your tactical range (good for plinking).
+Can turn this feature packet on/off with the netrekrc option
+"useFullWeapInfo: (on)/off".
+16) Added "clickDelay: (0-50)" to allow for a delay between continuous mouse
+clicks, range is in # of updates.
+17) Added "packetLights: (on)/off" to show packets sent and received via
+blinking lights on dashboard.
+18) New netrekrc option "showCloakers: (on)/off" to show other cloakers on
+tactical, only works if server has the new feature packet SHOW_CLOAKERS on.
+19) New netrekrc option "showOtherSpeed: (on)/off" to show speed next to other
+players, only works if server has the new feature packet SHOW_OTHER_SPEED on.
+20) Changed showArmy option to be a range (0-3), to take advantage of new server
+feature packet SHOW_ARMY_COUNT.  Range of values is now as follows:
+# 0 - don't show army counts
+# 1 - show army counts on local map only (default)
+# 2 - show army counts on galactic map only
+# 3 - show army counts on both maps
+21) Added support for CHECK_PLANETS feature packet, this is a nice packet that
+checks with the server to make sure your planet info is up to date, so no more
+phantom armies on a planet or delay on bombing a planet flat because you lost a
+planet packet.  Also no more wondering if you missed a planet packet while
+dropping if planet army count doesn't go down.  This cross-check with server
+occurs 10 times/second for a planet you are orbiting (critical), and will cycle
+through the rest of the planets at a rate of 1 planet every 100 ms.  Adds 100
+bytes/sec in upstream data from client to server.
+22) New netrekrc option "infoRange: (on)/off" to draw a dashed white box on your
+tactical if you increase the tactical size beyond 500 x 500.  This box is drawn
+to show the 500 x 500 range, which is important because other people's weapons
+data is not sent beyond this range (box essentially shows limit of fog of war
+for weapons).
+23) Added netrekrc option "richText: (on)/off" to allow stuff like cut/paste
+from message windows and clickable URLs.  Richtext windows also have a smarter
+scrollback mechanism.  If the mouse is over a richtext message window AND
+message position isn't already at the bottom of the window, it will not scroll
+upon receiving a new message, as it is likely you are scrolling back to read
+old messages.  If mouse is not in a window that receives a message, that window
+will scroll to the bottom, solving the problem of sometimes accidentally not
+resetting window scrollback to bottom and the failing to see new messages as
+they come in.
+24) Added netrekrc option "scaleFactor: (10-40)" that allows you to zoom in the
+tactical map to get more detail!  Turn on those high resolution bitmaps, pump up
+your tactical size to 1000x1000 and see the great graphics!  Default scale is 40
+(this is the traditional scale used in clients, changing scale to 20 will
+effectively double the scale).
+25) Added netrekrc option "color.God: <color>" to alter color of God messages.
+26) New netrekrc option "fullBitmapRotation: (on)/off" that lets you choose to
+draw the old ship bitmaps to 32 positions (off) instead of 256 (on).  Useful
+for those with custom bitmap sets, as it will use all 32 bitmaps in a set rather
+than just rotating the first one in the set.
+27) New netrekrc option "saveFile: name" to control what filename you write to
+when you save your options in game (either with " key or via the save menu).
+Default is now netrekrc, so that means if you save in-game, it will overwrite
+your netrekrc with your current settings (I have a feeling the benefits of this
+strongly outweigh the negatives such as mistakenly remapping things then
+mistakenly saving your netrekrc).  The netrekrc save feature now saves
+EVERYTHING.  Well pretty much everything.  All netrekrc options, windows
+geometries and locations, keymap, buttonmap, macros, etc.  It also saves some
+obscure options like ckeymaps, ship specific keymaps/ckeymap/buttonmaps
+/netrekrc, b1keymap - b5keymap, and observer/servertype specific options.
+Saving servernick options is not supported, but I doubt anyone uses those to
+begin with.  If any features are found which do NOT save properly, please send
+in a bug report.  In the case of the main window, it won't save the new size or
+coordinates if you resize them in game, as this is complicated to do due to
+things like task bars, title bars, and window resize borders.  Hopefully
+between using the mainTitleBar and mainMaximized options, as well as adjusting
+your netrekrc line "netrek.geometry", you can easily size the netrek window to
+be what you want it to be.  The in-game save key takes a lot of the pain out of
+setting up windows (you should be able to do it without having to edit netrekrc).
+It also makes editting the netrekrc to change options mostly unnecessary.
+28) Cambot files names are now autogenerated, similiar to logfile names, if no
+name is given (names will be like 20070401.pkt).
+29) New netrekrc option "mainMaximized: (on)/off" to make main window maximized
+on client start.
+30) New netrekrc option "richTextMove: on/(off)" to allow rich text message
+windows to be moved.  Since left mouse is used to move window, and left mouse is
+also used to highlight text, this option defaults to off, to make it easier to
+highlight text.
+31) Added fontSize option to netrekrc (this option always existed, but was
+undocumented and horribly buggy).  This option controls the pixel height of the
+font used in game.  As a result of changing font size, most windows should
+adjust to a new proper size.  Such as dashboards and playerlist and message
+windows.
+32) Added support for SP_FLAGS_ALL feature packet, this is a packet that sends
+important flags (cloak/shields/alive) on all players every update, if you are
+using long packets for players, or if you are using the
+FULL_DIRECTION_RESOLUTION feature packet.  This solves a problem with packet
+loss using the aforementioned full direction resolution feature.
+33) New netrekrc options "useCheckPlanets: (on)/off" and "useGeneric32:
+(on)/off" to control whether to use the CHECK_PLANETS or SP_GENERIC_32 feature
+packets.
+34) Added improved explanation to netrekrc for the bandwidth costs of using the
+4 new(ish) feature packets which actually increase bandwidth use.
+35) INL servers will no longer save in the UDP metacache file, so they won't
+show up on the metaserver listing unless people are actually on the server.
+36) New netrekrc option "hideConsole: on/(off)" to control whether to have a
+DOS-style console window that shows connect messages, feature packet negotiation,
+error messages, etc.  Default is on.  Provides easy way to close the client in
+case it hangs (the X button in upper right corner of console window).
+
+Netrek XP 2006, Version 1.2: (Released Mar-2007)
+- added "messageKeyOnly: (on)/off" so that you will only start messages with the actual
+  message key(s) if the cursor is in the message windows.  Previously, pressing any key
+  while the cursor was over the message windows/warning window would attempt to send a
+  message, which sometimes leads to accidental messaging.
+- changes updatesPerSec so it now only cycles over valid ranges as defined by the server.
+  For a server running at 10 fps, valid update/sec values are 1 2 5 and 10.  For a server
+  running at 50 fps, valid update/sec ranges are 1 2 5 10 25 and 50.
+- both sound menu and netrekrc now have ability to turn sounds off by type, i.e. to turn
+  all explosion sounds off, all message sounds off, etc.
+  The netrekrc option is called "soundExclude", and the valid sound types are:
+        e - explosion sounds
+        w - weapon sounds
+        a - alert sounds
+        m - message sounds
+        i - info sounds
+        c - cloak sounds
+        s - shield sounds
+        o - other's sounds
+  For example, to turn off explosions and alerts, you would have the line
+  "soundExclude: wa" in your netrekrc.
+- added "soundVolume: #" where the number is the starting sound volume.  Valid range
+  is 0-128.
+- all "newSound" options have just been renamed "sound".  The old sound playback (newSound
+  off) is no longer supported.  Thus the newSound netrekrc option is no longer.
+- border refresh now works slightly differently for those using the new color bitmaps
+  (colorClient = 4), ships can now be seen along the border edges that were normally
+  not drawn, allowing players to get a slightly increased viewable tactical range.
+- fixed bug where observers who right-mouse click lose their lock icon
+- changed warning message timer to be in tenths of seconds rather than updates/sec
+- changed keepInfo netrekrc option from updates to tenths of seconds, so info wins
+  remain up at a controllable time regardless of server update rate
+- full support for server FPS feature, allowing client to receive up to 50 updates/second!
+  In specific, all redraw animations (phaser cycling, torp/plasma spin, torp/plasma det,
+  explosions, cloaking, beeplite, warpstreaks, planet rotation) had to be modified so that
+  they all properly redraw no matter what update rate the client is running at.
+- fixed bug with phaser sounds that were causing others' phasers to play repeatedly
+  during the duration of their phaser cycle
+- the showArmy option now allows observers to lock onto a planet and see the army count
+- the varyShields option now only controls shield graphic, not shield color
+- new netrekrc option "varyShieldsColor: (on)/off" which colors shield based on damage,
+  and fixes a previous problem where shield color would go straight from green to red.
+  Now there is an intermediate yellow state as well.  Damage threshholds are the somewhat
+  standard 33%/66% for transition between green-yellow and yellow-red.
+- observer support for vary shields, vary shields color, warn shields, shrink phasers and
+  colorful (jubilee) phasers
+- added "autoRotate: on/(off)" to automatically rotate the galaxy when you enter so that
+  your team and largest other team are on the left hand side of the galaxy, if possible.
+- added "playerListBlankZeroKills: (on)/off" to choose whether or not to display 0.00 kills
+  in the player list.
+- fixed cloak/decloak cycling so that it animates properly at 10 updates/second.
+- sound and music volume are now independent of Windows sound volume, i.e. changing
+  game volume with the in game raise/lower volume keys does not change system WAV volume.
+- three new netrekrc options, which are soundEffects, soundMusic, and soundMusicBkgd.
+  The first toggles sound effects on/off, the second toggles music on/off, the third plays
+  a mix of star trek theme music continually in the background.  Thus, if you wish to play
+  with only music, you can.  If you want to play with only sound effects, you can.  Or both.
+  Or neither.  Defaults are on for sound effects and music, and off for background music.
+- the client can now play music files, 10 star trek themed music files from the various
+  star trek series and movies have been added.  Random intro themes will play on client connect,
+  and random end credits themes will play on genocide.  These new music files are in the .ogg
+  format.
+- servers that don't respond to metaping are not saved in the UDPcache, as they are likely
+  defunct
+- fixed some bugs relating to message windows, most noticeably, messages that are
+  printed off the viewable screen will no longer garble scrolling text.  Still doesn't
+  work for certain cases, most noticeable if the windows taskbar is covering part
+  of a message window
+- changed default metaStatusLevel from 3 to 2, so as not to include timed out servers
+- new engine sound that replaces the old static-like engine sound, the sound file is still
+  not used in normal gameplay though
+- changed default beeplite settings to include highlighting and sound effects for
+  carrying, take and escorting RCDs.
+- sound now fades out over 1 second upon quitting
+- support for new server feature packet SP_GENERIC_32.  This is a great upgrade to the server
+  as it allows for future data to be sent in this packet (lots of empty room).  Currently
+  it sends your ship's repair time..removing the need for the client side repair time
+  calculation, which had several flaws and didn't work well with observers.  It also
+  sends info on which planet you are orbiting.
+- added "UseFullShipInfo: (on)/off" to choose whether to use short or long type packets
+  for other player info.  Default is on.  This netrekrc setting controls whether the
+  feature packet FULL_DIRECTION_RESOLUTION is used.
+- support for new server feature packet FULL_DIRECTION_RESOLUTION.  This is a great change,
+  for it now uses long packets instead of short packets for other players ship info.
+  This means, finally, other ships can be displayed to 256 directions instead of 16,
+  and other player's speeds can be displayed correctly above warp 16.  For those using
+  the high res bitmap sets, it is a subtle yet noticeable improvement.  The one downside
+  is the player packets are now 12 bytes instead of 4 bytes.  At 10 updates/sec and 10
+  players on the screen, it is an extra 800 bytes/sec, or .8 kb/sec, of bandwidth.  If
+  you can't afford that bandwidth, you probably have no business being on the internet,
+  anyways.  As an added bonus, this feature fixes the problem where the playerlist would
+  not update properly - full direction resolution ignores packet size for short packets,
+  thus getting around some server code that is causing problems with player list updates.
+- planet window now updates regularly when planet status changes
+- det circle changed so it only flashes on det, rather than be on all the time
+- added "metaVerbose: on/(off)" and "metaUDPCache: (filename)" options to netrekrc
+  and help docs, these were part of the UDP metaserver merge
+- close windows key now closes ping stats window, graphical ship stats window,
+  sound window, xtrekrc window, documentation window, and short packets window
+- remapped close special windows key to W (was unused in the prior xp 2006 keymap)
+- remapped lower volume key to Z (was unused in the prior xp 2006 keymap)
+- help window and hint window are now closeable by shift-right click (assuming shiftedMouse
+  is on)
+- added "maxScrollLines: (integer)" to control how many lines of scrollback you want,
+  range of acceptable values is 50-500
+- fixed cambot playback help window size, and fixed bug where you could make the
+  the client lock up by using the decrease playback speed button continuously
+- added "metaType: (integer)" for which type of metaserver you wish to use, where the
+  default is 1, and the options are:
+# What type of metaserver to use
+# 1 - UDP multiple metaservers
+# 2 - cache, then TCP metaserver
+# 3 - TCP metaserver, then cache
+- merged the COW metaserver code.  There is now a UDP metaserver option, which can be
+  refreshed, that merges data from all known metaservers.  The UDP metaserver can also
+  solicit other servers as if they were a metaserver, and supports the server option to
+  display a comment rather than server name.  There is also support for multicast server
+  packets.  This change also renames the old -m option to -M, and changes -m option to
+  the UDP metaserver.  As multiple metaservers (and servers) may be polled, it is 
+  possible the metaserver window may need to be resized as more metaserver packets are
+  received.  Thus the metaserver window may briefly close/reopen in order to resize.
+  The time delay on closing/reopening is not even noticeable, from my testing.
+- moved position of planet owner on galactic (if showPlanetOwner on) so that it
+  does not overlap with the fuel can graphic.  The letter indicating planet owner
+  is now in the upper right hand corner of the planet rather than the center right.
+- changed how hull damage is colored in the graphical stats window - it now obeys
+  the green/yellow/red coloring by percent damage rather than being red at all hull conditions
+- fixed dashboard and graphical stats window that were not updating properly when
+  a ship cap value had changed, such as buying a hull upgrade in sturgeon
+- removed the 'A' key as alternate player list, was causing way too many complaints
+  that it was accidentally popping up.  Toggling this window is now controlled only
+  through the netrekrc, or the playerlist options menu.
+- added sounds for tmode starting and stopping
+- fixed longstanding crash bug with macros with more than 80 characters in a line
+- added -L option for logging to an automatically generated logfile that is datestamped
+  (i.e. 20061002.log will be the log file generated on October 2, 2006).
+- added support for multiline macros sent using NEWMACRO variables (%p, %z, etc)
+
+
+Netrek XP 2006, Version 1.1: (Released 26-Jun-2006)
+- middle mouse button now closes the help window
+- other people's phasers sounds were not being heard if you were cloaked, this has been fixed
+- added "puckCircle: on/(off)" to show the puck's max shot range as a circle around your ship, works
+  on hockey servers only.
+- client can now tell if a ping-pong plasma is hostile to your ship (no longer assumes your own
+  plasma or your team's plasmas are friendly) - the plasma will be drawn different depending
+  on if it is hostile to you or not.
+- added "mainTitleBar: on/(off)" to choose whether to start game with title bar on.  As always,
+  title bar can be toggled by alt+enter.
+- changed COW, KRP and text dashboard so they display ATT ship correctly
+- changed the way dashboard reports negative values for the bars (hull,shield,fuel,etc) - instead
+  of getting a garbled display since most of the dashboards can't handle negative values,
+  the number will display as a positive number, but will be in red font.  This effects cases
+  such as the KRP dashboard when your ship dies (hull goes to negative).
+- fixed ATT maxfuel to match server value
+- changed beeplite from built-into-the-client bitmaps to actual windows bitmaps
+- added "warnHull: on/(off)" to visually display hull status as a series of dots around your
+  ship (same as in COW), except that the colors of the hull dots more closely resemble the 
+  corresponding colors for the COW dashboard hull states.  So the hull dots are white when
+  ship hull is about 90% or better, then they turn to yellow from about 40-90% hull left, and
+  finally they turn red from about 0-40% hull left. 
+- fixed case of view box not updating under certain circumstances, like flipping through
+  options menus
+- changed drawing of the new ship bitmaps to overwrite any other image on the screen, except
+  for where the ship source bitmap is black (black treated as transparent).  Logic being that
+  ship draws should take precedence over things like planet and planet resource draws, to
+  make it easier to see the new ships.
+- removed the clock masking bitmap, instead using true transparent drawing
+- added a 2nd geno pic, randomly chooses which one to show on a geno.  Also added the geno
+  pics for the rarer true genocide case (most of the time game ends by conquer not genocide).
+- added 5 new message sounds (can be used with beeplite, or you can just choose your favorite
+  and save it over your default message sound file, which is nt_message.wav)
+- added enter ship sound to when you refit
+- converted 2 messages sounds and intro sound to higher quality to remove unwanted
+  static
+- changed SDL audio playback from 8 to 16bits, improves sound quality in a few cases.
+- added "planetHighlighting: on/(off)" to draw a circle around the galaxy planet in the
+  color of the team owner, and a 2nd white circle if planet has more than 4 armies.  Mostly
+  useful for new planets to easier tell race owner, and army status at a quick glance.
+- changed newQuit from default on to off
+- fixed a few bugs in scaled bitmap writing function, has the added bonus of making
+  the new planet bitmaps work in Win95/98/ME
+- fixed typo in metaserver2 name
+- changed the key to pick ATT from X to *, to be consistent with the key for refitting
+- fixed bug with lock icon and orbiting
+- fixed short packet phaser stats for phaser hits > 1024 damage (only noticeable with ATTs,
+  server sends phaser hit packet as long packet instead)
+- fixed beeplite TTS with detcircle and doublebuffering, at the same time rewriting the
+  text messaging code to display and clear text in a more intelligent fashion
+- fixed beeplite sounds with newSound
+- hopefully fixed redraw problem with beeplite not refreshing planets on the planet map
+
+
+Netrek XP 2006, Version 1.0: (Released 01-Jun-2006)
+- changed to constant border redraw vs. only redraw border on alert change - fixes some
+  problems with the new bitmap sets
+- fix to detcircle and shield drawing for observers watching someone who cloaked..it would
+  miss a draw during the cloak cycle
+- added "rotatePlanets: (on)/off" to use rotating planet graphics, only works with new
+  planet bitmaps
+- rotating planets!  Well, just the unknown (?) planet for now, lack of art is the holdup,
+  it might be awhile till the rest of the planets are done
+- fixed tractor/pressors which overlap window border so that they don't overwrite border
+- fixed continueTractors option (it wasn't working at all)
+- changed default team window size from 8 to 7 lines
+- fixed some inconsistencies in how a few RCDs were named - "taking" renamed to "take",
+  "generic" renamed to "help", "help3 and help4" renamed to "help1 and help2", and
+  "doing3 and doing4" renamed to "doing1 and doing2"
+- added "saveWindow: (on)/off" and "saveBeeplite: (on)/off" to allow saving of window placments
+  and beeplite macros to the netrek.sav file.
+- save options now can save windows placements, review window .allow settings, and beeplite 
+  macros
+- changed some default window sizes/locations that were either too small (i.e. help window)
+  or in a bad spot (i.e. planet window)
+- cambot works now with double buffering, and added cambot howto to the NetrekXP manual
+- team select screen no longer uses 99% cpu power
+- planet kill messages now show armies dooshed (if any)
+- fixed colorful phasers to work as intended (cycle through 4 colors and then your team color).
+  This feature hasn't worked right since netrek moved to 10 updates/sec.
+- added a better default netrekrc file (my personal file), which has a better keymap (designed
+  by Niclas Fredriksson), window placements, and macros than your average rc :).  Plus it has
+  all the settable rc options listed.  The format of the netrekrc is nearly identical to
+  that of the netrek.sav file that can be generated in game from the options menu.  Currently
+  the only difference between the two is custom observer/servernick/servertype settings.
+- fixed bug with observers with short packets on which was causing incorrect drawing of local
+  map in the case of losing player/planet lock (most noticeable effect was a single background
+  star being drawn at all times, instead of the usual blank local).
+- fixed phaser stats reporting for long packets
+- fixed longstanding bug with UDP where display was redrawn too frequently (once for udp redraw,
+  and again anytime a TCP packet was sent, like with warning messages).
+- observer support for show speed on tactical
+- added "showArmy: (on)/off" to show army count of planet you are orbiting.  Can be changed
+  in game via planets menu.
+- added "detCircle: on/(off)" to show det circle on tactical.  Can be changed in game via
+  ship menu.
+- pushing transwarp key will automatically lock you onto your team's base, and send the practice
+  robot request that starts transwarp, if your team has a base, and if you aren't locked onto
+  any player already.  For games with multiple bases on the same team (i.e. chaos), you will
+  have to lock onto the base of your choice, otherwise it will send you to the first base on
+  your team's player list.  
+- added observer support to show repair/declare war flags on dashboard.  Observers can also
+  now change lock if they are observing a transwarper (server side fix, but good to know).
+- readded the ability to see tractor/pressors if they go off screen (such as in the case of 
+  ATT tractors). 
+- added "doubleBuffering: (on)/off" to control whether to draw with double buffering (it's
+  recommended you do so if using the new planet and ship bitmaps).  Can be changed in game
+  through the options menu.
+- fixed the -c (report players on server) option so it doesn't crash the client
+- readded the ability to autologin by using -C name -A password.  No more extra typing :).
+- fixed a whole bunch of startup options (-C, -A, -h, -g, etc) that were crashing client if
+  not entered properly.  Also made it so it prints out option list on a misused option.
+- added timer/clock back to text dashboard
+- added torp count to LAB dashboard
+- added new status line to KRP, COW and LAB dashboard. In order of priority, it shows the following:
+  1) time left in declare war delay
+  2) time left in refit delay
+  3) time left to fully repair (if you are at warp 0 in repair mode)
+  4) time left in grace period after T mode drops to still take planets (15 second timer)
+  5) whether you are in transwarp
+  6) whether you are under impulse power (default)
+- new netrekrc option, "newQuit (on/off)", to use new quit window
+- new netrekrc option, "planetBitmapGalaxy: (0-3)", same options as planetBitmap, but now you have
+  the choice to change map display planets too!  And have map and local planets use different
+  bitmap sets.  Can be changed via planets menu.
+- fixed bug where map window border wasn't being redrawn on death
+- shortpackets is now "on" by default.  There are some problems with short packets, such as
+  only reporting ship heading to 16 positions, whereas all bitmap sets in this client use
+  32 positions, or in the case of the new highres bitmaps, 256 positions.  Some other minor
+  quibbles with short packets on is that observers do not get geno messages, and
+  shield/cloak status for warp 0 players are not sent by short packets.  However, short
+  packets allows client side customization of how data is displayed, as well as reducing
+  bandwith, so it is the default.  Hopefully these will be fixed server side in the near
+  future.
+- fix to problem with bottom and right borders in certain windows (like map) getting overwritten
+- new planet bitmaps!  Using Defcom's art.  Changeable via planets menu.
+- client now recognizes planets that are flagged as "core": this shows up in planet list menu,
+  planet info, and core planets also use different bitmaps in the "New Color" bitmap set
+- redesigned color1 ori GA so it's not the same pic as base
+- added link to genocide.netrek.org newbie manual to replace broken link
+- fix to background star jumpiness with short packets off
+- fixed a bunch of stray pixels in mono color and tinted GA bitmaps
+- fixed some playerlist bugs, and increased playerlist window from 21 to 32 lines
+- added pretty geno bitmap (no it's not Kathy Ireland, it's a color galaxy picture)
+- Added new plasma_kill sound (Fatality!) for when someone dies to plasma (note the
+  sound fires based on kill messages, so if reportKills is off, you won't hear it)
+- fixed the reportKills option, it wasn't working, now it does
+- Added new value (choice 3) for playerListObserver so that observers appear
+  at the bottom of the playerlist.  Options are:
+   # What kind of players to list
+   # 0 - all (default)
+   # 1 - players
+   # 2 - observers
+   # 3 - players, then observers
+- If sortPlayers is off, toggling playerListObserver now properly shows the correct players
+  (ie all, in game players only, observers only).  Furthermore, turning player list off
+  with the L key (or whatever key you have mapped to toggle player list) will now correctly
+  update the options menu to say "Playerlist is off" in the box corresponding to
+  playerListObserver options.
+- added sound window for SDL so one can toggle sound on/off
+- added a special explosion sound just for starbase explosions
+- added "colorWeapons: (on)/off" to use color weapon bitmaps for torps and plasmas!  The
+  bitmaps are a blend of COW/Ted Turner bitmaps, with some improvements in the area of
+  torp/plasma size and color ratio, the addition of a separate color bitmap for your own
+  weapons fire, and the addition of separate bitmaps for "friendly" and "enemy" weapons,
+  so you can tell who is at peace with you visually by the shading of their weapons.
+  This option can be toggled in game from the ships menu.
+- improved mono plasma explosion animation bitmaps
+- added a new Playerlist menu to the Options Menus, so the other menus are not as
+  cluttered, and all playerlist options are now on the same menu page
+- added "newSoundAngles: (on)/off" so one can choose to use SDL sound but lose the
+  directionality component (sounds will still be toned down in volume with distance, but
+  there will be no 3d sound component).  Changeable via sound menu (if using SDL sound).
+- made it so cloak sounds don't play at your twarp flash event (happens at warp 15, 31, 46)
+- changed self destruct sound so it doesn't sound like enter ship sound
+- added 2 new message sounds (they can be called by beeplite)
+- add 2 new sounds for enter/exiting transwarp, and observer support for hearing these as
+  well
+- replaced red alert sound with one less staticy
+- fixed up viewbox so map refreshes properly when toggled
+- fixed LAB dashboard to properly display armies/kills for observers
+- change to warning sounds: changed current "warning" sound to the yellow alert sound, and
+  made the red_alert sound file the red alert sound.
+- change to plasma_other sounds: uses closest other_plasma for sound location, as there is no
+  good way to determine which torp on screen is most recent for sound purposes.
+- change to plasma_hit sounds: nothing special other than stereo effect.
+- change to phaser sounds: observers now hear phasers!  Also fixed it so observers locked
+  onto a player hear self-phaser sounds rather than phaser_other sounds when that player
+  fire phasers
+- change to shields up/down: observers now hear shields up/down sounds for ship they are
+  locked onto.
+- change to cloak/uncloak sounds: under old sound (not using newSound), observers now hear
+  cloak/uncloak sounds for ship they are locked onto.  For newSound, you now hear
+  cloak/uncloak events for all ships on the tactical.
+- change to torp_other sounds: uses closest other_torp for sound location, as there is no
+  good way to determine which torp on screen is most recent for sound purposes.
+- change to torp_explosion sounds: nothing special other than stereo effect.
+- change to explosion sounds:  changed it so observers who are locked onto a player who blows
+  up hear the self-explosion sound rather than the explosion_other sound.
+- added a minimum distance to have the angular/distance modulation of sound effects (so close
+  sounds will sound like they are right on top of you)
+- added sound reduction with distance and stereo effect based on angle, for sound events
+  that occur on the tactical (weapons, explosions, cloaking, etc).  Current list includes
+  cloak, uncloak, torp_other, torp_explosion, explosion_other, phaser_other, plasma_other,
+  plasma_hit.
+- fire_plasma_other sound now works
+- added "newSound: (on)/off".  Allows one to choose not to use the new sound system.  Note
+  that this option is not settable in game through options menu, only through the .netrekrc
+  file.
+- SDL implementation - up to 16 sounds can play at once, with sound volume scaling with
+  the distance of the sound event from your ship
+- continuousMouse and continuousMouseFix now default to "on"
+- fixed the mono fed sb bitmaps so they rotate more cleanly
+- updated NetrekXP manual (in docs folder), removed old cow manuals
+- all greyscale and shaded old color starbase bitmaps now rotate
+- the new color fed starbase bitmaps now rotate
+- keeppeace default is now "on"
+- tidied up the save_options function, fixing some spacing errors, and putting the
+  keymap/buttonmap on the top of the list due to its importance.  Also added the
+  sounddir option.
+- fixed mainResizeable loading/saving (the option that allows you to resize the main
+  netrek window) from netrekrc.  Also made "on" the default setting.
+- rewrote TTS centering/refresh code so that text is properly centered and clears
+  properly when the message expires.  Updated manual to reflect change of tts_pos
+  variable to tts_ypos.
+- readded beeplite functionality.  Configuration options described in netrekxp manual.
+  Basic rc options are useLite: on/off to turn beeplite on and off, and defLite: on/off
+  to use the default settings.  The beeplite option is highly configurable, see manual
+  for details.  Can also be turned on via the Visual Menu. Default is "on" for both useLite
+  and defLite.
+- added preventative measures against loading bitmap files that might not exist - if
+  bitmaps are missing, it defaults to the mono bitmaps
+- cleaned up a lot of dead space sound at the end of sound files, most noticeably, the
+  phaser sound
+- fixed a bug in the options menu that incorrectly reported whether the phaser window
+  was mapped or not
+- phasering plasma now has less of an effect on phaser average damage statistics, it
+  is counted as your average damage hit, rather than the previous way of counting it
+  as a 38 point phaser hit
+- added "dynamicBitmap: (on)/off".  Enables dynamic bitmap switching from the options
+  menu.  If dynamicBitmap is set to off, only the necessary bitmap files will load into
+  memory.
+- renumbered the ship bitmap sets for the colorClient option.  Choices are 0=mono,
+  1=new color graphics, 2=single color graphics, 3=shaded single color graphics, and
+  4 = experimental high res graphics (the new 80x80 bitmaps).  Default setting is still 1.
+  Settings 2 and 3 have the bonus effect of turning your ship color to white (similar to COW)
+  due to there being a greyscale bitmap library with matching ship designs.
+- added a new ship bitmap set (made by Defcom).  These bitmaps are stored in 80x80 pixel
+  blocks (rather than 20x20 for all other bitmap sets).  In addition, only 1 bitmap per ship
+  is needed rather than 32 for each ship position - the rotation is done on the fly by Windows.
+  To take advantage of the high res bitmap set, Windows 2000 or later may be required, due to
+  needing a native Windows transform function to have your CPU do the bitmap rotation on
+  the fly.  The long term goal is to replace all client bitmaps with higher resolution versions,
+  to have the client scale/rotate as necessary, and to increase tactical size so we can
+  take advantage of the higher quality bitmap sets.
+- added new scaling/rotation function for displaying bitmaps.
+- fixed hightlightFriendlyPhaser option to work again: on for white phasers on hits,
+  off for flicker between team color and white
+- added some more hints to the hint database
+- fixed hint messages so they properly loop
+- added Maximize button to title bar
+
+Version 4.4.0.4: (changes by stas, added 18-Apr-2006 )
+- added "allowWheelActions: (on)/off" to be able to disable wheel in non-scrolling windows
+- added new window "player2" that behaves exactly as player list window, but allows to
+  select alternate custom layout and could be toggled with 'A' key
+- added "playerList2: (string)" option that allows to select different player list layout
+  for alternate player list window, by default it will be "n T R N l M K W L r O D d "
+- fixed bug that caused main thread to continue in case player died while scrolling
+  message window using scrollbar (which forced him close client window and reconnect)
+- fixed incorrect behavior of 'windowMove: off' feature. Previously window would snap
+  back to wrong place if the main window top-left corner was not (0,0) coordinates
+- fixed old conditional macro bug when having first part false would produce '0' as output instead
+  of nothing
+- fixed couple of scrolling bugs when main window wasn't at (0,0) coordinates
+- long lines are now wrapped by words instead of by chars. maximum message length was
+  reduced to 4 full message lines (4 * 69 characters)
+- message input window will now show Sender->Recipient even when the input line is longer
+  than 69 characters
+- changed 'Forum' URL on metaserver window to open Google's r.g.n location
+
+Version 4.4.0.3: (Released on 11-Jul-2004)
+
+- added "viewBox: (on)/off" to show tactical boundaries on galaxy
+- added "omitTeamLetter: on/(off)" to stop drawing team letter on galaxy
+- added "showStars: (on)/off" to have paradise-like background stars
+- added "warpStreaks: (on)/off" to draw streaks while warping to starbase and having
+  background stars on
+- added "disableWinkey: (on)/off" to allow Windows and Context keyboard keys to be disabled
+- added "timerType: 0-4" to be able to switch timer like in paradise.
+  0 - don't show
+  (1) - show current time
+  2 - show server time
+  3 - show time in ship
+  4 - show user-set time
+- "\" will now reset timer to 00:00:00 and start counting up
+- added "continuousMouseFix: on/(off)" option. If enabled the continuous mouse will follow
+  any buttons that are pressed at the same time. For example if you are steering and
+  firing at the same time this fix will allow both events to occur. Without the fix the
+  behavior was to only allow one button action.
+- sound volume can now be changed using keyboard: 
+  'v' - decrease volume
+  'V' - increase volume
+- planet bitmaps can now be switched through options menu
+- rearranged option menus. moved all show/hide window options to Windows menu
+- added metaserver2.us.netrek.org and metaserver.eu.netrek.org to the default list of
+  servers to try to connect to before falling down to metaCache
+- changed some defaults to help newbies
+- options menu now automatically resizes when switching from one page to another
+- messages can now be up to 1024 characters long. to allow server-side compatibility every
+  message longer than 69 characters is split to chunks of 69 and sent one-by-one
+- planets and players will appear as soon as they enter tactical window bounds. earlier
+  the bitmaps were painted only when their center was entering tactical window
+
+Version 4.4.0.2: (Released on 04-Mar-2004)
+
+- repack of 4.4.0.1 with some bug fixes
+
+Version 4.4.0.1:
+
+- most options in rc file can now have four appearances:
+     1. option.observer: string (i.e. "keymap.observer: aabbcc")
+     2. option.servernick: string (i.e. "keymap.continuum: aabbcc")
+        This one will work only if you have "server.servernick: servername" in rc
+        (i.e. "server.continuum: continuum.us.netrek.org")
+     3. option.servertype: string (i.e. "keymap.bronco: aabbcc")
+        This will work if you either connect from metaserver window (then types are taken from metaserver report)
+        or if you use option "server.nickname" to map server to nickname and then define "serverType.nickname" to
+        be one of "paradise, bronco, chaos, inl, sturgeon, hockey, dogfight" (so you will have two lines is rc:
+        "server.pickled: pickled.psychosis.net" and "serverType.pickled: bronco")
+     4. option: string (i.e. "keymap: aabbccdd")
+  the options are validated in same order (from 1 to 4 where 1 is best match and 4 is worst match)
+- added "window.allow" option to message windows (review, review_all, review_team, review_your, review_kill, review_phaser)
+  The option lets you set type of messages logged into that window.
+  Message types:
+	I - individual messages
+        T - team messages
+        A - all messages
+        K - kill messages
+        P - phaser messages
+  Default settings:
+        review.allow: ITAKP
+        review_all.allow: A
+        review_team.allow: T
+        review_your.allow: I
+        review_kill.allow: K
+        review_phaser.allow: P
+- removed "phaserMsg" rc option, because now you can define where to log phaser messages using "window.allow: P"
+- changed player list to not show any information on hidden players instead of returning your own info like
+  it was before
+- player list is now clickable:
+     LeftClick - send private message to person that was clicked
+     RightClick - send message to own team
+     MiddleClick - send message to all
+- added "playerListMessaging: on/off" rc option to enable/disable clickable player list (also added to options
+  window to be able to do that in-game)
+- added "beepOnPrivateMessage: on/off" rc option. If enabled the client will beep when you receive private
+  message from somebody that is not yourself or god.
+- added "showHockeyScore: on/off" rc option to show hockey score during the game on map
+- changed '-n' command line behavior to opposite. Now the client won't show console window by default
+  unless you run it with '-n' or you start the program from command line.
+- modified help window to show 'Off' for unmapped keys
+- now you can remap keys by pointing at the key in the help window and pushing key you want it to be
+- xtrekrc.txt and netrekrc.txt are also searched during defaults initialization
+- Pig Call will now include binary version number
+- 4th and 5th mouse buttons can now be mapped and used (not tested)
+  button 4 can be mapped as '4'
+  button 5 can be mapped as '5'
+- wheel up and down can be mapped in buttonmap now ('6' for wheelup and '7' for wheeldown)
+- added average phaser hit to phaser statistics
+- added player number to phaser message (Phaser burst hit guest (R0) for 64 points 10:00:01)
+- minor fix in message window. it wasn't refreshed when switching out of netrek with Alt-Tab
+  and coming back.
+- fixed application bitmap that wasn't loaded right. added both big and small bitmaps. So don't panic when
+  you don't see ugly Windows default application icon on your taskbar.
+- pingStats window didn't have base window as parent, so it could float around. Also removed option
+  to display while not logged in.
+- swapped between message windows and dashboard/playerlist. dashboard is now below tactical
+- added help line to metaserver window. clickable links to favorite netrek internet resources
+- fixed minor bug in saveOptions() where first two macro lines of the first macro were not saved
+- added help file to the project (netrek.chm)
+- binded F1 to open help file if it exists in executable directory
+- added "Save options now" menu to options menu
+
+Versions pre-4.4.0.1:
+
+03-Feb-2004:
+
+- added command line option '-n' to hide console window that is pretty much useless
+  unless you need to see what is the problem with connection
+
+05-Jul-2003:
+
+- added "metaPing: on/off" to show ping statistics in the metaserver window. The feature
+  was coded by Erik Hietbrink (Shadow Hunter). The feature is enabled by default.
+
+18-May-2003:
+
+- macros in macro window can now be scrolled using 'f' - line down, 'b' - line up,
+  'F' - page down, 'B' - page up
+
+16-May-2003:
+
+- added "mainResizeable: on/off" to enable resizing of main window (not in-game).
+- fixed the behavior of main window with "windowMove: off" (it wouldn't move too).
+
+14-May-2003:
+
+- added "windowMove: on/off" rc option to disable in-game movement of client windows.
+- same for options menu (under Controls menu)
+
+15-Mar-2003:
+
+- Ctrl-g will autologin as guest in the login screen
+
+13-Mar-2003:
+
+- added randomizer for first hint to be shown in hints window
+- added "agriCAPS: on/off" rc option to be able to display AGRI planet names in capital
+  letters on the map window
+- added "agriColor: 0-2" to choose between: 0 - owner race color, 1 - white, 2 - gray
+- hints window can now be closed with "unmap special windows" key (space by default)
+
+12-Mar-2003:
+
+- agri planet names are written in white on the map
+- hints code was rewritten to get rid of hints.dat formatting.
+- fixed code that allowed to gather info on cloaked or in-fog-of-war enemy from playerlist
+
+21-Feb-2003:
+
+- extended "playerlist" rc option to be able to select amount of decimal places in
+  float numbers. 
+  Now it is possible to set "playerlist: nTK1  RNr1 S1d0" in order to see:
+  "R0 CA 0.5  Ensign guest 0.8 2.4 95"
+  or giving old "playerlist: nTK RNr Sd" will give you:
+  "R0 CA 0.50 Ensign guest 0.82 2.43 95.07"
+  Current options that can be followed by numbers 0-2 are: KODSrdBPHkVv
+
+19-Feb-2003:
+
+- macros can now be sent using players from the player list as target. Some default
+  distresses can also be used with playerlist.
+
+09-Feb-2003:
+
+- added hints window. If you're newbie player you will be given some hints on the
+  game. Credits to Charlie ter Horst, Kevin M Bernatz, David Swasey.
+- added showHints: on/off rc option to disable hints window. Don't do that if you
+  still didn't read all of them
+
+25-Jan-2003:
+
+- fixed info/lock in the player list window to work right in case of playerListHack: on
+
+24-Jan-2003:
+
+- added playerListHack: on/off option to fix the problem with displaying
+  observers/players in the player list window while playing on server with
+  old code. If playerListHack is on then every player with letter greater 
+  than 'f' will be shown as observer.
+  This way you can display only players in the player list. 
+  Use 'L' to rotate player list window between: all players/players only/observers only
+- changed maximum number of macro lines to be 500 instead of old 75
+
+20-Jan-2003:
+
+- fixed colorfulPhasers option to shrink in case that shrinkage is used
+- added phaserShrinkStyle option to enable switch between standard COW
+  phaser shrink code and BRMH shrink code (phaser shrinks during rechange time)
+  0 - COW style
+  1 - BRMH style
+
+19-Jan-2003:
+
+- Alt+End will minimize netrek window
+- Alt+Enter will show titlebar of main window (this is old feature that wasn't documented)
+
+18-Jan-2003:
+
+- added player status window toggle 'S' to playback mode
+- changed normal playback speed to more 'normal'
+- fixed playback help window
+
+13-Jan-2003:
+
+- added "saveMacro", "saveRCD", "saveRCM" boolean rc options to enable saving of
+  macros, distresses and messages.
+- added new Save_Menu options menu that has options on what information to include
+  in the saveFile.
+
+12-Jan-2003:
+
+- added keymap and buttonmap to save options code
+- changed saveBig to be on by default
+
+11-Jan-2003:
+
+- expanded options menu to contain some missing options
+- changed code for tractor/pressor clearing
+- fixed player statistics window for playback mode
+
+10-Jan-2003:
+
+- added some string variables to options save file. probably it is enough for most
+  players
+
+09-Jan-2003:
+
+- added "saveFile: filename" rc option to define file to save options to 
+  (default xtrekrc.sav). Currently can save only integer and boolean options.
+- added "saveBig: on/off" rc option to save options with/without remarks. 
+  on - the saveFile will contain description of each variable and possible 
+       values for some of them.
+  off - only options with their values will be saved.
+- mapped " (double quote) to save current options to saveFile
+- updated help window
+
+08-Jan-2003:
+
+- removed player number from Puck player on hockey server (local window)
+
+07-Jan-2003:
+
+- added support for 19FLAGS feature.
+
+01-Jan-2003:
+
+- added help window for playback mode
+- added support for wheel mouse scroll in text windows
+
+31-Dec-2002:
+
+- added functionality to player list window. Now you can get info on any player or
+  lock on any player (observers can lock on cloacked teammates) by just pointing
+  at the player line in the list and pushing appropriate key.
+
+24-Dec-2002:
+
+- changed phaserMsg to be printed to review window by default. This was done to
+  enable newbie players to see phaser messages by default.
+- added "SHOW_ALL_TRACTORS" feature support. This feature enables code that shows 
+  tractor/pressor beams of every player in the game. It is server side decision 
+  to enable this feature. By default it is enabled only for observers.
+- added "showAllTractorPressor on/off" to be able to disable the code of
+  SHOW_ALL_TRACTORS even if server supports it
+- added option menu for "showAllTractorPressor" variable.
+
+17-Dec-2002:
+
+- added xtrekrc_options.txt file that contains a full list of available xtrekrc options
+- renamed sample.xtrekrc to xtrekrc_sample.txt and formatted appropriately
+- changed "showHockeyLines" to "showHockeyLinesLocal"
+- added "showHockeyLinesMap" to show hockey lines on galaxy
+- added menu line for showHockeyLinesMap
+- mapped "G" to toggle hockey lines on galaxy window
+- updated help window
+
+16-Dec-2002:
+
+- mapped "H" to toggle hockey lines
+- moved all documentation to docs folder
+- changed loaddocs() function to strip first two characters of the document line
+  if they are ^[b or ^[i. In case these are the first two characters of netrekxp.doc 
+  the line will appear in bold for ^[b or in underline for ^[i (^[ character here is
+  ascii x1b that represents ESC char)
+- added cow.doc, cow.txt, newbie.txt to distribution. As I know these files can be
+  distributed freely.
+- added sample.xtrekrc (actually some strips from mine xtrekrc).
+
+15-Dec-2002:
+
+- added "hockeyLines on/off" to show hockey lines on tactical
+- Changed help window text to match current working keys
+- Fixed bitmaps location in playback.c
+- changed default documentation file to be netrekxp.doc instead of brm.doc
+- compiled netrekxp.doc from old version of cow.doc. Still some features missing
+- fixed some bitmaps 
+- reduced bitmap sizes

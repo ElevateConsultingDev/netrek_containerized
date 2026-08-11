@@ -1,0 +1,380 @@
+
+	Here is a more in-depth explanation into some of the features
+that can change the server.
+
+1) config/config.h defines :
+
+	AUTOMOTD - Use this if you're not going to run the update daemon.
+		This will check you .motd and rebuild it every once in a
+		while. Don't use both AUTOMOTD and the update daemon.
+
+	CHAIN_REACTION - This will not give credit for chain-reaction and
+		will also report how a player died.
+
+	ERIKPLAGUE - Eric Mehlhaff's planet plague code that was used for
+		SINL 93.
+
+	NEED_EXIT - Some systems need exit to be defined in socket.c
+
+	RSA - Use RSA verification.  RSA is now deprecated.
+
+	SHOW_RSA - Display some messages like failed RSA verification message
+		and type of client on entry of player.
+
+	RESETGALAXY - Every time a conquer occurs reset the galaxy.
+
+	SHORT_THRESHOLD - More support for Short packets.  Causes the
+		update rate to halve under certain conditions.  With
+		modern networks, we do not need or want this, and we
+		have never seen it trigger anyways.  Save some CPU
+		cycles by defaulting it to off.
+
+	SURRENDER_SHORT - Cut the surrender time in half when the genocide
+		counter starts.
+
+	SPEEDUP - Some misc. improvements to make the daemon faster.
+
+	TWO_RACE - Conquer only a 1/4 of the galaxy for the galaxy to reset.
+
+	SENDFLAGS - Print flags used in the compile on the MOTD.
+
+	CHECK_ENV - Check the environment variable NTSERV_PATH for the
+		location of system files.
+
+	GPPRINT - Print the path that is being used to find the system files.
+
+	NEWMASK - Use a newer tournament mask function that is less rigid
+		than older version. Doesn't take preferences into account.
+
+	FLAT_BONUS - 5x bonus for killing last army on a planet
+
+	BASEPRACTICE - Base training server. (Need special robots, see
+		README.basep).
+
+	NEW_CREDIT - give 1 planet for destroying, two planets for taking.
+
+	SBFUEL_FIX - fix starbase re-fueling
+
+	NEW_ETEMP - Wreck's etemp fix
+
+	DOGFIGHT - .sysdef interface for dogfight robot
+
+	VOTING - allow voting mode
+
+        ALLOW_EJECT     - define to allow players to eject others (only when
+			  VOTING is defined).
+
+        NO_BRUTALITY    - disallow fighting between waiting players in the
+			  dogfighting mode (only when DOGFIGHT is defined).
+
+	ROBOT_OBSERVER_OFFSET	- define to ensure that the moderation robot
+			  is always in slot g.
+
+	SB_RAPID_COOLDOWN	- allows for twice the normal rate of weapon
+				  cool down; useful on base-practice.
+
+	ALLOW_PRACTICE_ROBOT_SB	- allows practice robots to be refit into
+				  starbases if defined.
+
+	CHRISTMAS	- replace pre-t bot names; Kathy becomes Santa and the
+			  other bots are replaced with the names of the 9
+			  reindeer.
+
+2) .sysdef parameters:
+
+	All parameters follow the rule: <PARAM> <VALUE>
+	1 = TRUE, 0 = FALSE
+
+	CLUE -	(0 or 1) Turn on clue checking
+
+	HUNTERKILLER - (0 or 1) Have the hunterkiller on the server
+
+	RESETGALAXY - (0 or 1) reset the galaxy every time the daemon starts
+
+	SELF_RESET - (0 or 1) galaxy will reset if daemon dies.
+
+	LOGALL - (0 or 1) log all messages. Use with CHECKMESG.
+
+	LOGGOD - (0 or 1) log messages with "god:" at the beginning. Use with
+		CHECKMESG.
+
+	CHECKMESG - (0 or 1) check message logging.
+
+	DOOSHER - (0 or 1) Enable the auto-doosher.
+
+	WHYMESS - (0 or 1) with .mk define CHAIN_REACTION will report how a
+		player died.
+
+	SHOWSYSDEF - (0 or 1) will show some of the sysdef options on the
+		motd.
+
+	PLANET_MOVE - (0 or 1) Not recommended. Will move the planets around.
+
+	TOURN - ( >3 ) Number of players needed on each side for t-mode.
+
+	CLASSICTOURN - (0 or 1) Emulate the old behavior of tournamentMask()
+		by removing the restrictions on joining a diagonal race if 2
+		players are present on the opposing diagonal, and remove the
+		logic not allowing teams to grow past 4 humans before T mode
+		starts.
+
+	REPORT_USERS (0 or 1) Report users on the metaservers if enabled.
+		Disabling this option is useful for bot servers such as
+		base-practice servers so they always report the server
+		as empty.
+
+	SHIPS - ( SC, DD, CA, BB, AS, SB ) Type of ships that are allowed at
+		the server.
+
+	WEAPONS - (TRACTOR, PLASMA) Special weapons that are allowed.
+
+	PLKILLS - ( >=0 ) Number of kills needed to get plasmas.
+
+	DDRANK - ( 0 - 7 ) Rank needed to get a DD.
+		0 = Ensign , 7 = Admiral
+
+	AS_MINIMAL_OFFENSE - ( >=0.0 ) Minimal offense required to get an
+		assault ship.
+
+	BB_MINIMAL_OFFENSE - ( >=0.0 ) Minimal offense required to get a
+		battleship.
+
+	DD_MINIMAL_OFFENSE - ( >=0.0 ) Minimal offense required to get a
+		destroyer.
+
+	SC_MINIMAL_OFFENSE - ( >=0.0 ) Minimal offense required to get a
+		scout.
+
+	GARANK - ( 0 - 7 ) Rank needed to get a GA.
+		0 = Ensign , 7 = Admiral
+
+	SBRANK - ( 0 - 7 ) Rank needed to get a starbase.
+		0 = Ensign , 7 = Admiral
+
+	SB_MINIMAL_OFFENSE - ( >=0.0 ) Minimal offense required to get a
+		starbase.
+
+	RESTRICT_BOMB (0 or 1) - Disable bombing out of t-mode.
+
+	NO_UNWARRING_BOMBING - Don't allow 3rd space bombing at any time.
+
+	HOCKEY - (0 or 1) Turn on hockey mode.  Mutually exclusive with
+		all other non-standard server modes.
+
+	INL - (0 or 1) Turn on INL (clue game) mode.  Mutually exclusive
+		with all other non-standard server modes.
+
+	CHAOS - (0 or 1) Turn on chaos mode. Ships are more powerful and
+		re-generate faster.  Mutually exclusive with all other
+		non-standard server modes.
+
+	TOPGUN - (0 or 1) Misc things to make playing harder and only clueful
+		players may like..  Mutually exclusive with all other non-
+		standard server modes.
+
+	PRET - (0 or 1) Enable pre-t entertainment mode.  Mutually exclusive
+		with all other non-standard server modes.
+
+	PRET_GUEST - (0 or 1) Use 'guest' logins for pre-t robots if set.
+
+	PRET_PLANETS - (1-10) Set win condition for pre-t mode.  This is
+		the number of planets a team must be up by in order to
+		win a round of pre-t entertainment.
+
+	PRET_SAVE_GALAXY - (0 or 1) If set galaxy is saved on t-mode to
+		pre-t transitions and if t-mode starts again within
+		PRET_GALAXY_LIFETIME seconds the galaxy will be restored
+		when t-mode starts.
+
+	PRET_GALAXY_LIFETIME - (integer seconds) Number of seconds the saved
+		t-mode galaxy is eligible to be restored when t-mode starts
+		again.
+
+	PRET_SAVE_ARMIES - (0 or 1) If set armies carried by players at the
+		start of Pre-T will get returned to the players home planet.
+		This will occur just prior to the galaxy being saved if
+		PRET_SAVE_GALAXY is enabled.
+
+	NEWTURN - (0 or 1) Different turning speeds.
+
+	HIDDEN - (0 or 1) Enemy players that are far away from a friendly ship
+		during t-mode will be hidden.
+
+	MAXLOAD - (0 or 1) The maximum load allowed on the server's machine.
+
+	PLANETS - (0 - 39) The planets the will be the home planets. There are
+		4 params here. The order is fed, rom, kli, and then ori.
+
+	CONFIRM - (0 or 1) Use binary confirmation.
+
+	UDP - (0 or 1) Allow UDP packets. Reduces lag.
+
+	PING_FREQ - ( >1 ) how often to ping in seconds (default 1)
+
+   	PING_ILOSS_INTERVAL - ( >0 ) the interval in seconds over which
+		incremental loss statistics are kept (iloss_sc, iloss_cs)
+
+   	PING_GHOSTBUST - (0 or 1) whether or not to allow ghostbusting based on
+		the absence of ping responses from a client.
+
+   	PING_GHOSTBUST_INTERVAL - ( >0) based on PING_GHOSTBUST and PING_FREQ,
+		the number of unanswered pings before ghostbusting a player.
+
+        GHOSTBUST_TIMER - ( >0 ) Timer setting to ghostbust a client using the
+                normal ghostbust routines.
+
+        MAX_POP - Set the maximum number of armies a planet can pop too.
+
+        ERROR_LEVEL - How much errors/debugging is sent to the ERROR file.
+                Only 1-3 are valid.
+
+        START_ARMIES - How many planets are initially put on a planet.
+
+	VECTOR - (0 or 1) Use vector torps instead of normal torps.
+
+	BASEPRACTICE - (0 or 1) Used to put server in basepractice mode.
+
+	TRANSWARP_ENABLE - (o or 1) Turn on transwarp capabilities.
+
+	TRANSWARP_SPEED - (0 or 1) How fast transwap is.
+
+	WHITELIST_INDIV - (0 or 1) Allow whitelist to overide :i messages
+
+	WHITELIST_TEAM - (0 or 1) Allow whitelist to overide :t messages
+
+	WHITELIST_ALL - (0 or 1) Allow whitelist to overide :a messages
+
+	LAME_REFIT - (0 or 1) If 1 use the historic ship refit criteria;
+		if 0 use the criteria the original developers intended
+		(>25% fuel, >25% shields, >75% hull).  Defaults to
+		classical criteria.
+
+	LAME_BASE_REFIT - (0 or 1) Same as LAME_REFIT but exclusively
+		for starbases.
+
+	RECREATIONAL_DOGFIGHT_MODE - (0 or 1) If 1 pl_reset() will generate
+		a galaxy where each planet is INDI owned, FUEL/REPAIR with
+		no armies and that is known by all teams.  This is used for
+		servers whose intent is to provide a location for dogfight
+		practice without interference from any bots that may be present.
+		NOTE: for such a server seting TOURN=99 is also recommended
+		to prevent t-mode from starting.
+		NOTE: it may be necessary to run "tools/setgalaxy d" to force
+		a galaxy reset if a normal galaxy currently exists.
+
+	PLANET_PLAGUE
+		Simulates the effects of plague on a planet's army
+		count; the more armies on a planet and the higher the
+		chances are that some will "die off" due to plague.
+		Plague can never cause a planet to fall below 4 armies
+		and that the chances of a planet at 5 armies being
+		plagued is extremely small.
+
+	Dog-Fighter Specific Defines:
+		CONTESTSIZE - ( >0) Number of the contestants needed
+				    before starting.
+
+		NUMMATCH - ( >0) Number of matches per contest.
+
+		SAVE_DOG_STAT - (0 or 1) Save the player stats?
+				(not implemented yet..).
+
+	In addition ship characteristics can be changed. The list of
+	characteristics that can be changed are:
+          TURNS, ACCS, TORPDAMAGE, PHASERDAMAGE, PHASERFUSE, PLASMADAMAGE,
+          TORPSPEED, TORPFUSE, TORPTURNS, PLASMASPEED, PLASMAFUSE, PLAMSATURNS,
+          MAXSPEED, REPAIR, MAXFUEL, TORPCOST, PLASMACOST, PHASERCOST,
+          DETCOST, WARPCOST, CLOAKCOST, RECHARGE, ACCINT, DECINT, MAXSHIELD,
+          MAXDAMAGE, MAXEGNTEMP, MAXWPNTEMP, EGNCOOLRATE, WPNCOOLRATE,
+          MAXARMIES, WIDTH, HEIGHT, TYPE, MASS, TRACTSTR, TRACTRNG.
+
+	  To set ship characteristics you need to do something like the
+	  following:
+
+		SHIP=1
+		BB PHASERCOST 945
+		AS TORPCOST 210
+		!       MaxWpnTemp should ONLY be defined when non-chaos mode.
+		SB MAXWPNTEMP 1500
+		END
+
+	  Unless SHIP is 1 the stats between SHIP and END will not be read in.
+	  This example sets the NEWSHIP defines found at some servers. A '!'
+	  is a comment.
+
+3) .time file.
+
+	The time file is an array field that is 7 by 24. Each line is for the
+	days of the week and each character in the line is for the hours.
+	Line 0 is Sun. Line 6 is Sat. Char. 0 is 12am and char 23 is 11pm.
+
+	Allowable characters are:
+
+		X - Non-playable hours. The server is down.
+
+		C - Clue hour. The server is up and checking for clue.
+
+		Anything else is interpreted as playable.
+
+4) .features file.
+
+	The .features file specifies the features specific to a client that
+	are allowed at a server. There are two formats for a line in the
+	features file. The client type is gotten from the RSA client type
+	field.
+
+		1) <Client Type>: <Features>
+		   EX:
+			BerkRick Moo: SMARTMACRO NEWMACRO
+
+		   This method doesn't check for the version of the client.
+		   It is assumed that every version of this client will have
+		   these features.
+
+		2) <Client Type>*confirm:<Version>: <Features>
+		   EX:
+			BerkRick Moo*confirm:2.00.15: WHY_DEAD
+
+		   This method checks the version sent by the client to see if
+		   the client is new enough to have this feature. The client
+		   has to have a version >= to the version specified to have
+		   the server send the message to the client. The Version field
+		   in is in the format of: Version:PatchLevel.
+
+5) .banned file, clue-bypass file.
+
+	These both use a similar format. The .banned file lists players that are
+	banned from the server. The .clue-bypass lists players that don't need
+	to go through clue checking.
+
+	Each line in these files should follow the format:
+
+		<login>@<domain>
+	The domain field can contain the total domain such as
+	guzzler.ecst.csuchico.edu or can contain "*"s for all names such as
+	*.ecst.csuchico.edu would include all machines in the .ecst.csuchico.edu
+	domain.
+
+Under Solaris 2.5.1 the wildcard "*" does not work. If wish to ban
+all login attempts from rpi.edu, I must have something like this in my
+.banned file:
+
+leemy@rpi.edu
+
+If I do a leemy@*.rpi.edu the ban does not work. If the "*" wildcard
+method does not work try this way.
+
+6) Robot configuration
+
+	The newbie and pre-t robots accept commands from players by
+	default.  To prevent potential abuse this feature may be
+	deactivated by editing robotd/defs.h and changing the line:
+
+	#undef BOTS_IGNORE_COMMANDS
+
+	to
+
+	#define BOTS_IGNORE_COMMANDS
+
+	This change will require the bots to be re-compiled and
+	reinstalled.

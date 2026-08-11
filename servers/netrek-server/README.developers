@@ -1,0 +1,206 @@
+README for developers
+
+Refer to BUGS for a list of defects
+Refer to PROJECTS for a list of future changes
+
+New Developer Familiarisation Documentation
+by Jeffrey Nowakowski, 27th March 2000
+with edits by James Cameron, 10th October 2002
+with edits by Zachary Uram, 25th October 2002
+
+Setting up a Build Environment
+
+    using a Debian system is easiest, since the other developers use
+    that.  It can be a virtual machine using VMware or Qemu or
+    something else.
+
+    you need certain build tools, look at Build-Depends in
+    debian/control for ideas.
+
+        apt-get install build-essential libtool autoconf automake po-debconf
+
+    you need certain software dependencies, again look at
+    Build-Depends in debian/control for ideas.
+
+        apt-get install libgdbm-dev libncurses5-dev libx11-dev \
+        libxt-dev libglib1.2-dev libgmp3-dev
+
+    test that a build completes using tests/build
+
+Source Structure
+
+    ntserv/ contains the daemon process,
+
+    ntserv/ contains the per-player ntserv process code,
+
+    ntserv/ also contains libnetrek source code.  To add a new object
+    module to libnetrek, add it to the L_OBJS variable in
+    ntserv/Makefile.in, reconfigure, then compile.
+
+    tools/ contains general purpose server administration tools.
+
+    other directories contain other tools that are large enough to
+    justify their own tree.
+
+Server Processes
+
+    netrekd
+
+       (aka newstartd) Listens for incoming clients that want to
+       connect to the server.  Reads the .ports file which tells it
+       what programs to run when a client connects.  Normally, it forks
+       an ntserv process for each client, but it also handles other things
+       such as the player list for the metaserver.
+
+    ntserv
+
+	Communicates with the client.  It will start as a daemon
+        process if shared memory doesn't exist, or if there are no
+        free shared memory segments.  Each player has their own
+        associated ntserv process.
+
+    daemon
+
+	This process maintains the game state.  It can start robots
+        such as hockey if sysdef option is set.  It sends data to the
+        metaserver if the metaservers file is configured properly.
+
+Shared Memory
+
+    Contains the game state.  This is updated by both ntserv and the
+    daemon.  It isn't touched by newstartd, all queueing is handled by
+    ntserv.  Use 'ipcs' command to see if the shared memory segment is
+    present in the operating system.
+
+Globals
+
+    data.c/h: Holds global data only for ntserv.  Lotsa crap.  These
+    are variables shared within a program, not between processes.
+
+Queues
+
+    Implemented using struct queue, managed by queue.c
+
+Robots
+
+    Started through sysdef when the server starts, through a player
+    vote, practice request, or out-of-t take.  Either daemon or ntserv
+    will start them.
+
+    If through sysdef, the daemon forks the robot when daemon is
+    started.
+
+    If through a vote, the robot is forked at the time of the vote.
+
+    Both the daemon and the robot run at the same time.  The daemon
+    handles the general game engine (moving players, firing weapons,
+    etc).  The robot then handles extra things like keeping track of
+    the game clock, or modifies the behavior of the game by messing
+    with the shared memory (like in hockey).
+
+Configuring the server
+
+    Game speed, useful to change for testing
+
+	UPDATE in sysdef
+	REALITY in sysdef
+
+    sysdef
+
+        Read on server startup.  readsysdefaults() in
+        ntserv/daemon.c, ntserv/main.c.  To add a new option to
+        sysdef, see the instructions in include/sysdefaults.h
+
+    features
+
+    config.h.in
+
+	#defines
+
+    ntserv/defs.h
+
+	#defines
+
+    keycomp/defs.h
+
+	Same as ntserv/defs.h, but SURREND=5 instead of 4?  Should be
+	link to ntserv instead?  What is keycomp/ used for?
+
+    getship.c
+
+	Contains ship stats.  How does SHIP in sysdefs affect?
+
+Messages
+
+    see also command_questions.txt [?? - james]
+
+    messages are handled by ntserv.  daemon doesn't touch them.
+    robots need to handle messages to check commands (using
+    gencmds.c).
+
+    socket.c, parseIgnore(): takes care of :D (ignore doosh mess), :M
+    (ignore multi-line macro, pig call (5 spaces sent to yerself), and
+    :[ita] messages (ignore player).
+
+
+Sample Scenario
+
+    Short packets?
+    TCP/IP
+    UDP
+
+    Player A shoots a torp: Packet arrives, handled by ntserv, which
+    allocates a torp struct entry, daemon moves torp coordinates at
+    game reality update rate, ntserv's deliver torp update packets to
+    all players who can 'see' the torp.
+
+Debugging/Error Messages
+
+    ERRORS (why no date?), stdout/err for different processes.  ERRORS
+    not usable in all processes?  ERROR() doesn't seem to work in
+    robots (puck, basep, etc); perror() does though.
+
+--
+Data Structures
+
+                            +----------------------------------------+
+                            | struct player players[MAXPLAYER];      |---+
+                            +----------------------------------------+   |
+                            |                                        |   |
+                            |   struct player players[0]; <--------------+
+                            |   struct player players[1];            |
+  +-----------+             |                                        |
+  | me->p_no; |------------>|                                        |
+  +-----------+             |                                        |
+                            |                                        |
+  +--------------------+    |                                        |
+  | struct player *me; |------> struct player players[me->p_no];     |
+  +--------------------+    |                                        |
+                            |                                        |
+                            |   struct player players[MAXPLAYER-2];  |
+                            |   struct player players[MAXPLAYER-1];  |
+                            +----------------------------------------+
+  +--------------+
+  | memory->mctl |---------------+
+  +--------------+               v
+                            +----------------------+
+                            | struct mctl mctl[1]; |
+                            |                      |
+                            | mc_current           |-------+
+                            | mc_uplink[MAXPLAYER] |       |
+                            | mc_oob               |       |
+                            +----------------------+       |
+  +------------------+                                     |
+  | memory->messages |-----------+                         |
+  +------------------+           v                         |
+                            +------------------------------|-------+
+                            | struct message messages[MAXMESSAGE]; |
+                            |                              |       |
+           +--------------> | messages[0];                 |       |
+           |                | messages[1];            <----+       |
+           |                | messages[MAXMESSAGE-2];              |
+           |                | messages[MAXMESSAGE-1];              |
+           |                +--------------------------------------+
+  +------------+
+  | msgCurrent |
+  +------------+

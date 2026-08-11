@@ -1,0 +1,305 @@
+Welcome.  Of the things we would welcome work on, it's the initial
+appearance of the package that will generate the most result.  Placement
+in Gnome menus.  Placement in KDE menus.  Package description.
+Documentation.  Initial startup appearance.  Compatibility with all
+window managers.
+
+sound, distance and position
+	see /usr/share/doc/libsdl-mixer1.2-dev/examples/playwave.c.gz
+
+sound, tonality
+
+sound, recognition
+        torp fire request, tick,
+	torp hit, noise bang ding,
+	torp det, noise bang,
+	torp self det, pfft,
+        phaser fire request, tock,
+	phaser hit, whistle ding,
+	phaser plasma, whistle bang ding,
+	phaser miss, whistle,
+	tractor, low whistle rising,
+	pressor, low whistle falling,
+	shield up,
+	shield down,
+	explosion, as usual,
+	beam up, high whistle rising,
+	beam down, high whistle falling,
+	repair, hammer, chainsaw, drill,
+	warp, filtered noise, spike at cabin resonance,
+	transwarp,
+	bomb begin,
+	bomb progress,
+	bomb end,
+	hurt, ding, crumple,
+	etmp, noise whistle, contracting metal,
+	wtmp, noise whistle, contracting metal,
+	help me, sos
+	carrying, pan pan
+
+teamspeak integration
+	determine ports needed on orion
+
+advise player if there is t-mode on another server
+
+tactical planet pixmaps from tedturner or other clients
+
+www.ggzgamingzone.org/
+	bug id 9b966bd6ed186fa7d55efa6062582065a390b7b7
+
+ship colours, eight per team.
+
+	extend colortable, which increases NCOLORS
+	change macros that determine colour for a ship to allocate a
+	colour from available team colours on a join.  sigh.
+
+http://mpt.net.nz/archive/2008/08/01/free-software-usability
+
+RCD i18n translations.
+
+safe-idle
+
+	do not red alert
+	issue audio notification when safe-idle ends without user action
+
+metaserver window,
+
+	align columns flexibly.
+	integrated newbie server
+	integrated league server
+	update information age every few seconds
+	new version warning
+	time to play notifier
+		an audio sample
+		if player has not played in past minute
+		if n players moves from below threshold to threshold or above
+		also change window or icon title
+
+login window,
+
+	add a quit button, centre bottom
+		Can't type control/d on password prompt to exit, as it
+		may form part of a password.
+	add a guest button, left side, if port is pickup
+	if disconnect happens,
+		add a reconnect button, right side,
+		e.g. while user is reading docs on galactic?
+	galactic intro text, theme of game, how to play
+
+flight windows,
+
+	turn keys, Key187, Key189 from xp
+
+discoverability, keys, lack of
+
+	replace player list area with new players' control panel
+
+	commands
+
+	flying: 0 stop, 3 dodge, 6 cruise, 9 top, right-click, ; lock, o orbit
+	talking: shift-E distress, shift-F urgency i am carrying armies, mA
+	defense: s shields, shift-T tractor, y pressor, d detonate enemy torps, c cloak, shift-R repair,
+	attack: left-click fire torp, middle-click phaser, 
+	planets: ; lock, o orbit, ctrl-t announce, b bomb, z pick, x drop 
+
+	advisory
+
+	game goal: take planets until no enemy (team name) planets remain
+	tasks, bomb: identify enemy planet / fly / lock / bomb / raise shields / fly
+	tasks, protect: identify enemy bomber / fly / fight / die
+	tasks, control: identify front / fly / fight / die
+	tasks, ogg: identify enemy carrier / fly / cloak / decloak / tractor / fight / die
+	tasks, escort: identify carrier / fly / fight / die
+	tasks, carry: get a kill / fly back / pick / fly / lock / bomb / drop / die
+
+
+
+mouse-over hints for windows.
+
+	EnterNotify, set flag, enable MotionNotify, set timer,
+	LeaveNotify, clear flag, clear timer, unmap hint,
+	MotionNotify,
+		calculate coordinate change per second using time in event,
+		if above threshold then clear timer,
+	on timer expiry, map hint
+	dashboard elements, player list, tactical objects.
+
+general user interface
+
+	clickable links in message windows,
+	clickable links in documentation windows.
+
+this, is a planet,
+
+	you can orbit it,
+	you can bomb it, but usually only if it is the enemy team,
+		and only if it has more than four armies,
+	etc
+
+--
+
+build static binary
+
+--
+
+!!! PLCLEAR is set too often.  Does not need to be set for every draw,
+	just for BEEPLITE and moves
+
+
+The following are projects, ideas, and bugs for anyone who would like
+to contribute to BRM.  Please send all patches to brmbugs@crissy.berkeley.edu
+
+These are listed in approximately order of importance.
+
+BUGS:
+
+-----------------------------------------------------------------
+-----------------------------------------------------------------
+ 
+
+
+TODO:
+
+-----------------------------------------------------------------
+
+Create an rc editor that will allow:
+	- keymap, buttonmap editing
+	- configuration of all <key>:<value> options
+	- window placement
+	- choosing fonts
+	- macro editing
+	- etc...
+
+-----------------------------------------------------------------
+
+Enhance macrowindow to include a display of receiver configurable
+distress calls.
+[I think Nick Trown has finished this and will include it
+in future patches]
+
+-----------------------------------------------------------------
+
+Make a mouse button -> control key buttonmap
+
+-----------------------------------------------------------------
+
+Add a meta-command mode into the client, so that people
+can imitate what they did with macromode earlier in
+terms of RCD.  Further, sensative commands like 'q' and 'Q'
+could be mapped to a "safe" meta command mode.
+
+Ex:  Have something like the following in xtrekrc.
+
+metaCommand:  qQ^3
+
+In order to do a fast quit, you then need to hit say 'W'
+(or whatever your meta command key is) followed by 'q'.
+In order to send the ^3 RCD, need to get into meta-command
+mode, then hit ^3.
+
+-----------------------------------------------------------------
+
+Allow macros to be assigned to control keys
+
+-----------------------------------------------------------------
+
+Suggestions for new MACRO arguments:
+%* automatically abort a macro (ie don't print it) whenever this occurs
+%  that is %<SPACE>, this would be used mainly to start a macro
+      with blanks in it, ie mac.a.T: %                 BOMB!!
+
+Don't print MACROs if they reduce down via SMARTMACRO to a null message. 
+
+-----------------------------------------------------------------
+
+jeffw writes:
+>How does one map a control key to a single key macro?
+
+Not possible, needs adding.
+
+
+-----------------------------------------------------------------
+
+Include Hadley's xtrekrc window into the client.
+Steal as much of Hadley's other cool client features as possible.
+
+-----------------------------------------------------------------
+
+From: "Joseph E. Beck" <jb8n+@andrew.cmu.edu>
+
+Just curious, do you have any idea on the status of "galaxy rotate"
+with short packets?  It would be really cool if you could get
+something like:
+galaxy-position:                lower-left
+galaxy-direction:               up
+So when you enter the game your race is in the lower left corner, and
+you will fly upwards to meet your opponents.  Granted, this is
+cosmetic but would be really neat.  Do you know if anyone is looking at
+this, or is it dead?
+
+-----------------------------------------------------------------
+
+From: "Joseph E. Beck" <jb8n+@andrew.cmu.edu>
+
+Highly related second question: is there (or could there be? :-) a way
+to have the received smartdistresses be displayed on 2 separate lines?
+Eg:
+F4->FED
+F4->FED ORG     5 armies        @3 armies
+F4->FED CAN     60% fuel        AS
+ 
+Which would be parsed as "F4 is at CAN in an AS with 60% fuel.  He is
+heading to ORG@3 with 5 armies.".  The reason for this is that I like
+to put a message board on my galactic window, but I can only have a
+partial width window (since if it was wider it would block the battle
+area).  Shouldn't be too tough, right? :-)
+
+-----------------------------------------------------------------
+
+Come up with some scheme for allowing keymaps to use control and
+meta keys, along with TAB, RETURN, DELETE, and other such keys.
+
+-----------------------------------------------------------------
+
+Rewrite and update all the documentation.
+
+-----------------------------------------------------------------
+
+Keep a team stats total in the playerlist, so that teams may
+be compared as a whole with one simple quotient.
+(idea came from Bharat.Mediratta I think, not sure)
+
+-----------------------------------------------------------------
+
+From glaurent@indri.inria.fr Fri Sep 17 05:46:15 1993
+Date: Fri, 17 Sep 1993 14:47:51 +0200
+To: brmbugs@crown.berkeley.edu
+Subject: BRM 2.99pl1: we want the old new player list
+
+Last suggestion : the help window is a mess. A bit of sorting (by themes
+for ex.) would be a good idea...
+
+-----------------------------------------------------------------
+
+Someone wrote:
+>Hmm.. I just tried un-keymapping the ` key.
+>I did options and `` and it still does the macro instead of the packetwindow..
+>
+>Here's what I had in .xtrekrc:
+>
+ 
+xtrekrc entry:
+#newmacro stuff
+singleMacro: `
+mac.`.A:       %p: MAJOR FUCKING TWINK
+ 
+jn responded:
+If these are the lines you have in your .xtrekrc, it is not
+possible to use the ` key for anything but the specified
+macro.  Macros override commands, and singleMacro means you
+automatically enter macro mode when that key is hit.  As of
+this patchlevel [3.0 beta], keymap is entirely ignored when it comes
+to macros and dist.key.name configured distresses.  In future patch levels
+we might provide a way to modify and remove whatever singleMacro
+is set to, right now editing and reloading xtrekrc is necessary.
+

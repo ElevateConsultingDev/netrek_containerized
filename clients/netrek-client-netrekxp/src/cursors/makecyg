@@ -1,0 +1,21 @@
+#
+# This makefile is written for Cygwin
+#
+
+# Cygwin
+cc     = gcc
+rc     = windres
+link   = gcc
+
+all: curslib.dll
+
+RESOURCES = curslib.o
+
+$(RESOURCES): curslib.rc
+	$(rc) -o curslib.o curslib.rc
+
+curslib.dll:  $(RESOURCES)
+	$(link) -shared -o curslib.dll $(RESOURCES)
+
+clean:
+	rm curslib.dll curslib.ilc curslib.ild curslib.ilf curslib.ils curslib.o curslib.tds

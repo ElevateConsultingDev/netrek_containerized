@@ -1,0 +1,97 @@
+#
+# Sample configuration for MetaServerII
+#
+# $Id: metarc,v 1.3 2006/08/23 01:51:02 modemhero Exp $
+#
+
+# ports to listen on for user connections
+#
+# ----- num --- kind -- "Description" ------------------------- extra-stuff ---
+#port:	3520	old	"Original METASERVER format"
+port:	3521	new	"New and improved format"
+port:	3522	verbose	"Verbose format, with player lists"
+port:	1080	web	"Web browser HTML format"
+#port:	3523	info	"News & information"			metaII_info
+#port:	3524	info	"Server FAQ posting (long)"		server_faq
+#port:	3525	info	"MetaServerII config file"		metarc
+#port:	3530	info	"RSA key list"				rsa_keys
+#port:	3531	info	"Server Feature List"			features
+
+
+# couldn't connect to server, wait xx minutes
+wait_noconn:		30
+# server is empty, wait xx minutes
+wait_empty:		15
+# server is open (1-15 players), wait xx minutes
+wait_open:		5
+# server has a wait queue, wait xx minutes
+wait_queue:		10
+
+
+# check port-1 (player list port) first?
+try_alt_port:		on
+
+# shall we do logging?
+do_logging:		on
+
+# log DNS hostnames instead of numeric IP addresses?  (DNS lookups can cause
+# pauses during client connections)
+log_dns_names:		off
+
+# where are we?
+location:		Earth
+
+# who maintains me?
+admin:			metaserver@us.netrek.org
+
+# should we write to a checkpoint file before exiting?
+save_ckp:		on
+
+
+#
+# List of sites on our "bad" list.  They get a standard "go away" message
+# if they try to connect.  [actually, they just get dropped]
+#
+# Future enhancement, for entire subdomains, allowing tailored messages:
+# exclude: ip-addr ip-mask message-file
+#
+
+#
+# List of servers; runs until end of file.  MetaServerII will use the IP
+# address if one is given; if you use 0.0.0.0 it will resolve the domain
+# name at startup time.
+#
+# Note that this format is identical to the FAQ server list; just cut & paste.
+# If you plan to take MetaServerII up and down frequently, put the most
+# popular servers near the top, so that they can be scanned right away when
+# the program comes up.
+#
+servers:
+
+#				Number of Players ---vv
+# server name ----------------- IP address ---- Port -- Notes (optional) ------
+#
+# BRONCO/VANILLA Servers (B):
+#
+B RSAcontinuum.us.netrek.org		0.0.0.0		2592 20 Minnesota
+
+# 
+# CHAOS Servers (C):
+# 
+
+#
+# HOCKEY Servers (H):
+#
+
+#
+# PARADISE Servers (P):
+#
+
+#
+# DOGFIGHT/BASEPRACTICE Servers (F):
+#
+
+#
+# STURGEON Servers (S):
+#
+

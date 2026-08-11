@@ -1,0 +1,386 @@
+This is a list of all known public Netrek servers.  If you know of any 
+others, or if any of my information is wrong, please mail
+tom@csua.Berkeley.EDU.
+
+Note: All servers are UDP unless noted otherwise.
+
+
+Subject: Vanilla servers in America (short listing)
+
+Description: These servers are based on the orignal code, Terence Chang's
+	     bronco code, or Nick Trown's New Vanilla release.  They are
+	     not all identical but they have minimal modifications.
+
+
+Server name			INET address	Port	Notes
+
+bronco.ece.cmu.edu		128.2.210.65	2592	Now RSA only.
+
+calvin.usc.edu			128.125.62.143	2592	USC, RSA.
+
+netrek.cs.mcgill.ca		132.206.51.198	2592	Canada.
+
+garnet.cdf.toronto.edu		128.100.31.36	5555	Canada.
+
+wormhole.ecst.csuchico.edu	132.241.1.117	5858	Replaces guzzler, RSA.
+
+bigbang.astro.indiana.edu	129.79.157.41	2592	Indiana, RSA.
+
+rosebud.umiacs.umd.edu		128.8.120.103	2592	Maryland.
+
+mean.mu.caltech.edu		131.215.143.6	2592	Caltech, borgish.
+
+bradbert.ugcs.caltech.edu	131.215.134.140	2592	Caltech.
+
+
+Subject: Vanilla servers outside America (short listing)
+
+Description: Same as above but not in America.
+
+
+peanuts.informatik.uni-tuebingen.de 134.2.14.1	2592	Germany.
+
+bayes.ibr.cs.tu-bs.de		134.169.34.33	5855	Germany.
+
+legend.cma.fr			192.33.149.2	2592	France, RSA only.
+
+netrek.chemietechnik.uni-dortmund.de 129.217.174.20  592  Germany.
+
+ghost.dsi.unimi.it		149.132.1.2	2592	Italy, RSA.
+
+netrek.cs.bham.ac.uk		147.188.192.10	2592	U.K. RSA only.
+
+megalag.risc.uni-linz.ac.at	193.170.38.158	2592	Replaces melmac.
+
+fisher.psy.vu.nl		130.37.96.2	2592	Amsterdam.
+
+rsls6.sprachlit.uni-regensburg.de 132.199.136.36  2592	Germany.
+
+gilean.solace.mh.se		193.10.118.132	2592	Sweeden, experimental.
+
+
+Subject: Sturgeon-style upgrade servers (short listing)
+
+Description: These servers are based on Donald Tsang's Sturgeon source.
+	     They include ship upgrades, a modified combat system,
+	     ridiculous starbases, and more.
+
+rosebud.umiacs.umd.edu		128.8.120.103	7654	U Maryland.
+
+netrek.engg.ksu.edu		129.130.41.86	3333	Kansas State.
+
+
+Subject: Paradise-style servers (short listing)
+
+Description: These servers use the NetrekII/Paradise source.  Paradise 
+	     servers can be configured to many settings, including that
+	     simulating a regular bronco server.  The source code release
+	     includes an expanded galaxy, impluse/warp differentiation, 
+	     suns, extra ships, and more.
+
+
+netrek.cis.ufl.edu		128.227.224.254	2592	UFL, RSA only.
+
+defiant.theo-physik.uni-kiel.de	134.245.67.1	2592	Germany.
+
+aedile.icaen.uiowa.edu		128.255.17.38	2592	Iowa.
+
+eelpout.micro.umn.edu		128.101.245.6	2592	UMN.
+
+fantasia.eng.clemson.edu	130.127.152.72	2592	Clemson
+
+netrek.skypoint.net		199.86.32.2	2592	?
+
+netrek.skypoint.net		199.86.32.2	3333	No warp.
+
+fred.cs.city.au.uk		138.40.91.2	2592	UK.
+
+netrek.engg.ksu.edu		129.130.41.86	2592	Kansas State.
+
+europa.informatik.uni-frankfurt.de  141.2.5.3	2592	Germany.
+
+i12.msi.umn.edu			128.101.27.62	2592	Minnisota.
+
+cassius.cs.uiuc.edu 		128.174.240.3	2592	Illinois.
+
+
+Subject: Hockey servers (short listing)
+
+Description: Netrek hockey mode.  Most fun you can have on ice without
+             actually being on it.  Teams of players try to shoot (pressor)
+             the Puck (a robot) into the other teams goal.
+
+
+hockey.ksu.edu 			129.130.6.10	2592	Kansas State.
+
+rosebud.umiacs.umd.edu		128.8.120.103	6666	U Maryland.
+
+hot.caltech.edu			131.215.9.49	2592	Caltech.
+
+
+Subject: KSU Chaos servers (short listing)
+
+Description: These are servers based on the original KSU Chaos mods.  They
+	     include galaxy-class ships, high refuel rates, free plasmas,
+	     wrap-around walls, and much more.  
+
+netrek.engg.ksu.edu		129.130.41.86	5855	Kansas State.
+
+
+Subject: Dogfight servers (short listing)
+
+Description: These are servers designed with dogfighting tournaments in mind.
+	     The code is still rather buggy.
+
+rosebud.umiacs.umd.edu		128.8.120.103	3333	U Maryland.
+
+
+Comments and server configurations:
+
+NOTE: It is an excellent idea to read the MOTD when you first log
+on to a server (use 'f' and 'b' to move forwards and backwards through
+the news).
+
+
+Subject: Vanilla servers in America (long listing)
+
+bronco.ece.cmu.edu:
+Server source: Guzzler source.
+UDP: version 1.0.
+Hours: 5PM-9AM Eastern time Monday-Friday, all day on weekends.
+T-mode: 5 on 5.
+Maintainer: netrek@bronco.ece.cmu.edu
+Comments: This server is down most of the time.
+
+calvin.usc.edu
+Server source: Scam source.
+Hours: Open 24 hours.
+Cyborgs: Never allowed, blessed binary required.
+Maintainer: hadley@ics.uci.edu
+Comments: Jacked-up AS's and transwarp.
+
+netrek.cs.mcgill.ca
+Server source: Guzzler source.
+Hours: Open 24 hours.
+Cyborgs: Never allowed, RSA client required.
+Maintainer: kent@cs.mcgill.ca
+Comments: This server requires RSA.  Suppots short packets, ping reporting.
+	Clue checking 3PM-10PM weekdays, all day on weekends.
+
+garnet.cdf.toronto.edu
+Server source: Guzzler source.
+Hours: Open 24 hours.
+
+wormhole.ecst.csuchico.edu
+Server source: Guzzler source.
+Hours: Open 24 hours.
+Cyborgs: Never allowed, RSA client required.
+Maintainer: trown@ecst.csuchico.edu.
+Comments: This server requires RSA.  Now has the calvin database.
+	  Supports short packets, ping reporting, and RCD.
+	  Clue checking 5PM-6AM weeknights, all day on weekends.
+
+bigbang.astro.indiana.edu
+Server source: Guzzler source.
+Hours: Open 24 hours.
+Cyborgs: Never allowed, RSA client required.
+Maintainer: netrek@bigbang.astro.indiana.edu
+Comments: Playerlist on port 2591.  finger netrek@bigbang.astro.indiana.edu
+	  gives a high score list.  Ship stats modified to weaken cruisers.
+
+rosebud.umiacs.umd.edu (2592)
+Server source: Guzzler source.
+Hours: Open 24 hours.
+Maintainer: ctso@umiacs.umd.edu
+Comments: Has the UML player database.  Note port number; port 6666 has 
+	  a hockey server.
+
+mean.mu.caltech.edu
+Server source: Guzzler source.
+Hours: Open 5PM to 8AM weekdays, all day on weekends.
+Cyborgs: Encouraged, no binary checking.
+Maintainer: kantner@hot.caltech.edu
+
+tolstoy.afit.af.mil: This server is apparently down.
+
+smurfland.cit.buffalo.edu: This server is apparently down.
+
+bradbert.ugcs.caltech.edu
+Server source: Guzzler source.
+Hours: Open 24 hours.
+
+
+Subject: Vanilla servers outside America (long listing)
+
+peanuts.informatik.uni-tuebingen.de
+Server source: Bronco source.
+Hours: 5PM-7AM Monday-Friday, all day on weekends.
+Cyborgs: Allowed.
+Maintainer: jw@peanuts.informatik.uni-tuebingen.de.
+
+bayes.ibr.cs.tu-bs.de
+Server source: Bronco source.
+Hours: Open 24 hours.
+Cyborgs: Always allowed. 
+Maintainer: schrei@ibr.cs.tu-bs.de.
+
+legend.cma.fr
+Server source: Guzzler source.
+Hours: Open 24 hours.
+Cyborgs: Never allowed, RSA client required.
+Maintainer: jmt@cma.cma.fr.
+Comments: Requires message reading.
+	  Supports short packets and RC_DISTRESS.
+
+netrek.chemietechnik.uni-dortmund.de
+Server source: Bronco source.
+Hours: Closed 8 AM to noon Monday-Friday.
+Maintainer: hw@plato.Chemietechnik.Uni-Dortmund.DE.
+Comments: No Iggy.
+
+ghost.dsi.unimi.it
+Server source: Bronco source.
+Hours: Open 5PM-10AM Monday-Friday, all day on weekends.
+Cyborgs: Always allowed.
+Maintainer: carlo@ghost.dsi.unimi.it.
+
+netrek.cs.bham.ac.uk
+Server source: Bronco source.
+Hours: 5PM to 8AM Monday-Friday, all day weekends.
+T-mode: 4 on 4.
+Cyborgs: Never allowed, RSA client required.
+Maintainer: A.Willams@cs.bham.ac.uk.
+
+megalag.risc.uni-linz.ac.at
+Server source: Guzzler source.
+Hours: Open 24 hours.
+T-mode: 3 on 3.
+Cyborgs: Never allowed, RSA client required.
+Maintainer: siegl@risc.uni-linz.ac.at.
+Comments: Usually runs in base practice server mode.  Suppots short packets  
+	  and RC_DISTRESS.  Replaces melmac.
+
+fisher.psy.vu.nl
+Server source: Guzzler source.
+Hours: Open 24 hours.
+T-mode: 4 on 4.
+Cyborgs: Never allowed, RSA client required.
+Maintainer: rob@psy.vu.nl.
+Comments: Clue hours 5PM to 8PM local time.
+
+gilean.solace.mh.se
+Server source: Guzzler source.
+Hours: Open 24 hours.
+T-mode: 3 on 3.
+Cyborgs: Never allowed, RSA client required.
+Maintainer: netrek@solace.mh.se.
+Comments: Experimental server based on Sturgeon mods.
+This server was down at the time of testing.
+
+
+Subject: Sturgeon-style upgrade servers (long listing)
+
+rosebud.umiacs.umd.edu: This server is apparently down.
+
+netrek.engg.ksu.edu: This server is apparently down.
+
+
+Subject: Paradise-style servers (long listing)
+
+netrek.cis.ufl.edu
+Server source: Paradise source.
+Hours: Open 24 hours.
+Maintainer: thoth@aviator.cis.ufl.edu.
+Comments: This is Arctica, another branch of the Paradise line.
+
+defiant.theo-physik.uni-kiel.de
+Server source: Paradise source.
+Hours: Open 24 hours.
+Maintainer: trek@theo-physik.uni-kiel.de.
+Comments: Good round-trip times.  Replaces ravel.
+
+aedile.icaen.uiowa.edu
+Server source: Paradise source.
+Hours: Open 24 hours.
+
+eelpout.micro.umn.edu: This server is apparently down.
+
+fantasia.eng.clemson.edu
+Server source: Paradise source.
+Hours: Open 24 hours.
+Maintainer: ttatum@harley.eng.clemson.edu, dcrane@eng.clemson.edu.
+This server was down at the time of testing.
+
+netrek.skypoint.net: This server is apparently down.
+
+fred.cs.city.ac.uk
+Server source: Paradise source.
+Hours: Open 24 hours.
+Maintainer: deorth@city.ac.uk.
+This server was down at the time of testing.
+
+netrek.engg.ksu.edu (2592)
+Server source: Paradise source.
+Hours: Open 24 hours.
+Maintainer: tundra@cis.ksu.edu.
+Comments: This is Armageddon, a mixture of Paradise and KSU Chaos.
+
+europa.informatik.uni-frankfurt.de
+Server source: Paradise source.
+Hours: Open 24 hours.
+
+i12.msi.umn.edu
+Server source: Paradise source.
+Hours: Open 24 hours.
+This server was down at the time of testing.
+
+cassius.cs.uiuc.edu 
+Server source: Paradise source.
+Hours: Open 24 hours.
+
+
+Subject: Hockey servers (long listing)
+
+hockey.ksu.edu
+Server source: Guzzler source, hockey mode.
+Hours: Open 24 hours.
+Cyborgs: Allowed.
+Maintainer: bav@hobbes.ksu.ksu.edu.
+Comments: Hockey mode all the time, send 'help' to player g for details.
+
+rosebud.umiacs.umd.edu (6666)
+Server source: Guzzler source, hockey mode.
+Hours: Open 24 hours.
+Cyborgs: Never allowed, RSA client required.
+Maintainer: ctso@umiacs.umd.edu.
+Comments: Note port number, normal netrek server runing on port 2592.
+
+hot.caltech.edu
+Server source: Guzzler source, hockey mode.
+Hours: Open 5PM-8AM weekdays, all day weekends.
+Maintainer: kantner@hot.caltech.edu
+
+rsls6.sprachlit.uni-regensburg.de
+Server source: Guzzler source, hockey mode.
+Hours: Open 24 hours.
+
+
+Subject: KSU Chaos servers (long listing)
+
+netrek.engg.ksu.edu (2592)
+Server source: KSU Chaos.
+Hours: Open 24 hours.
+Cyborgs: Allowed.
+Maintainer: greyhelm@engg.ksu.edu.
+Comments: KSU Chaos with grit-style robots.
+
+
+Subject: Dogfight servers (long listing)
+
+rosebud.umiacs.umd.edu (3333)
+Server source: Guzzler source, dogfight mode.
+Hours: Open 24 hours.
+Cyborgs: Not allowed, RSA client required.
+Maintainer: ctso@umiacs.umd.edu.
+Comments: Note port number; normal netrek on port 2592, hockey on port 6666.
+This server was down at the time of testing.

@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=Netrek Client (COW)
+Comment=Conquer space with Netrek
+Exec=netrek-client-cow
+Terminal=false
+Type=Application
+Icon=cow
+Categories=Game;StrategyGame;

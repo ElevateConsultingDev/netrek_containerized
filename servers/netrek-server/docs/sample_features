@@ -1,0 +1,207 @@
+#
+# Syntax:
+# FEATURE_NAME                <S/C>   <ON/OFF>        [int-arg] [int-arg]
+#
+# Description:
+# FEATURE_NAME: is a unique string of up to 80 characters describing
+# a client or server feature.
+# <S/C>: 'S' indicates that the feature requires server support.  Servers
+# that do not support the feature, regardless of how it is listed in the
+# .features file, will return value UNKNOWN to clients requesting that
+# feature.  'C' indicates that the feature is a client option, requiring no
+# special code support from the server.
+# <ON/OFF>: As stated above, if the server does not support a given feature,
+# this value is ignored and UNKNOWN will be sent to the client.  Otherwise
+# this value is returned and will be honored by the client.
+# [int-args]: two optional integer args may be used for future extensions.
+#
+# feature packets support
+FEATURE_PACKETS       S       ON
+# why-dead message extra args (see vanilla server)
+WHY_DEAD              S       ON
+# receiver-configurable distress (see vanilla server)
+RC_DISTRESS           S       ON
+# multi-line macros (see vanilla server)
+MULTIMACROS           C       ON
+# first 8 flags of my ship sent in SP_S_YOU_SS (see vanilla server)
+SELF_8FLAGS           S       ON
+# send 19 flags in SP_S_YOU_SS and SP_SEQUENCE
+19FLAGS               S       ON
+# warp 15 means player is cloaked (see vanilla server)
+CLOAK_MAXWARP         S       OFF
+# SB hours (?)
+SBHOURS               S       ON
+# client macro switch (old clients)
+NEWMACRO              C       ON
+# client macro switch (old clients)
+SMARTMACRO            C       ON
+# continuous mouse
+CONTINUOUS_MOUSE      C       ON
+# continuous steering
+CONTINUOUS_STEER      C       ON
+# info mode
+INFO_MODE1            C       ON
+# beeplite options. These get or'ed together to produce the BEEPLITE value.
+#       LITE_PLAYERS_MAP       1
+#       LITE_PLAYERS_LOCAL     2
+#       LITE_SELF              4
+#       LITE_PLANETS           8
+#       LITE_SOUNDS            16
+#       LITE_COLOR             32
+#       LITE_TTS               64
+#
+BEEPLITE              C       ON      95
+# lite players map
+LITE_PLAYERS_MAP      C       ON
+# lite players local
+LITE_PLAYERS_LOCAL    C       ON
+# lite self
+LITE_SELF             C       ON
+# lite planets        
+LITE_PLANETS          C       ON
+# lite sounds
+LITE_SOUNDS           C       ON
+# ship stat. packets
+SHIP_CAP              S       ON
+# generic packets (plus packet version number)
+SP_GENERIC_32         S       ON       2
+# Despite using short packets, show full direction resolution for
+# ships.  The same information for players is already included in the
+# original packet format.  When a client requests this feature, the
+# average data rate to the client will increase, because the short
+# packet format for ships is turned off.
+FULL_DIRECTION_RESOLUTION     S       ON
+# Despite using short packets, show own torps beyond tactical for
+# players, and show all weapons to observers.  The same information
+# for players is already included in the original packet format.  When
+# a client requests this feature, the average data rate to the client
+# will increase, because the short packet format for torps is turned off.
+FULL_WEAPON_RESOLUTION        S       ON
+# Adds support for CP_PLANET, which is a request from client for the
+# server to check if the client's knowledge of a planet needs
+# updating.  The server issues an SP_PLANET in reply if an update is
+# needed.  Reduces effect of packet loss by enforcing state.  Reduces
+# need for the player to request an update of planets.  The client is
+# entitled to request updates whenever it wishes.
+CHECK_PLANETS         S       ON
+# Show tractors and pressors for all players' ships.  Regardless of the
+# setting here, this will be turned on for observers.
+SHOW_ALL_TRACTORS     S       OFF
+# army counts next to planets
+SHOW_ARMY_COUNT       S       OFF
+# show other player's speed
+SHOW_OTHER_SPEED      S       OFF
+# show other cloakers on tactical map
+SHOW_CLOAKERS         S       OFF
+# allow turning via keyboard
+TURN_KEYS             S       OFF
+# Allow clients to show the range at which enemy ships can see you as a circle
+# on the galactic map.  This information can be derived by the client by
+# mimicing the function udplayersight() in daemon.c.
+SHOW_VISIBILITY_RANGE         S       OFF
+# Flag packet that sends abbreviated flags (cloak, shield, alive) for all
+# players every update for those who use SP_PLAYER instead of SP_S_PLAYER.
+SP_FLAGS_ALL            S       ON
+# Send additional p_whydead states (KSHIP2, KTORP2, KPLASMA2) to clients which
+# can handle those cases.
+WHY_DEAD_2		S	ON
+# Allow client to use automatic aiming and/or firing of weapons
+AUTO_WEAPONS            S       OFF
+# Client can handle rank_spacket and ranks above NUMRANKS
+SP_RANK                 S       ON
+# Client can handle ltd_spacket
+SP_LTD                  S       ON
+# Client can handle motd clearing for tips, several clients have a
+# bug, which will cause them to crash if given a motd clear.
+# Affected: Netrek XP Mod
+# Affected: Netrek XP 2006
+# Affected: Netrek XP 2009
+# Affected: netrek-client-cow-3.2.10 and lower
+# Unaffected: brmh (usually built without #define EM)
+# Unaffected: netrek-client-pygame
+# Untested: MacTrek
+TIPS                    S       ON
+#
+#
+# OLD FORMAT FOR CLIENTS WITHOUT FEATURE_PACKETS SUPPORT.
+#
+#	INL SERVERS READ: The inl servers are using a broken version of 
+#		feature.c and no one seems to want to fix it. So ALL the
+#		features without confirm strings WILL NOT work. YOU WILL
+#		HAVE TO PUT A CONFIRM ON THEM. To do this for example change:
+#			Client Of Win: WHY_DEAD  	to
+#			Client Of Win*confirm:0.00.0: WHY_DEAD
+#
+#
+#
+#	BRM FEATURES
+#
+# NEWMACRO and SMARTMACRO are intelligent message macro sending. For more info
+# look at the NEWMACRO.DOC that comes with the BRM source.
+# These should be disabled soon since they are now on by default and BRM2.99
+# doesn't use these anymore.
+BerkRick Moo!confirm:2.99.0: NEWMACRO
+BerkRick Moo!confirm:2.99.0: SMARTMACRO
+#
+# WHY_DEAD will allow the server/client to communicate why a player died while
+# using Short Packets.
+BerkRick Moo*confirm:2.00.15: WHY_DEAD
+#
+ricksmoo 3.0*confirm:moo 3.0.99: WHY_DEAD
+#
+#
+# Starting with 2.99 the BRM will have SMART_MACROS on unless told not to by
+# the server. NOSMARTMACROS turns off smart-macros.
+#BerkRick Moo*confirm:2.99.0: NO_SMARTMACROS 
+#
+# NO_SMARTDISTRESS is new to BRM 2.99. It disables the smart distresses when
+# the client recieves the string.
+#BerkRick Moo*confirm:2.99.0: NO_SMARTDISTRESS
+#
+# RC_DISTRESS is new to BRM 2.99pl2. It enables variable distress calls. If the
+# server has it then it should be enabled.
+BerkRick Moo*confirm:2.99.3: RC_DISTRESS
+#
+# NO_CONTINUOUS_MOUSE is to disable the ability to have auto-repeat with the
+# mouse.
+BerkRick Moo*confirm:3.00.0: NO_CONTINUOUS_MOUSE
+#
+#
+#	BRM INFO CLIENT FEATURES
+#
+# Disable all of BRMi's enhancements
+#BerkRick Moo (i): NO_INFO_MODE
+#
+# Enable the first level of enhanced information.
+BerkRick Moo (i): INFO_MODE1
+#
+# INFO_MODE2-6 enable more and more until 6 is a full blown info-borg
+#
+#
+# Enable BRMi's code which provides minimal information about
+# touching planets, bombing etcetera.
+#
+#BerkRick Moo (i):0.00.0: TRAINER_MODE
+#
+#
+#	BRM SOUND CLIENT FEATURES
+#
+BRM-Sound: WHY_DEAD
+BRM-Sound*confirm:0.99.0: INFO Welcome to the world of Sounds.
+#BRM-Sound: NO_SMARTMACROS
+#BRM-Sound: NO_SMARTDISTRESS
+#
+#
+#       BRM - HADLEY  FEATURES
+#
+BRM-Hadley*confirm:1.4.0: WHY_DEAD
+#
+#
+#	Paradise CLIENT FEATURES
+#
+paradise 2*confirm:2.2 patch 11au: WHY_DEAD
+paradise 2*confirm:2.2 patch 11au: NO_CONTINUOUS_MOUSE
+#paradise 2*confirm:2.2 patch 11au: NO_NEWMACRO
+#paradise 2*confirm:2.2 patch 11au: NO_SMARTMACRO
+#paradise 2*confirm:2.2 patch 11au: RC_DISTRESS
+

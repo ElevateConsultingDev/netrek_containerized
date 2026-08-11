@@ -1,0 +1,14 @@
+Tue Mar  7 22:49:44 2006  James Cameron  <quozl@us.netrek.org>
+
+	* disp_web.c (display_web): remove reference to European
+	metaserver, add <head>, change title to Netrek Metaserver.
+
+Tue Feb 14 18:18:10 2006  James Cameron  <quozl@us.netrek.org>
+
+	* disp_info.c: add forward declaration to fix compiler error.
+
+Tue Feb 14 18:07:08 2006  James Cameron  <quozl@us.netrek.org>
+
+	* scan.c (uread): block godfather.mob.net, netrek.kilohm.net and
+	203.200.79.130 due to misreporting player count.
+

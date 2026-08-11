@@ -1,0 +1,6 @@
+List of things to be done.
+
+- add a blacklist of servers that are either not to be listed, or
+where the player count provided should be ignored or minimised.
+
+- implement server keys for public listing.

@@ -1,0 +1,94 @@
+#
+# This makefile is written for Cygwin
+#
+
+#DEBUG = 1
+
+# Cygwin
+cc     = gcc
+rc     = windres
+link   = gcc
+compileandlink = gcc
+
+# Compiler and linker flags
+ifndef DEBUG
+cflags = -O2 -g -v -DWIN32 -DCYGWIN -mwindows
+ccompileonly = -c
+ldebug =  -v 
+DEBUGDEFS = -DDEBUG
+else
+cflags = -O2 -g -DWIN32 -DCYGWIN -mwindows
+ccompileonly = -c
+ldebug = -w-dup
+endif
+
+# Libs
+LIBOPTS = -L/cygdrive/c/netrekxp/win32/lib/VCC
+
+LIBS = /cygdrive/c/netrekxp/win32/lib/VCC/SDL.LIB \
+       /cygdrive/c/netrekxp/win32/lib/VCC/SDL_mixer.LIB \
+       /cygdrive/c/netrekxp/win32/lib/VCC/SDLmain.LIB \
+       /cygdrive/c/netrekxp/win32/lib/VCC/User32.lib \
+       /cygdrive/c/netrekxp/win32/lib/VCC/Gdi32.lib \
+       /cygdrive/c/netrekxp/win32/lib/VCC/Wsock32.lib \
+       /cygdrive/c/netrekxp/win32/lib/VCC/Kernel32.lib \
+       /cygdrive/c/netrekxp/win32/lib/VCC/Shell32.lib \
+       /cygdrive/c/netrekxp/win32/lib/VCC/Winmm.lib \
+       /cygdrive/c/netrekxp/win32/lib/VCC/Mpr.lib \
+       /cygdrive/c/netrekxp/win32/lib/VCC/Msimg32.lib \
+       $(GMPLIB)
+
+INCS = -I/cygdrive/c/netrekxp/include -I/cygdrive/c/netrekxp/win32 -I/cygdrive/c/netrekxp/win32/h -I/cygdrive/c/netrekxp/win32/SDL/
+
+ROBJ            = beeplite.o check.o colors.o console.o data.o death.o defaults.o dmessage.o\
+                  enter.o findslot.o getname.o getship.o helpwin.o hintwin.o inform.o\
+                  interface.o newwin.o option.o planetlist.o macrowin.o\
+                  map.o playerlist.o ranklist.o reserved.o sintab.o\
+                  smessage.o socket.o stats.o util.o war.o warning.o\
+                  udpopt.o ping.o pingstats.o rotate.o parsemeta.o\
+                  spopt.o dashboard.o dashboard3.o\
+                  short.o distress.o senddist.o defwin.o tools.o sound.o\
+                  docwin.o feature.o\
+                  string_util.o local.o cowmain.o playback.o
+
+RSRC            = beeplite.c check.c colors.c console.c data.c death.c defaults.c dmessage.c\
+                  enter.c findslot.c getname.c getship.c helpwin.c hintwin.c inform.c\
+                  input.c interface.c newwin.c option.c planetlist.c\
+                  macrowin.c map.c playerlist.c ranklist.c redraw.c\
+                  smessage.c parsemeta.c socket.c stats.c util.c war.c\
+                  warning.c udpopt.c sintab.c ping.c pingstats.c rotate.c\
+                  spopt.c dashboard.c dashboard3.c\
+                  short.c distress.c senddist.c defwin.c tools.c sound.c\
+                  docwin.c feature.c reserved.c\
+                  string_util.c local.c cowmain.c playback.c
+
+INPUTOBJ        = input.o redraw.o 
+MAINOBJ         = main.o
+MAINSRC         = main.c
+
+WIN32_SRCS = winmain.c mswindow.c
+WIN32_OBJS = winmain.o mswindow.o
+
+INCLUDES        = struct.h packets.h defs.h copyright.h bitmaps.h data.h\
+                  oldbitmaps.h tngbitmaps.h hullbitmaps.h rabbitbitmaps.h\
+                  sound.h litebitmaps.h copyright2.h Wlib.h\
+                  playerlist.h version.h moobitmaps.h\
+                  parsemeta.h spopt.h map.h string_util.h wtext.h local.h
+
+all: netrek.exe
+
+OBJS = $(ROBJ) $(MAINOBJ) $(INPUTOBJ) $(WIN32_OBJS)
+.c.o:
+	$(cc) $(cflags) $(ccompileonly) $(cdebug) $(DEFS) $(DEBUGDEFS) $(INCS) $<
+
+RESOURCES = vccnetrek.o
+
+$(RESOURCES): vccnetrek.rc
+	$(rc) -o vccnetrek.o vccnetrek.rc
+
+netrek.exe:  $(OBJS) $(RESOURCES) main.ico
+		$(link) $(ldebug) $(LIBOPTS) $(OBJS) $(LIBS) $(RESOURCES)
+
+clean:
+	rm *.o
+	rm netrek.exe netrek.ilc netrek.ild netrek.ild netrek.ilf netrek.ils netrek.map bccnetrek.res netrek.tds

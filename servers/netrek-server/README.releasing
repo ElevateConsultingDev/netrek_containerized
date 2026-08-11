@@ -1,0 +1,147 @@
+Release Procedure
+
+# set variables
+VS=2.19.0
+PN=netrek-server-vanilla
+
+# check version numbers in files
+# include/version.h
+grep SERVER_VERSION include/version.h
+# include/patchlevel.h
+grep PATCHLEVEL include/patchlevel.h
+# Makefile.in
+egrep ^VERSION= Makefile.in
+# README.releasing
+egrep ^VS= README.releasing
+# ChangeLog (add release date)
+head -3 ChangeLog
+# NEWS
+head -1 NEWS
+
+# commit changes
+git commit -a -m "prerelease $VS"
+
+# test the build is clean
+tests/build
+
+# tag the release
+git tag $VS
+
+# build the distribution file from pristine sources
+cd /tmp
+rm -rf release
+git clone -b ${VS} ~/src/netrek-server release
+cd release
+./autogen.sh
+./configure
+make dist
+
+# record md5sum of kit for publishing
+md5sum $PN-$VS.tar.gz > $PN-$VS.tar.gz.md5sum
+
+# publish
+cp $PN-$VS.tar.gz $PN-$VS.tar.gz.md5sum ~/public_html/external/mine/netrek/
+
+# test build kit
+cp $PN-$VS.tar.gz /tmp
+cd /tmp
+tar xfz $PN-$VS.tar.gz
+mv $PN-$VS $PN-$VS.orig
+tar xfz $PN-$VS.tar.gz
+cd $PN-$VS
+./configure --prefix=/tmp/$VS
+make
+
+# test install kit
+make install
+
+# ensure that the tree is returned to pristine condition by distclean
+make distclean
+cd /tmp
+diff -ur $PN-$VS.orig $PN-$VS
++++ netrek-server-vanilla-2.16.0/docs/sample_geno_timer_crontab 2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/include/config.h       2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/robotd/Makefile        2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/Makefile 2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/admin/Makefile   2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/geno_timer       2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/no_geno_timer    2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/setpath  2009-09-01 17:23:59.000000000 +1000
++++ netrek-server-vanilla-2.16.0/tools/setpath.csh      2009-09-01 17:23:59.000000000 +1000
+
+# test run
+/tmp/$VS/bin/netrekd
+
+# test client
+netrek-client-cow -h 127.0.0.1
+
+# clean up
+/tmp/$VS/bin/netrekd stop
+rm -rf /tmp/$VS /tmp/$PN-$VS
+cd
+
+# sign package
+cd ~/public_html/external/mine/netrek/
+gpg --detach-sign -a $PN-$VS.tar.gz
+
+# release on web site
+cd ~/public_html/external/mine/netrek/
+vi index-brief.html
+
+# notify mirror owners, include URL of incoming copy and md5sum.
+mailto:netrek-dev@us.netrek.org
+
+# build differences between this version and previous
+
+# update web page
+http://vanilla.netrek.org/
+~/public_html/external/vanilla.netrek.org/html
+
+# release netrek.org
+orion:/data/orion/var/www/files.netrek.org/Vanilla
+
+# sourceforge.net upload procedure (brief, yet to be retested)
+# - upload to ftp://upload.sourceforge.net/incoming/
+# - project files
+# - add release for Vanilla
+# - fill in form
+# - select file from incoming
+# Bob Tanner gets notified and builds RPMs
+
+# sf.net upload
+ftp -n upload.sourceforge.net <<EOF
+user anonymous quozl@us.netrek.org
+cd incoming
+passive
+hash
+put netrek-server-vanilla-${VS}.tar.gz
+EOF
+
+
+# freshmeat announcement
+
+Note from Dave Ahn ...
+
+Date: Mon, 22 Oct 2001 11:39:28 -0400
+To: vanilla-list@us.netrek.org
+From: Dave Ahn <ahn@vec.wfubmc.edu>
+Subject: Re: [Vanilla List] Re: [Vanilla Devel] vanilla package
+Errors-To: vanilla-list-admin@us.netrek.org
+  
+On Mon, Oct 22, 2001 at 09:04:01AM +1000, James Cameron wrote:
+> On Sun, Oct 21, 2001 at 04:16:33PM -0400, Dave Ahn wrote:
+> > James, are you bundling RES-RSA with Vanilla?
+> 
+> It appears so.  I just noticed.  The 2.9pl7.tar.gz has res-rsa files.
+> See after signature for the list.  Do you still need to tell 'em when
+> it was imported from Australia first?  ;-)
+  
+If the first documented release is in Australia, and I just mirror an      
+archive, then I don't need to do anything.  But ftp.netrek.org is the
+primary distribution site, so I need to let BXA know.  It's not a problem.
+I have a template I use, so I'll notify BXA before each Vanilla release
+I put on the ftp site.  You should probably add a notice to each Vanilla
+release announcement with something like "This package contains
+cryptographic software.  Please be aware of the laws governing your country
+regarding the use of cryptography."
+

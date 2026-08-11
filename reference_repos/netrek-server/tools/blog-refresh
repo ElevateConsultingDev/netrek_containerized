@@ -1,0 +1,40 @@
+#!/bin/sh
+set -e
+
+# refresh the entire blog after manual manipulation of the blog
+# directory.
+
+# Note: this script assumes you have the netrek server binary
+# directories in your shell path, so you should source setpath before
+# calling this, for example:
+# . /usr/local/games/netrek-server-vanilla/lib/tools/setpath
+
+# determine path to blog storage
+BLOG=`getpath --localstatedir`/blog
+
+# set full path to blosxom script
+BLOSXOM=`getpath --libdir`/blosxom
+
+# avoid blosxom if we don't have it available
+if test ! -x ${BLOSXOM}; then
+    echo "blog-refresh: cannot proceed, blosxom not found" 1>&2
+    exit 2
+fi
+
+# try to prevent multiple instances of blosxom, 
+# attempt a filesystem lock, see debian package procmail
+if test -x /usr/bin/lockfile; then
+    lockfile ${BLOG}/lock
+    echo "blog-refresh: blog lock created" 1>&2
+fi
+
+# refresh the static blog content, continue if fail
+${BLOSXOM} \
+    -f="`getpath --sysconfdir`/blosxom.conf" \
+    -password='netrek' -all=1 \
+    || true
+echo "blog-refresh: blog refresh attempt complete" 1>&2
+
+# remove the lock
+rm -f ${BLOG}/lock
+echo "blog-refresh: blog lock removed" 1>&2

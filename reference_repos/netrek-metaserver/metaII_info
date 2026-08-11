@@ -1,0 +1,155 @@
+
+Welcome to MetaServerII's News & Information port!
+
+
+METASERVER-II SERVICES:
+
+Port 3520 has the "look & feel" of the original METASERVER.  It's fully
+    compatible with programs like XNetrekM.
+Port 3521 is a new and improved format.  It incorporates some of the
+    suggestions seen on rec.games.netrek.
+Port 3522 provides verbose output, giving player lists (when available) as
+    well as all of the information available from the above two ports.
+Port 3523 is what you are reading now.
+Port 3524 is the server list posted to rec.games.netrek once per month.  It
+    has a complete list of known public servers, with some detailed info
+    about each.
+Port 3525 is the MetaServerII config file.  Server admins may want to look
+    at this to see if/how their server is listed.
+Port 3530 is the list of RSA public keys.  This is only useful for server
+    administrators; you don't need this just to play.
+
+You can save a copy of the info with:
+
+	telnet metaserver.netrek.org <port> > file
+
+(replace <port> with one of the numbers above.)
+
+
+EXPLANATION OF "FLAGS":
+
+ T  Means that at some point in the lifetime of the MetaServerII process there
+    were >= 8 players on this server ("T-mode").
+ D  Means that this server hasn't responded since MetaServerII started
+    watching ("always Dead").
+ R  Means that this server supports (and may REQUIRE) RSA validation.
+
+The server types are as follows.  These are broad categories, indicating a
+general "feel" of play.
+ B  Bronco - standard scam/bronco sources.
+ P  Paradise - paradise-style server.
+ S  Sturgeon - upgrades and weird weapons, planets, etc.
+ C  Chaos - lots of really whacked out mods.
+ H  Hockey - works like hockey.
+ F  Dogfighting - dogfighting server.
+
+
+I CAN'T SEEM TO GET THE ENTIRE LISTING
+
+Try sending it to a file:
+("telnet metaserver.netrek.org 3521 > /tmp/mlist; cat /tmp/mlist").
+If that doesn't work, I have a short (70 line) program which WILL work.
+Send mail and I'll forward it.
+
+
+MASS RETRIEVALS:
+
+DO NOT run scripts or MS-II clients that automatically read in every port
+every time.  If everybody ran one of these the extra load would be difficult
+to bear.  Ask for all the information you want, but don't load up the network
+with requests for information you're not interested in (the clients usually
+get both ports 3520 and 3521, which contains essentially identical
+information, and the faq from port 3524, which most people don't need to read
+more than once or twice).
+
+Repeat offenders will be added to the "exclude" list, which blocks a host
+from all access.  Currently ALL of richsunN.gatech.edu is blocked for
+exactly this reason.
+
+
+WHERE CAN I GET MORE INFORMATION?
+
+Try rec.games.netrek.  Use "rn", "readnews", "vnews", "nn", "notes", or
+whatever else you have to read Usenet news.  If you can't quite figure it
+out, ask someone on your system.
+
+There's a Frequently Asked Questions list for rec.games.netrek.  I would
+include it here except that you really ought to be reading the newsgroup
+anyway.
+
+From Jonathan Hardwick's rec.games.netrek .signature:
+ Jonathan H., jch@cs.cmu.edu                    Keeper Of The Netrek Archives
+ Access for the masses : anonymous FTP to gs69.sp.cs.cmu.edu (128.2.206.167).
+ If you have AFS, look in /afs/cs.cmu.edu/user/jch/netrek.  If you have WAIS,
+ use the netrek-ftp database, available on port 6000 of gourd.srv.cs.cmu.edu.
+
+Grab all the files you can from this site, and READ THEM.
+
+From Tom Holub's FAQ series:
+"This is a list of all known FTP servers where you can find Netrek client and
+server code, or anything else.  Mail tom@soda.berkeley.edu with any
+comments.
+
+Name                    Address         Comments
+
+scam.Berkeley.EDU       128.32.138.1    The original site (now outdated).
+soda.berkeley.edu       128.32.149.19   INL administrata, FAQ lists.
+ftp.cis.ksu.edu         129.130.10.80   Mirrors, INL server.
+pittslug.sug.org        192.58.107.150  Bronco clients, RSA stuff.
+gs69.sp.cs.cmu.edu      128.2.206.167   Learn to play here!
+b62103.student.cwru.edu 129.22.242.151  NeXT stuff.
+ftp.iastate.edu         129.186.140.11  Little bit of everything.
+iacrs2.unibe.ch         130.92.11.4     Source for IBM rs6k/AIX.
+sgi.com                 192.48.153.1    Silicon Graphics binary.
+ocf.berkeley.edu        128.32.184.252  Apollo stuff.
+crissy.berkeley.edu     128.32.156.224  Latest Berkeley client, INL server.
+cad.ics.uci.edu         128.195.1.42    UDP client.
+ftp.coe.montana.edu     192.31.215.240  Mirrors.
+ftp.informatik.uni-rostock.de 139.30.5.23  Galaxy client.
+ftp.ulowell.edu         129.63.32.1     VMS client.
+ftp.unh.edu             132.177.128.99  VAX Ultrix client.
+duke.me.chalmers.se     129.16.50.80    ntpatch source.
+grind.isca.uiowa.edu    128.255.19.233  Grandfather borg.
+charon.amdahl.com       129.212.11.1    Andy McFadden's stuff.
+ftp.chemietechnik.uni-dortmund.de 129.217.174.20  Mirrors gs69.sp.cs.cmu.edu.
+tbird.cc.iastate.edu    129.186.140.11  Game recorder server mod.
+melmac.risc.uni-linz.ac.at      140.78.140.60   RSA stuff/ENL archive.
+jupiterII.cl.msu.edu    35.8.1.236      Sun, sun386i and 486 blessed clients.
+netcom.com              192.100.81.100  Blessed linux client.
+nyquist.cs.nott.ac.uk   128.243.22.10   Sparc sound client.
+ftp.ecst.csuchico.edu   132.241.1.108	Guzzler server source.
+"
+
+
+USEFUL STUFF
+
+-----
+Article 7402 (57 more) in rec.games.netrek:
+From: jjudy@argon.berkeley.edu (Jack W. Judy)
+
+I find the following simple command line filters useful to remove
+the less usefull info of the outstanding MS II.
+
+Add them to your .aliases or .login files if you think they're useful.
+
+telnet metaserver.ecst.csuchico.edu 3521 | grep "h " | grep -v "Nobody playing"
+| grep -v "Not responding"
+
+telnet metaserver.ecst.csuchico.edu 3522 | egrep '^Server:|^.. ..  ...'
+
+******************************************************************************
+Netrek T-Shirts Now Available!  Very cool black T-shirts with a Fed vs. Rom
+game (complete with galactic, tactical, player, and message windows) on the
+front and a large "OGG THIS!" on the back.  Screen printed in three colors, 
+red, white, and yellow, these 100% cotton tees are only $11.00. Indicate size 
+L or XL when ordering (XXL add $1.00).  Send check or money order to:
+
+K & K  Enterprises                                    
+8831 Milton Morris Drive                               email kcwinter@uncc.edu
+Charlotte, NC  28227
+
+NC residents add 6% sales tax.  Shipping and handling $4.00 for first shirt, 
+$1.00 for each additional shirt.  Allow four to six weeks for delivery.
+******************************************************************************
+
+--- End of info ---

@@ -1,0 +1,237 @@
+#
+#	Installers, you should not need to edit this file.
+#	Everything should be setup in the configuration script.
+#
+
+PACKAGE=netrek-server-vanilla
+VERSION=2.19.0
+
+RANLIB=@RANLIB@
+VPATH=@srcdir@
+srcdir=@srcdir@
+
+CONFIG=system.mk
+
+include $(CONFIG)
+
+.PHONY: rmdependencies clean reallyclean install installbin \
+	do_library do_server do_listener do_robots do_robotd \
+	do_utilities do_rsa_utilities do_xsg do_pledit
+
+all: null $(PMAKE) \
+	do_library do_server do_listener do_robots do_robotd \
+	do_utilities do_rsa_utilities
+
+minimal: null $(PMAKE) \
+	do_library do_server do_listener do_robots do_robotd \
+	do_utilities do_rsa_utilities
+
+depend: system.mk
+	@cd ntserv;    $(MAKE) depend
+	@cd robots;    $(MAKE) depend
+	@cd newstartd; $(MAKE) depend
+	@cd tools;     $(MAKE) depend
+	@cd keycomp;   $(MAKE) depend
+	@cd sequencer; $(MAKE) depend
+	-@if [ -f res-rsa/Makefile ]; then \
+		(cd res-rsa; $(MAKE) depend) \
+	fi
+
+null:
+	touch null
+	$(MAKE) depend
+
+system.mk: ${srcdir}/system.mk.in ${srcdir}/include/config.h.in ${srcdir}/configure
+	if [ -f config.status ]; then \
+		./config.status; \
+	else \
+		${srcdir}/configure -v; \
+	fi
+
+config.h: system.mk
+	touch config.h
+
+do_library: null
+	@cd ntserv; $(MAKE) libnetrek.a
+
+do_server: null do_rsa_library
+	@cd ntserv; $(MAKE)
+
+do_robots: do_library
+	@cd robots; $(MAKE)
+
+do_robotd:
+	@cd robotd; $(MAKE)
+
+do_xsg: do_library
+	@cd xsg; $(MAKE);
+
+do_pledit: do_library
+	@cd pledit; $(MAKE)
+
+do_rsa_library:
+	-@if [ -f res-rsa/Makefile ]; then \
+		(cd res-rsa; $(MAKE) librsa.a) \
+	fi
+
+do_utilities: do_rsa_library do_library
+	@cd tools; $(MAKE)
+	@cd sequencer; $(MAKE)
+
+do_rsa_utilities: do_library
+	@cd keycomp; $(MAKE)
+
+do_listener: do_library
+	@cd newstartd; $(MAKE)
+
+cflags.h: Makefile $(CONFIG)
+	@cd ntserv;  $(MAKE) cflags
+
+lint:
+	@cd ntserv;  $(MAKE) lint
+	@cd robots;  $(MAKE) lint
+	@cd keycomp; $(MAKE) lint
+	@cd tools;   $(MAKE) lint
+
+doxygen:
+	rm -rf html
+	doxygen doxygen.conf
+
+clean:
+	@cd ntserv;    $(MAKE) clean
+	@cd robots;    $(MAKE) clean
+	@cd robotd;    $(MAKE) clean
+	@cd newstartd; $(MAKE) clean
+	@cd tools;     $(MAKE) clean
+	@cd tools/admin;     $(MAKE) clean
+	@cd sequencer; $(MAKE) clean
+	@cd keycomp;   $(MAKE) clean
+	-@if [ -f res-rsa/Makefile ]; then \
+		cd res-rsa; echo "	cd res-rsa; make clean"; $(MAKE) clean; \
+	fi
+	rm -f make.out cflags.h *~ null #*#
+
+reallyclean:
+	@cd ntserv;    $(MAKE) reallyclean
+	@cd robots;    $(MAKE) reallyclean
+	@cd robotd;    $(MAKE) reallyclean
+	@cd newstartd; $(MAKE) reallyclean
+	@cd tools;     $(MAKE) reallyclean
+	@cd sequencer; $(MAKE) reallyclean
+	@cd keycomp;   $(MAKE) reallyclean
+	-@if [ -f res-rsa/Makefile ]; then \
+		cd res-rsa; echo "	cd res-rsa; make reallyclean"; \
+		$(MAKE) reallyclean; \
+	fi
+	rm -f make.out cflags.h config.cache config.log *~ null #*#
+
+distclean: clean reallyclean rmdependencies
+
+maintainer-clean: distclean
+	@echo 'This command is intended for maintainers to use; it'
+	@echo 'deletes files that may need special tools to rebuild.'
+	rm -f Makefile */Makefile */*/Makefile
+	rm -rf */.depend
+	rm -rf autom4te.cache conf*.dir
+	rm -f config.* configure libtool ltmain.sh aclocal.m4 system.mk
+	rm -f docs/sample_sysdef
+
+installbin: all
+	@cd ntserv;    $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd robots;    $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd robotd;    $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd newstartd; $(MAKE) install DESTDIR=$(DESTDIR)
+	-@if [ -f res-rsa/Makefile ]; then \
+		cd res-rsa; echo "	cd res-rsa; make install"; $(MAKE) install DESTDIR=$(DESTDIR); \
+	fi
+	@cd tools;     $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd tools/admin; $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd keycomp;   $(MAKE) install DESTDIR=$(DESTDIR)
+	@cd sequencer; $(MAKE) install DESTDIR=$(DESTDIR)
+
+install: installbin
+	mkdir -p $(DESTDIR)$(LIBDIR) $(DESTDIR)$(BINDIR) $(DESTDIR)$(SYSCONFDIR) $(DESTDIR)$(LOCALSTATEDIR)
+	cd docs;   $(MAKE) install DESTDIR=$(DESTDIR)
+	@echo
+	@echo "netrek-server-vanilla installation complete."
+	@echo "start the server with $(BINDIR)/netrekd"
+	@echo "then start a client to try it out."
+
+rmdependencies:
+	@cd ntserv;    $(MAKE) rmdependencies
+	@cd robots;    $(MAKE) rmdependencies
+	@cd newstartd; $(MAKE) rmdependencies
+	@cd tools;     $(MAKE) rmdependencies
+	@cd keycomp;   $(MAKE) rmdependencies
+	@cd sequencer; $(MAKE) rmdependencies
+	-@if [ -f res-rsa/Makefile ]; then \
+		cd res-rsa; echo "      cd res-rsa; make rmdependencies"; \
+		$(MAKE) rmdependencies; \
+	fi
+
+NAME=$(PACKAGE)-$(VERSION)
+dist:
+	mkdir $(NAME)
+        # what has changed
+	cp -p ChangeLog NEWS $(NAME)/
+        # what needs to change
+	cp -p BUGS PROJECTS $(NAME)/
+        # top level documentation
+	cp -p INSTALL INSTALL.INL INSTALL.Newbie README.md \
+	README.developers README.releasing CHANGES $(NAME)/
+        # configuration
+	cp -p configure.in Makefile.in system.mk.in configure config.sub \
+	config.guess install-sh ltmain.sh aclocal.m4 $(NAME)/
+        # subdirectories
+	cp -rp docs include keycomp motd newstartd ntserv php \
+	pledit robotd robots sequencer tools xsg $(NAME)/
+        # strip out surplus
+	rm -rf $(NAME)/*/CVS $(NAME)/*/*/CVS
+	rm -rf $(NAME)/.cvsignore $(NAME)/*/.cvsignore
+	rm -rf $(NAME)/*/.deps $(NAME)/*~ $(NAME)/*/*~
+        # build
+	GZIP=--best tar cfz $(NAME).tar.gz $(NAME)
+	rm -rf $(NAME)
+
+dist-minimal:
+	mkdir $(NAME)-minimal
+        # what has changed
+	cp -p ChangeLog NEWS $(NAME)-minimal/
+        # top level documentation
+	cp -p INSTALL INSTALL.INL INSTALL.Newbie INSTALL.RSA README \
+	README.developers $(NAME)-minimal/
+        # configuration
+	cp -p configure.in Makefile.in system.mk.in configure install-sh \
+	$(NAME)-minimal/
+        # subdirectories
+	cp -rp docs include keycomp newstartd ntserv res-rsa robots robotd \
+	$(NAME)-minimal/
+        # strip out surplus
+	rm -rf $(NAME)-minimal/*/CVS $(NAME)-minimal/*/*/CVS
+	rm -rf $(NAME)-minimal/.cvsignore $(NAME)-minimal/*/.cvsignore
+	rm -rf $(NAME)-minimal/*/.deps $(NAME)-minimal/*~ $(NAME)-minimal/*/*~
+        # build
+	GZIP=--best tar cfz $(NAME)-minimal.tar.gz $(NAME)-minimal
+	rm -rf $(NAME)-minimal
+
+#
+# Maintainer's Debian packaging section
+#
+DEBIAN_VERSION=$(shell head -1 debian/changelog|cut -f2 -d\(|cut -f1 -d\))
+DEBIAN_PACKAGE=$(shell head -1 debian/changelog|cut -f1 -d\ )
+DEBIAN_ARCHIVE=~/public_html/external/mine/netrek
+
+source-package:
+	fakeroot dpkg-buildpackage -S -us -uc -I_darcs
+
+package:
+	fakeroot dpkg-buildpackage -us -uc -I_darcs
+
+upload:
+	mv ../$(DEBIAN_PACKAGE)_$(DEBIAN_VERSION)*{.dsc,.changes,.tar.gz,.deb} $(DEBIAN_ARCHIVE)
+
+update:
+	(cd $(DEBIAN_ARCHIVE);make)
+
+release: package upload update
+

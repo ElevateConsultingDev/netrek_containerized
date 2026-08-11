@@ -1,0 +1,20 @@
+developers
+
+http://james.tooraweenah.com/darcs/netrek-client-cow/
+http://sethwklein.net/projects/netrek/darcs/netrek-client-cow/
+http://www.ninjatronics.com/darcs/netrek-client-cow/
+http://netrek.warped.us/netrek-client-cow/
+
+project
+
+http://www.netrek.org/repos/netrek-client-cow/
+
+mirror (synced with http://james.tooraweenah.com/darcs/netrek-client-cow/)
+
+private push targets
+
+quozl@giskard.tooraweenah.com:/var/www/tooraweenah.com/james/darcs/netrek-client-cow
+
+web references
+
+http://james.tooraweenah.com/cgi-bin/darcs.cgi/netrek-client-cow/?c=patches
