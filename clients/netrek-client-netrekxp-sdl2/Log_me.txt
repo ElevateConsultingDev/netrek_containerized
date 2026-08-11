@@ -1,0 +1,68 @@
+Server sending PING packets at 2 second intervals 16:41:37
+Welcome aboard Ensign! 16:41:39
+Sending short packet request 16:41:39
+16:41:39: Merlin->ALL Robot Vanquisher (R8) was ejected to make room for a human player.
+16:41:39: Ceti Alpha V->FED We are being attacked by Wrecker Rj who is 47% damaged.
+16:41:39:  R8->ALL  Ensign Vanquisher (R8) leaving game (robot!@566ce22825a4)
+16:41:39: Rigel->FED We are being attacked by Blaster Rg who is 39% damaged.
+16:41:39:  F0->ALL  Ensign guest is now F0 (guest@192.168.127.1)
+Sending variable and short packets.  16:41:39
+UDP connection established 16:41:39
+Sent request for small update (weapons+planets+kills) 16:41:39
+16:41:39:  F0->F0   @Netrek XP 2010 1.0
+16:41:44: Rigel->FED We are being attacked by Blaster (Rg) who is 63% damaged.
+UDP link severed 16:41:45
+16:41:50: Beta Crucis->FED We are being attacked by Shredder (Rl) who is 30% damaged.
+Phaser missed!!! [0%] 16:41:50
+Phaser missed!!! [0%] 16:41:52
+16:41:55: Beta Crucis->FED We are being attacked by Smasher (Rh) who is 52% damaged.
+Phaser burst hit Exiler (Re) for 18 points [ 33%] [ 6] 16:41:59
+Locking onto Exiler (Re) 16:42:06
+Phaser burst hit Exiler (Re) for 11 points [ 50%] [ 7] 16:42:08
+16:42:09: Rigel->FED We are being attacked by Despoiler (Rc) who is 1% damaged.
+Phaser burst hit Exiler (Re) for 24 points [ 60%] [10] 16:42:11
+16:42:13: Alpha Centauri->FED We are being attacked by Wrecker (Rj) who is 39% damaged.
+16:42:14: Rigel->FED We are being attacked by Despoiler (Rc) who is 9% damaged.
+Locking onto Exiler (Re) 16:42:17
+16:42:18: Alpha Centauri->FED We are being attacked by Wrecker (Rj) who is 59% damaged.
+16:42:18: Altair->FED We are being attacked by Exiler (Re) who is 41% damaged.
+Locking onto Altair 16:42:19
+16:42:23: GOD->ALL Exiler (BB) (Re) was kill 1.01 for guest (F0) [photon]
+Phaser burst hit Blaster (Rg) for 48 points [ 66%] [16] 16:42:29
+16:42:31: GOD->ALL guest (CA) (F0) was kill 1.44 for Blaster (Rg) [phaser]
+16:42:31: GOD->ALL Blaster (CA) (Rg) was kill 1.60 for Emasculator (Ff) [photon]
+Server sending PING packets at 2 second intervals 17:43:21
+Welcome aboard Ensign! 17:43:23
+Sending short packet request 17:43:23
+Sending variable and short packets.  17:43:23
+Sent request for small update (weapons+planets+kills) 17:43:23
+UDP connection established 17:43:23
+17:43:23: Merlin->ALL Robot Eliminator (F9) was ejected to make room for a human player.
+17:43:23:  F0->ALL  Ensign guest is now F0 (guest@192.168.127.1)
+17:43:23:  F0->F0   @Netrek XP 2010 1.0
+17:43:23:  F9->ALL  Ensign Eliminator (F9) leaving game (robot!@566ce22825a4)
+UDP link severed 17:43:25
+17:43:35: GOD->ALL Demoralizer (SC) (Ra) was kill 1.00 for Ravager (Fd) [phaser]
+17:43:35: GOD->ALL Ravager (DD) (Fd) was kill 1.10 for Demoralizer (Ra) [photon]
+Locking onto Canopus 17:43:37
+17:43:39: Beta Crucis->FED We are being attacked by Despoiler (Rc) who is 2% damaged.
+17:43:41: GOD->ALL Emasculator (SC) (Ff) was kill 1.00 for Vanquisher (R8) [photon]
+Phaser burst hit Vanquisher (R8) for 36 points [100%] [36] 17:43:43
+Phaser missed!!! [50%] 17:43:44
+Phaser burst hit Vanquisher (R8) for 39 points [ 66%] [25] 17:43:45
+Phaser burst hit Vanquisher (R8) for 38 points [ 75%] [28] 17:43:46
+17:43:47: GOD->ALL Vanquisher (BB) (R8) was kill 1.10 for guest (F0) [phaser]
+17:43:47: GOD->ALL guest (CA) (F0) was kill 2.10 for Vanquisher (R8) [photon]
+17:44:07: Vega->FED We are being attacked by Despoiler (Rc) who is 2% damaged.
+Welcome aboard Ensign! 17:44:07
+17:44:12: Earth->FED We are being attacked by Demoralizer (Ra) who is 2% damaged.
+17:44:13: GOD->ALL Emasculator (SC) (Ff) was kill 2.11 for Shredder (Rl) [phaser]
+17:44:15: GOD->ALL Ravager (SC) (Fd) was kill 3.11 for Shredder (Rl) [phaser]
+Phaser burst hit Demoralizer (Ra) for 24 points [ 80%] [27] 17:44:16
+17:44:16: GOD->ALL Demoralizer (SC) (Ra) was kill 1.00 for Emasculator (Ff) [phaser]
+17:44:16: GOD->ALL Emasculator (CA) (Ff) was kill 2.25 for Exiler (Re) [photon]
+Locking onto Earth 17:44:21
+17:44:34: Beta Crucis->FED We are being attacked by Exiler (Re) who is 2% damaged.
+17:44:38: GOD->ALL Decimator (CA) (Fk) was kill 2.13 for Smasher (Rh) [phaser]
+17:44:49: GOD->ALL Vanquisher (BB) (R8) was kill 2.00 for Obliterator (Fi) [phaser]
+17:44:56: GOD->ALL guest (CA) (F0) was kill 1.12 for Despoiler (Rc) [photon]

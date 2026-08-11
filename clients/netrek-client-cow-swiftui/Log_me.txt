@@ -1,0 +1,243 @@
+Server sending PING packets at 2 second intervals 13:45:32
+I cannot allow that.  Pick another team 13:45:34
+Welcome aboard Ensign! 13:45:36
+Sending short packet request 13:45:36
+Sending variable and short packets.  13:45:36
+Sent request for small update (weapons+planets+kills) 13:45:36
+13:45:36: Merlin->ALL Robot Vanquisher (R8) was ejected to make room for a human player.
+13:45:36: GOD->ALL Despoiler (SC) (Rc) was kill 2.61 for Obliterator (Fi) [photon]
+13:45:36:  R8->ALL  Commander Vanquisher (R8) leaving game (robot!@566ce22825a4)
+13:45:36: GOD->ALL Decimator (DD) (Fk) was kill 2.13 for Smasher (Rh) [phaser]
+13:45:36:  R0->ALL  Ensign guest is now R0 (guest@192.168.127.1)
+13:45:36:  R0->R0   @netrek-client-cow 3.3.2
+UDP link severed 13:45:47
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:48
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:48
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:48
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:48
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:48
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+Our computers limit us to having 8 live torpedos at a time captain! 13:45:49
+13:45:53: GOD->ALL Shredder (SC) (Rl) was kill 1.00 for Eliminator (F9) [phaser]
+13:45:56: GOD->ALL Blaster (SC) (Rg) was kill 2.00 for Eliminator (F9) [phaser]
+13:45:58: GOD->ALL Demoralizer (SC) (Ra) was kill 3.00 for Eliminator (F9) [phaser]
+13:45:59: GOD->ALL Exiler (SC) (Re) was kill 4.00 for Eliminator (F9) [phaser]
+13:46:00: GOD->ALL Eliminator (CA) (F9) was kill 1.40 for Exiler (Re) [explosion]
+13:46:08: Capella->ROM We are being attacked by Emasculator (Ff) who is 2% damaged.
+13:46:14: GOD->ALL Shredder (SC) (Rl) was kill 1.00 for Banisher (Fb) [phaser]
+Our computers limit us to having 8 live torpedos at a time captain! 13:46:16
+Our computers limit us to having 8 live torpedos at a time captain! 13:46:16
+13:46:21: GOD->ALL Wrecker (CA) (Rj) was kill 1.00 for Eliminator (F9) [photon]
+13:46:21: GOD->ALL Eliminator (BB) (F9) was kill 1.16 for Wrecker (Rj) [photon]
+13:46:24: GOD->ALL Blaster (SC) (Rg) was kill 2.20 for Eradicator (Fm) [photon]
+Locking onto Tauri 13:46:25
+Locking onto Tauri 13:46:28
+Locking onto Tauri 13:46:29
+Locking onto Tauri 13:46:30
+Locking onto Tauri 13:46:35
+13:46:42: Alpha Centauri->ROM We are being attacked by Eradicator (Fm) who is 2% damaged.
+13:46:43: GOD->ALL Shredder (CA) (Rl) was kill 2.00 for Ravager (Fd) [phaser]
+13:46:43: GOD->ALL Ravager (BB) (Fd) was kill 1.20 for Demoralizer (Ra) [photon]
+Self destruct initiated 13:46:44
+Server sending PING packets at 2 second intervals 13:53:43
+I cannot allow that.  Pick another team 13:53:47
+I cannot allow that.  Pick another team 13:53:47
+Welcome aboard Ensign! 13:53:48
+Sending short packet request 13:53:48
+Sending variable and short packets.  13:53:48
+Sent request for small update (weapons+planets+kills) 13:53:48
+13:53:48: Merlin->ALL Robot Annihilator (R8) was ejected to make room for a human player.
+13:53:48:  R8->ALL  Ensign Annihilator (R8) leaving game (robot!@566ce22825a4)
+13:53:48: GOD->ALL Wrecker (DD) (Rj) was kill 2.22 for Emasculator (Ff) [phaser]
+13:53:48:  F0->ALL  Ensign guest is now F0 (guest@192.168.127.1)
+13:53:48:  F0->F0   @netrek-client-cow 3.3.2
+13:53:51: GOD->ALL Smasher (DD) (Rh) was kill 3.22 for Emasculator (Ff) [phaser]
+13:53:52: GOD->ALL Emasculator (CA) (Ff) was kill 1.32 for Smasher (Rh) [explosion]
+13:53:52: GOD->ALL Eradicator (SC) (Fm) was kill 3.22 for Emasculator (Ff) [chain explosi
+13:53:52: GOD->ALL    Credit for Fm awarded to Smasher (Rh), kill 2.43
+13:53:52: GOD->ALL Ravager (SC) (Fd) was kill 2.04 for Eradicator (Fm) [explosion]
+13:53:59: Vega->FED We are being attacked by Despoiler (Rc) who is 2% damaged.
+UDP link severed 13:54:13
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:14
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:20
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:20
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:21
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:21
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:21
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:21
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+13:54:22: GOD->ALL Blaster (CA) (Rg) was kill 1.00 for Emasculator (Ff) [phaser]
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:22
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:23
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:23
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:23
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:23
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:23
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:23
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:23
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:23
+13:54:23: GOD->ALL guest (CA) (F0) was kill 1.00 for Demoralizer (Ra) [photon]
+Welcome aboard Ensign! 13:54:28
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:30
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:30
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:30
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:30
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:30
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+13:54:31: Merlin->ALL Welcome to the Newbie Server.
+13:54:31: Merlin->ALL See http://genocide.netrek.org/beginner/newbie.php
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:31
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:34
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:34
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:34
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:34
+Our computers limit us to having 8 live torpedos at a time captain! 13:54:34
+13:54:34: GOD->ALL guest (CA) (F0) was kill 1.00 for Shredder (Rl) [photon]
+Server sending PING packets at 2 second intervals 14:16:11
+Welcome aboard Ensign! 14:16:13
+Sending short packet request 14:16:13
+Sending variable and short packets.  14:16:13
+Sent request for small update (weapons+planets+kills) 14:16:13
+14:16:13: Merlin->ALL Robot Eliminator (F9) was ejected to make room for a human player.
+14:16:13:  F9->ALL  Commander Eliminator (F9) leaving game (robot!@566ce22825a4)
+14:16:13: GOD->ALL  The Federation has 4 minutes remaining.
+14:16:13:  F0->ALL  Ensign guest is now F0 (guest@192.168.127.1)
+14:16:13:  F0->F0   @netrek-client-cow 3.3.2
+14:16:17: GOD->ALL Smasher (CA) (Rh) was kill 1.00 for Banisher (Fb) [phaser]
+14:16:21: GOD->ALL guest (CA) (F0) was kill 1.00 for Shredder (Rl) [phaser]
+Server sending PING packets at 2 second intervals 14:17:28
+Welcome aboard Ensign! 14:17:37
+Sending short packet request 14:17:37
+Sending variable and short packets.  14:17:37
+Sent request for small update (weapons+planets+kills) 14:17:37
+14:17:37: Merlin->ALL Robot Eliminator (F9) was ejected to make room for a human player.
+14:17:37: Merlin->ALL Robot Annihilator (R8) was ejected to make room for a human player.
+14:17:37:  F9->ALL  Commander Eliminator (F9) leaving game (robot!@566ce22825a4)
+14:17:37:  R8->ALL  Ensign Annihilator (R8) leaving game (robot!@566ce22825a4)
+14:17:37:  F8->ALL  Commander Eliminator is now F8 (robot!@566ce22825a4)
+14:17:37: GOD->ALL Wrecker (CA) (Rj) was kill 1.10 for Emasculator (Ff) [photon]
+14:17:37: GOD->ALL Blaster (DD) (Rg) was kill 2.09 for Emasculator (Ff) [phaser]
+14:17:37:  F0->ALL  Ensign guest is now F0 (guest@192.168.127.1)
+14:17:37:  F0->F0   @netrek-client-cow 3.3.2
+14:17:40: GOD->ALL Eliminator (CA) (F8) was kill 1.00 for Smasher (Rh) [phaser]
+14:17:50: GOD->ALL Eradicator (BB) (Fm) was kill 1.12 for Exiler (Re) [phaser]
+14:17:50: GOD->ALL Exiler (BB) (Re) was kill 2.36 for Eradicator (Fm) [phaser]
+14:17:51: GOD->ALL guest (CA) (F0) was kill 1.00 for Despoiler (Rc) [phaser]
+Lost connection to server, your only option is to quit and try again. 14:20:38
+Server sending PING packets at 2 second intervals 14:22:09
+Welcome aboard Ensign! 14:22:12
+Sending short packet request 14:22:12
+Sending variable and short packets.  14:22:12
+Sent request for small update (weapons+planets+kills) 14:22:12
+14:22:12: Merlin->ALL Robot Annihilator (R9) was ejected to make room for a human player.
+14:22:12:  R9->ALL  Ensign Annihilator (R9) leaving game (robot!@566ce22825a4)
+14:22:12:  F0->ALL  Ensign guest is now F0 (guest@192.168.127.1)
+14:22:12:  F0->F0   @netrek-client-cow 3.3.2
+14:22:13: Canopus->FED We are being attacked by Smasher (Rh) who is 2% damaged.
+14:22:13: Ceti Alpha V->FED We are being attacked by Exiler (Re) who is 2% damaged.
+14:22:18: Canopus->FED We are being attacked by Smasher (Rh) who is 19% damaged.
+14:22:18: Ceti Alpha V->FED We are being attacked by Exiler (Re) who is 17% damaged.
+14:22:23: Ceti Alpha V->FED We are being attacked by Exiler (Re) who is 27% damaged.
+14:22:28: Rigel->FED We are being attacked by Demoralizer (Ra) who is 51% damaged.
+14:22:33: Rigel->FED We are being attacked by Smasher (Rh) who is 17% damaged.
+Lost connection to server, your only option is to quit and try again. 14:22:45
+Server sending PING packets at 2 second intervals 14:32:31
+Welcome aboard Ensign! 14:32:41
+Sending short packet request 14:32:41
+Sending variable and short packets.  14:32:41
+Sent request for small update (weapons+planets+kills) 14:32:41
+14:32:41: Merlin->ALL Robot Eliminator (F8) was ejected to make room for a human player.
+14:32:41:  F8->ALL  Commander Eliminator (F8) leaving game (robot!@566ce22825a4)
+14:32:41: GOD->ALL Annihilator (CA) (R9) was kill 4.12 for Eradicator (Fm) [phaser]
+14:32:41: GOD->ALL Banisher (DD) (Fb) was kill 1.02 for Shredder (Rl) [photon]
+14:32:41: GOD->ALL Shredder (CA) (Rl) was kill 1.18 for Banisher (Fb) [photon]
+14:32:41:  F0->ALL  Ensign guest is now F0 (guest@192.168.127.1)
+14:32:41:  F0->F0   @netrek-client-cow 3.3.2
+14:32:45: GOD->ALL Decimator (SC) (Fk) was kill 2.43 for Exiler (Re) [phaser]
+14:32:49: GOD->ALL Blaster (DD) (Rg) was kill 1.00 for Obliterator (Fi) [phaser]
+14:32:56: GOD->ALL Emasculator (DD) (Ff) was kill 2.20 for Despoiler (Rc) [phaser]
+Lost connection to server, your only option is to quit and try again. 14:33:14
+Server sending PING packets at 2 second intervals 19:01:37
+Welcome aboard Ensign! 19:01:38
+Sending short packet request 19:01:38
+Sending variable and short packets.  19:01:38
+Sent request for small update (weapons+planets+kills) 19:01:38
+19:01:38:  Iv->ALL  It's 1:01am, time to die.
+19:01:38:  Iv->ALL  Ensign Merlin is now Iv (Robot@=Nowhere)
+19:01:38:  F8->ALL  Commander Eliminator is now F8 (robot!@566ce22825a4)
+19:01:38:  R9->ALL  Commander Decimator is now R9 (robot!@566ce22825a4)
+19:01:38:  Ra->ALL  Ensign Destroyer is now Ra (robot!@566ce22825a4)
+19:01:38:  Fb->ALL  Commander Emasculator is now Fb (robot!@566ce22825a4)
+19:01:38:  Rc->ALL  Commander Vanquisher is now Rc (robot!@566ce22825a4)
+19:01:38:  Fd->ALL  Commander Banisher is now Fd (robot!@566ce22825a4)
+19:01:38:  F0->ALL  Ensign guest is now F0 (guest@192.168.127.1)
+19:01:38:  F0->F0   @netrek-client-cow 3.3.2
+19:01:39:  Re->ALL  Commander Exiler is now Re (robot!@566ce22825a4)
+19:01:39: GOD->ALL  'Manifest Destiny' becomes motive in galactic superpower conflict!
+19:01:40:  Rf->ALL  Commander Despoiler is now Rf (robot!@566ce22825a4)
+19:01:41:  Fg->ALL  Commander Blaster is now Fg (robot!@566ce22825a4)
+19:01:42:  Rh->ALL  Commander Obliterator is now Rh (robot!@566ce22825a4)
+19:01:43:  Fi->ALL  Ensign Demolisher is now Fi (robot!@566ce22825a4)
+19:01:44:  Rj->ALL  Lt. Cmdr. Annihilator is now Rj (robot!@566ce22825a4)
+19:01:45:  Fk->ALL  Commander Ravager is now Fk (robot!@566ce22825a4)
+19:01:46:  Rl->ALL  Commander Smasher is now Rl (robot!@566ce22825a4)

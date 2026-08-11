@@ -1,0 +1,652 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 77;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		0AD6E31BFA24D7B4020961AE /* dmessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 63F1F1D6BE0F436408161ECF /* dmessage.c */; };
+		13D4E4C2D0B3BF50850A6B60 /* data.c in Sources */ = {isa = PBXBuildFile; fileRef = 9B26427DCC2D7FF8AA14D23F /* data.c */; };
+		15819913A349D4C2C4442DF1 /* parsemeta.c in Sources */ = {isa = PBXBuildFile; fileRef = 5FA7FE36CAD7659D5EEF6ECF /* parsemeta.c */; };
+		24FCD83E354A86519614CE73 /* NetrekApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD96858EC65117B756D6033 /* NetrekApp.swift */; };
+		2D6F9711EE8B40621D369E46 /* senddist.c in Sources */ = {isa = PBXBuildFile; fileRef = F564B75588E9893CEC7E918C /* senddist.c */; };
+		3055E373C92414F4891B444F /* macrowin.c in Sources */ = {isa = PBXBuildFile; fileRef = B4F7D632B3F4A75169FF1FC5 /* macrowin.c */; };
+		311F4F3F092F04B6853AF907 /* ping.c in Sources */ = {isa = PBXBuildFile; fileRef = 64916874C2CECE5235660C5A /* ping.c */; };
+		317B1F655D7A564456193AC6 /* enter.c in Sources */ = {isa = PBXBuildFile; fileRef = 071B3D0C83770EFA00BEF53D /* enter.c */; };
+		322D24A2361F2DFF21180644 /* defaults.c in Sources */ = {isa = PBXBuildFile; fileRef = E48AE9054679E14F08C58EA9 /* defaults.c */; };
+		38E1D773E5B3A53619DFC138 /* swiftuiwindow.c in Sources */ = {isa = PBXBuildFile; fileRef = DB4C868EA4787CC3469A7B3B /* swiftuiwindow.c */; };
+		3A563AD0E80D62C2D878CFD7 /* PixelBufferView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 946192CB5737A3C83BB35322 /* PixelBufferView.swift */; };
+		45FF0F5BD4B78364EFB13198 /* lagmeter.c in Sources */ = {isa = PBXBuildFile; fileRef = 33266D15D92C9DACC6CD00A9 /* lagmeter.c */; };
+		46A9E5E4F335EBC16F7977B9 /* docwin.c in Sources */ = {isa = PBXBuildFile; fileRef = 6C86AD0E9C59F66125DEDF36 /* docwin.c */; };
+		494519D54D76A8179FF613A9 /* playerlist.c in Sources */ = {isa = PBXBuildFile; fileRef = 3A81EA5636937E51B5B9572B /* playerlist.c */; };
+		49879798BA07FF3D34382477 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E9B21A69B6A0B2FB05FCF31 /* ContentView.swift */; };
+		499079D5DF808DF8A14F9AB0 /* swiftuisprite.c in Sources */ = {isa = PBXBuildFile; fileRef = 179F0797A5EBD22DAB506E38 /* swiftuisprite.c */; };
+		512857D8C955C74BFBA75756 /* check.c in Sources */ = {isa = PBXBuildFile; fileRef = 407E6B0F19ECE3ABFA9BDBFA /* check.c */; };
+		658C704B5E4534AAE7FEF055 /* sound_stubs.c in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA88471608019B7869CE4D /* sound_stubs.c */; };
+		68B1D723F255620EA6E719D8 /* newwin.c in Sources */ = {isa = PBXBuildFile; fileRef = 79ABB4A73B1002AC55343844 /* newwin.c */; };
+		69F0B1BE8FEDAD94A915BBDA /* findslot.c in Sources */ = {isa = PBXBuildFile; fileRef = 71E47BF19FBAF1566270F128 /* findslot.c */; };
+		6AF331CBFAC9CFD6CE9365C5 /* EngineController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 710FC3FCD2AFBC26A32B7FFC /* EngineController.swift */; };
+		6F4A4BE78498DE098AC8FBA6 /* ranklist.c in Sources */ = {isa = PBXBuildFile; fileRef = D67501B0A071BF7961AA58E7 /* ranklist.c */; };
+		7082203E76A200EBEE16959B /* socket.c in Sources */ = {isa = PBXBuildFile; fileRef = 9B78F823F645AE07D57E1E31 /* socket.c */; };
+		737EBA411D05CE0ADD674263 /* dashboard.c in Sources */ = {isa = PBXBuildFile; fileRef = 540E89425019D64A3CE71419 /* dashboard.c */; };
+		742DA5466EEF8EF386458679 /* smessage.c in Sources */ = {isa = PBXBuildFile; fileRef = 3369F7A57BCCC607A7BA3808 /* smessage.c */; };
+		7499D59F582BB6A02095983F /* short.c in Sources */ = {isa = PBXBuildFile; fileRef = 524354DDEC4645C1E4385E5E /* short.c */; };
+		758E151904747A1857CA2B02 /* cowmain.c in Sources */ = {isa = PBXBuildFile; fileRef = CD98818113B3592C8A4E2712 /* cowmain.c */; };
+		79FC9804AC900DAB93A74C04 /* inform.c in Sources */ = {isa = PBXBuildFile; fileRef = 83240E97744619F0A5E9C82A /* inform.c */; };
+		7E64330E569AFF18345AEA76 /* redraw.c in Sources */ = {isa = PBXBuildFile; fileRef = FEEE0FB7D7720BEAFD01055A /* redraw.c */; };
+		816495BC6BB1999AB544FD05 /* defwin.c in Sources */ = {isa = PBXBuildFile; fileRef = 2F20A4B5644E56D052FADE56 /* defwin.c */; };
+		84EF8982303C6726359505BA /* dashboard3.c in Sources */ = {isa = PBXBuildFile; fileRef = 179BE80C345B7AD056E43EF1 /* dashboard3.c */; };
+		87C7BF8D90D42553219E7177 /* censor.c in Sources */ = {isa = PBXBuildFile; fileRef = 97A616E5D9B055AF38046CA8 /* censor.c */; };
+		9256A62F2D8F4E62A2FEAF9D /* war.c in Sources */ = {isa = PBXBuildFile; fileRef = 42C7EE854D18CCE9DA0E6C2B /* war.c */; };
+		9D45B40155AD71CEB685E9A7 /* reserved.c in Sources */ = {isa = PBXBuildFile; fileRef = 77DE9664A070FE3D4C78124B /* reserved.c */; };
+		9E5E261CA326665B2812AC11 /* death.c in Sources */ = {isa = PBXBuildFile; fileRef = 54E86AED420C57941A16AC4F /* death.c */; };
+		A088FE4E35A97B2FAB090F16 /* planetlist.c in Sources */ = {isa = PBXBuildFile; fileRef = 6A58696E4441E75921518F0E /* planetlist.c */; };
+		A196EFB3B2C184627D17C932 /* getname.c in Sources */ = {isa = PBXBuildFile; fileRef = 758AA9BDEB1833F3FD805DDD /* getname.c */; };
+		A2565F04FEAE3A2ECF7E5071 /* util.c in Sources */ = {isa = PBXBuildFile; fileRef = 2CEF3EA056B2D5F895098FF1 /* util.c */; };
+		A2752BCC94E4F303120A7D26 /* distress.c in Sources */ = {isa = PBXBuildFile; fileRef = FF7F8F9DCFFA562D9911C298 /* distress.c */; };
+		A6A189B443FC09B0B8894D39 /* pingstats.c in Sources */ = {isa = PBXBuildFile; fileRef = 528D827072E4F9C659A32B4B /* pingstats.c */; };
+		AE26B24F66727EA202A9D038 /* interface.c in Sources */ = {isa = PBXBuildFile; fileRef = D08DA7C24F7BB26F7FE6F912 /* interface.c */; };
+		B0801EC28ECB0C66E446D293 /* string_util.c in Sources */ = {isa = PBXBuildFile; fileRef = 8C1EB4556DCE1F41CC547ADF /* string_util.c */; };
+		B303F6D363567F23E8F47994 /* getship.c in Sources */ = {isa = PBXBuildFile; fileRef = 39A79E3693FFADB45F8D49C1 /* getship.c */; };
+		BB5459E0C02CA84EB0161E16 /* netstat.c in Sources */ = {isa = PBXBuildFile; fileRef = 02C4A99D6BEE6F8A96DAB51D /* netstat.c */; };
+		BB691689975915AF7EBBF59E /* feature.c in Sources */ = {isa = PBXBuildFile; fileRef = 68DE8B3D64BCD996FBD5651B /* feature.c */; };
+		BBC61F0DE70051CF755A6134 /* input.c in Sources */ = {isa = PBXBuildFile; fileRef = 7446B9D2A8085CE4F53A0EB7 /* input.c */; };
+		BC06D1EE551F09A699082C34 /* spopt.c in Sources */ = {isa = PBXBuildFile; fileRef = B7DD1166E52A2FC8C7C76CEC /* spopt.c */; };
+		BDEA9B0A20E19668EC08959E /* warning.c in Sources */ = {isa = PBXBuildFile; fileRef = 6AC43B546E6F56AF92FA4FD7 /* warning.c */; };
+		C61443777CFA6E43B577D0FB /* option.c in Sources */ = {isa = PBXBuildFile; fileRef = 4CC217BB485C9EBB7F02E188 /* option.c */; };
+		C6889C18694A960BCC8F75C2 /* tools.c in Sources */ = {isa = PBXBuildFile; fileRef = 713B17E964B3F4D34ACB51FB /* tools.c */; };
+		C7295ED11F021C214473BC4F /* stats.c in Sources */ = {isa = PBXBuildFile; fileRef = 6BBD1EB04D331030565639DA /* stats.c */; };
+		CBDA6EE87E9D699955B8C680 /* colors.c in Sources */ = {isa = PBXBuildFile; fileRef = 0DF663A4CE8ECB812D38797D /* colors.c */; };
+		D01C1532FCF11167E11ECDCE /* netstatopt.c in Sources */ = {isa = PBXBuildFile; fileRef = 253F5AF10C6D6EE9B5A0947C /* netstatopt.c */; };
+		D187A7D7B5F9ABF17483A6B2 /* local.c in Sources */ = {isa = PBXBuildFile; fileRef = 2D4F47E2D4424A6C2D1D3EEA /* local.c */; };
+		D46B4C4EFDEB7861B4309E8C /* beeplite.c in Sources */ = {isa = PBXBuildFile; fileRef = 3EEA7D1DDF5A744DB7A38C81 /* beeplite.c */; };
+		DC1FC7E64AC4C40826F41922 /* playback.c in Sources */ = {isa = PBXBuildFile; fileRef = 284C47CA1457AFE33D11EB5B /* playback.c */; };
+		DD93B4A3729DADFB78FD1639 /* myf.c in Sources */ = {isa = PBXBuildFile; fileRef = B3279853BE25053781D7ABC1 /* myf.c */; };
+		DFF6076A1590CEF853864B0C /* helpwin.c in Sources */ = {isa = PBXBuildFile; fileRef = 752C4913B062F893CF1B74A2 /* helpwin.c */; };
+		E681E3D7F740D4D3A24ABBD9 /* map.c in Sources */ = {isa = PBXBuildFile; fileRef = EF2A42929A0BBEC528E41413 /* map.c */; };
+		EA459606448C1E441795AD8D /* rotate.c in Sources */ = {isa = PBXBuildFile; fileRef = E02A01ADD1E32A91A2F9682F /* rotate.c */; };
+		EBC47B2504C7C74F56D02C8E /* udpopt.c in Sources */ = {isa = PBXBuildFile; fileRef = B3405C3361A980E53F317D40 /* udpopt.c */; };
+		ECC26A35A981CA914F90BE6E /* sintab.c in Sources */ = {isa = PBXBuildFile; fileRef = A0038FDAE474723117DF1E79 /* sintab.c */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		02C4A99D6BEE6F8A96DAB51D /* netstat.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = netstat.c; sourceTree = "<group>"; };
+		071B3D0C83770EFA00BEF53D /* enter.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = enter.c; sourceTree = "<group>"; };
+		0DF663A4CE8ECB812D38797D /* colors.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = colors.c; sourceTree = "<group>"; };
+		0E9B21A69B6A0B2FB05FCF31 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		179BE80C345B7AD056E43EF1 /* dashboard3.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dashboard3.c; sourceTree = "<group>"; };
+		179F0797A5EBD22DAB506E38 /* swiftuisprite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = swiftuisprite.c; sourceTree = "<group>"; };
+		253F5AF10C6D6EE9B5A0947C /* netstatopt.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = netstatopt.c; sourceTree = "<group>"; };
+		284C47CA1457AFE33D11EB5B /* playback.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = playback.c; sourceTree = "<group>"; };
+		2CBA88471608019B7869CE4D /* sound_stubs.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sound_stubs.c; sourceTree = "<group>"; };
+		2CEF3EA056B2D5F895098FF1 /* util.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = util.c; sourceTree = "<group>"; };
+		2D4F47E2D4424A6C2D1D3EEA /* local.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = local.c; sourceTree = "<group>"; };
+		2F20A4B5644E56D052FADE56 /* defwin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = defwin.c; sourceTree = "<group>"; };
+		33266D15D92C9DACC6CD00A9 /* lagmeter.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = lagmeter.c; sourceTree = "<group>"; };
+		3369F7A57BCCC607A7BA3808 /* smessage.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = smessage.c; sourceTree = "<group>"; };
+		39A79E3693FFADB45F8D49C1 /* getship.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = getship.c; sourceTree = "<group>"; };
+		3A81EA5636937E51B5B9572B /* playerlist.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = playerlist.c; sourceTree = "<group>"; };
+		3EEA7D1DDF5A744DB7A38C81 /* beeplite.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = beeplite.c; sourceTree = "<group>"; };
+		407E6B0F19ECE3ABFA9BDBFA /* check.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = check.c; sourceTree = "<group>"; };
+		42C7EE854D18CCE9DA0E6C2B /* war.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = war.c; sourceTree = "<group>"; };
+		47C5ABC98FCC0F090BD6586E /* NetrekSwiftUI.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NetrekSwiftUI.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		4CC217BB485C9EBB7F02E188 /* option.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = option.c; sourceTree = "<group>"; };
+		524354DDEC4645C1E4385E5E /* short.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = short.c; sourceTree = "<group>"; };
+		528D827072E4F9C659A32B4B /* pingstats.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = pingstats.c; sourceTree = "<group>"; };
+		540E89425019D64A3CE71419 /* dashboard.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dashboard.c; sourceTree = "<group>"; };
+		54E86AED420C57941A16AC4F /* death.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = death.c; sourceTree = "<group>"; };
+		5FA7FE36CAD7659D5EEF6ECF /* parsemeta.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = parsemeta.c; sourceTree = "<group>"; };
+		63F1F1D6BE0F436408161ECF /* dmessage.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = dmessage.c; sourceTree = "<group>"; };
+		64916874C2CECE5235660C5A /* ping.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ping.c; sourceTree = "<group>"; };
+		68DE8B3D64BCD996FBD5651B /* feature.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = feature.c; sourceTree = "<group>"; };
+		6A58696E4441E75921518F0E /* planetlist.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = planetlist.c; sourceTree = "<group>"; };
+		6AC43B546E6F56AF92FA4FD7 /* warning.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = warning.c; sourceTree = "<group>"; };
+		6BBD1EB04D331030565639DA /* stats.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = stats.c; sourceTree = "<group>"; };
+		6C86AD0E9C59F66125DEDF36 /* docwin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = docwin.c; sourceTree = "<group>"; };
+		710FC3FCD2AFBC26A32B7FFC /* EngineController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EngineController.swift; sourceTree = "<group>"; };
+		713B17E964B3F4D34ACB51FB /* tools.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = tools.c; sourceTree = "<group>"; };
+		71E47BF19FBAF1566270F128 /* findslot.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = findslot.c; sourceTree = "<group>"; };
+		7446B9D2A8085CE4F53A0EB7 /* input.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = input.c; sourceTree = "<group>"; };
+		752C4913B062F893CF1B74A2 /* helpwin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = helpwin.c; sourceTree = "<group>"; };
+		758AA9BDEB1833F3FD805DDD /* getname.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = getname.c; sourceTree = "<group>"; };
+		77DE9664A070FE3D4C78124B /* reserved.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = reserved.c; sourceTree = "<group>"; };
+		79ABB4A73B1002AC55343844 /* newwin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = newwin.c; sourceTree = "<group>"; };
+		83240E97744619F0A5E9C82A /* inform.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = inform.c; sourceTree = "<group>"; };
+		8C1EB4556DCE1F41CC547ADF /* string_util.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = string_util.c; sourceTree = "<group>"; };
+		946192CB5737A3C83BB35322 /* PixelBufferView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PixelBufferView.swift; sourceTree = "<group>"; };
+		97A616E5D9B055AF38046CA8 /* censor.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = censor.c; sourceTree = "<group>"; };
+		9B26427DCC2D7FF8AA14D23F /* data.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = data.c; sourceTree = "<group>"; };
+		9B78F823F645AE07D57E1E31 /* socket.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = socket.c; sourceTree = "<group>"; };
+		9FD96858EC65117B756D6033 /* NetrekApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetrekApp.swift; sourceTree = "<group>"; };
+		A0038FDAE474723117DF1E79 /* sintab.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = sintab.c; sourceTree = "<group>"; };
+		B3279853BE25053781D7ABC1 /* myf.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = myf.c; sourceTree = "<group>"; };
+		B3405C3361A980E53F317D40 /* udpopt.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = udpopt.c; sourceTree = "<group>"; };
+		B4F7D632B3F4A75169FF1FC5 /* macrowin.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = macrowin.c; sourceTree = "<group>"; };
+		B7DD1166E52A2FC8C7C76CEC /* spopt.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = spopt.c; sourceTree = "<group>"; };
+		CD98818113B3592C8A4E2712 /* cowmain.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = cowmain.c; sourceTree = "<group>"; };
+		D08DA7C24F7BB26F7FE6F912 /* interface.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = interface.c; sourceTree = "<group>"; };
+		D67501B0A071BF7961AA58E7 /* ranklist.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ranklist.c; sourceTree = "<group>"; };
+		DB4C868EA4787CC3469A7B3B /* swiftuiwindow.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = swiftuiwindow.c; sourceTree = "<group>"; };
+		E02A01ADD1E32A91A2F9682F /* rotate.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = rotate.c; sourceTree = "<group>"; };
+		E48AE9054679E14F08C58EA9 /* defaults.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = defaults.c; sourceTree = "<group>"; };
+		EF2A42929A0BBEC528E41413 /* map.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = map.c; sourceTree = "<group>"; };
+		F564B75588E9893CEC7E918C /* senddist.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = senddist.c; sourceTree = "<group>"; };
+		FEEE0FB7D7720BEAFD01055A /* redraw.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = redraw.c; sourceTree = "<group>"; };
+		FF7F8F9DCFFA562D9911C298 /* distress.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = distress.c; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXGroup section */
+		04BE3E62A57E1F9D4EA7ACDC /* netrek-client-cow */ = {
+			isa = PBXGroup;
+			children = (
+				3EEA7D1DDF5A744DB7A38C81 /* beeplite.c */,
+				97A616E5D9B055AF38046CA8 /* censor.c */,
+				407E6B0F19ECE3ABFA9BDBFA /* check.c */,
+				0DF663A4CE8ECB812D38797D /* colors.c */,
+				CD98818113B3592C8A4E2712 /* cowmain.c */,
+				540E89425019D64A3CE71419 /* dashboard.c */,
+				179BE80C345B7AD056E43EF1 /* dashboard3.c */,
+				9B26427DCC2D7FF8AA14D23F /* data.c */,
+				54E86AED420C57941A16AC4F /* death.c */,
+				E48AE9054679E14F08C58EA9 /* defaults.c */,
+				2F20A4B5644E56D052FADE56 /* defwin.c */,
+				FF7F8F9DCFFA562D9911C298 /* distress.c */,
+				63F1F1D6BE0F436408161ECF /* dmessage.c */,
+				6C86AD0E9C59F66125DEDF36 /* docwin.c */,
+				071B3D0C83770EFA00BEF53D /* enter.c */,
+				68DE8B3D64BCD996FBD5651B /* feature.c */,
+				71E47BF19FBAF1566270F128 /* findslot.c */,
+				758AA9BDEB1833F3FD805DDD /* getname.c */,
+				39A79E3693FFADB45F8D49C1 /* getship.c */,
+				752C4913B062F893CF1B74A2 /* helpwin.c */,
+				83240E97744619F0A5E9C82A /* inform.c */,
+				7446B9D2A8085CE4F53A0EB7 /* input.c */,
+				D08DA7C24F7BB26F7FE6F912 /* interface.c */,
+				33266D15D92C9DACC6CD00A9 /* lagmeter.c */,
+				2D4F47E2D4424A6C2D1D3EEA /* local.c */,
+				B4F7D632B3F4A75169FF1FC5 /* macrowin.c */,
+				EF2A42929A0BBEC528E41413 /* map.c */,
+				B3279853BE25053781D7ABC1 /* myf.c */,
+				02C4A99D6BEE6F8A96DAB51D /* netstat.c */,
+				253F5AF10C6D6EE9B5A0947C /* netstatopt.c */,
+				79ABB4A73B1002AC55343844 /* newwin.c */,
+				4CC217BB485C9EBB7F02E188 /* option.c */,
+				5FA7FE36CAD7659D5EEF6ECF /* parsemeta.c */,
+				64916874C2CECE5235660C5A /* ping.c */,
+				528D827072E4F9C659A32B4B /* pingstats.c */,
+				6A58696E4441E75921518F0E /* planetlist.c */,
+				284C47CA1457AFE33D11EB5B /* playback.c */,
+				3A81EA5636937E51B5B9572B /* playerlist.c */,
+				D67501B0A071BF7961AA58E7 /* ranklist.c */,
+				FEEE0FB7D7720BEAFD01055A /* redraw.c */,
+				77DE9664A070FE3D4C78124B /* reserved.c */,
+				E02A01ADD1E32A91A2F9682F /* rotate.c */,
+				F564B75588E9893CEC7E918C /* senddist.c */,
+				524354DDEC4645C1E4385E5E /* short.c */,
+				A0038FDAE474723117DF1E79 /* sintab.c */,
+				3369F7A57BCCC607A7BA3808 /* smessage.c */,
+				9B78F823F645AE07D57E1E31 /* socket.c */,
+				B7DD1166E52A2FC8C7C76CEC /* spopt.c */,
+				6BBD1EB04D331030565639DA /* stats.c */,
+				8C1EB4556DCE1F41CC547ADF /* string_util.c */,
+				713B17E964B3F4D34ACB51FB /* tools.c */,
+				B3405C3361A980E53F317D40 /* udpopt.c */,
+				2CEF3EA056B2D5F895098FF1 /* util.c */,
+				42C7EE854D18CCE9DA0E6C2B /* war.c */,
+				6AC43B546E6F56AF92FA4FD7 /* warning.c */,
+			);
+			path = "netrek-client-cow";
+			sourceTree = "<group>";
+		};
+		169445818E94CF4FB8712F94 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				946192CB5737A3C83BB35322 /* PixelBufferView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		1E050A7F2874211571858CA2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				47C5ABC98FCC0F090BD6586E /* NetrekSwiftUI.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		62AF9B22509921910605C2F8 = {
+			isa = PBXGroup;
+			children = (
+				7F6DEF5CD15E997F544FB438 /* netrek_containerized */,
+				B63C65F550DA89B5D4D2C139 /* NetrekSwiftUI */,
+				1E050A7F2874211571858CA2 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7133BFEAAF17780A314E1267 /* submodules */ = {
+			isa = PBXGroup;
+			children = (
+				04BE3E62A57E1F9D4EA7ACDC /* netrek-client-cow */,
+			);
+			path = submodules;
+			sourceTree = "<group>";
+		};
+		7F6DEF5CD15E997F544FB438 /* netrek_containerized */ = {
+			isa = PBXGroup;
+			children = (
+				7133BFEAAF17780A314E1267 /* submodules */,
+			);
+			name = netrek_containerized;
+			path = ../..;
+			sourceTree = "<group>";
+		};
+		B63C65F550DA89B5D4D2C139 /* NetrekSwiftUI */ = {
+			isa = PBXGroup;
+			children = (
+				EC023368161C55D14DC167BE /* App */,
+				B7731A01249E5222A304483C /* Bridge */,
+				F33F9E69B3E08A4909A1E7EE /* ViewModels */,
+				169445818E94CF4FB8712F94 /* Views */,
+			);
+			path = NetrekSwiftUI;
+			sourceTree = "<group>";
+		};
+		B7731A01249E5222A304483C /* Bridge */ = {
+			isa = PBXGroup;
+			children = (
+				2CBA88471608019B7869CE4D /* sound_stubs.c */,
+				179F0797A5EBD22DAB506E38 /* swiftuisprite.c */,
+				DB4C868EA4787CC3469A7B3B /* swiftuiwindow.c */,
+			);
+			path = Bridge;
+			sourceTree = "<group>";
+		};
+		EC023368161C55D14DC167BE /* App */ = {
+			isa = PBXGroup;
+			children = (
+				0E9B21A69B6A0B2FB05FCF31 /* ContentView.swift */,
+				9FD96858EC65117B756D6033 /* NetrekApp.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		F33F9E69B3E08A4909A1E7EE /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				710FC3FCD2AFBC26A32B7FFC /* EngineController.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		4C668489DE8A0EB28233D28F /* NetrekSwiftUI */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = D8BD8B1509EF851E39EDB611 /* Build configuration list for PBXNativeTarget "NetrekSwiftUI" */;
+			buildPhases = (
+				1C8A811B85D0B3A266C835AC /* Setup Build Prerequisites */,
+				5B826AECFB568FB00C41A62B /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NetrekSwiftUI;
+			packageProductDependencies = (
+			);
+			productName = NetrekSwiftUI;
+			productReference = 47C5ABC98FCC0F090BD6586E /* NetrekSwiftUI.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		D9116C2F0DFABD3F89F42D83 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = YES;
+				LastUpgradeCheck = 1600;
+				TargetAttributes = {
+				};
+			};
+			buildConfigurationList = BE92FDAB5501AFF9E9912A9A /* Build configuration list for PBXProject "NetrekSwiftUI" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = 62AF9B22509921910605C2F8;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 1E050A7F2874211571858CA2 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				4C668489DE8A0EB28233D28F /* NetrekSwiftUI */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		1C8A811B85D0B3A266C835AC /* Setup Build Prerequisites */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "Setup Build Prerequisites";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "cd \"${SRCROOT}/NetrekSwiftUI/Bridge\"\n[ -f config.h ] || ln -sf swiftui_config.h config.h\n[ -f null ] || echo \"/* intentionally empty */\" > null\ncd \"${SRCROOT}\"\n[ -e pixmaps ] || ln -sf ../../submodules/netrek-client-cow/pixmaps pixmaps\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		5B826AECFB568FB00C41A62B /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				49879798BA07FF3D34382477 /* ContentView.swift in Sources */,
+				6AF331CBFAC9CFD6CE9365C5 /* EngineController.swift in Sources */,
+				24FCD83E354A86519614CE73 /* NetrekApp.swift in Sources */,
+				3A563AD0E80D62C2D878CFD7 /* PixelBufferView.swift in Sources */,
+				D46B4C4EFDEB7861B4309E8C /* beeplite.c in Sources */,
+				87C7BF8D90D42553219E7177 /* censor.c in Sources */,
+				512857D8C955C74BFBA75756 /* check.c in Sources */,
+				CBDA6EE87E9D699955B8C680 /* colors.c in Sources */,
+				758E151904747A1857CA2B02 /* cowmain.c in Sources */,
+				737EBA411D05CE0ADD674263 /* dashboard.c in Sources */,
+				84EF8982303C6726359505BA /* dashboard3.c in Sources */,
+				13D4E4C2D0B3BF50850A6B60 /* data.c in Sources */,
+				9E5E261CA326665B2812AC11 /* death.c in Sources */,
+				322D24A2361F2DFF21180644 /* defaults.c in Sources */,
+				816495BC6BB1999AB544FD05 /* defwin.c in Sources */,
+				A2752BCC94E4F303120A7D26 /* distress.c in Sources */,
+				0AD6E31BFA24D7B4020961AE /* dmessage.c in Sources */,
+				46A9E5E4F335EBC16F7977B9 /* docwin.c in Sources */,
+				317B1F655D7A564456193AC6 /* enter.c in Sources */,
+				BB691689975915AF7EBBF59E /* feature.c in Sources */,
+				69F0B1BE8FEDAD94A915BBDA /* findslot.c in Sources */,
+				A196EFB3B2C184627D17C932 /* getname.c in Sources */,
+				B303F6D363567F23E8F47994 /* getship.c in Sources */,
+				DFF6076A1590CEF853864B0C /* helpwin.c in Sources */,
+				79FC9804AC900DAB93A74C04 /* inform.c in Sources */,
+				BBC61F0DE70051CF755A6134 /* input.c in Sources */,
+				AE26B24F66727EA202A9D038 /* interface.c in Sources */,
+				45FF0F5BD4B78364EFB13198 /* lagmeter.c in Sources */,
+				D187A7D7B5F9ABF17483A6B2 /* local.c in Sources */,
+				3055E373C92414F4891B444F /* macrowin.c in Sources */,
+				E681E3D7F740D4D3A24ABBD9 /* map.c in Sources */,
+				DD93B4A3729DADFB78FD1639 /* myf.c in Sources */,
+				BB5459E0C02CA84EB0161E16 /* netstat.c in Sources */,
+				D01C1532FCF11167E11ECDCE /* netstatopt.c in Sources */,
+				68B1D723F255620EA6E719D8 /* newwin.c in Sources */,
+				C61443777CFA6E43B577D0FB /* option.c in Sources */,
+				15819913A349D4C2C4442DF1 /* parsemeta.c in Sources */,
+				311F4F3F092F04B6853AF907 /* ping.c in Sources */,
+				A6A189B443FC09B0B8894D39 /* pingstats.c in Sources */,
+				A088FE4E35A97B2FAB090F16 /* planetlist.c in Sources */,
+				DC1FC7E64AC4C40826F41922 /* playback.c in Sources */,
+				494519D54D76A8179FF613A9 /* playerlist.c in Sources */,
+				6F4A4BE78498DE098AC8FBA6 /* ranklist.c in Sources */,
+				7E64330E569AFF18345AEA76 /* redraw.c in Sources */,
+				9D45B40155AD71CEB685E9A7 /* reserved.c in Sources */,
+				EA459606448C1E441795AD8D /* rotate.c in Sources */,
+				2D6F9711EE8B40621D369E46 /* senddist.c in Sources */,
+				7499D59F582BB6A02095983F /* short.c in Sources */,
+				ECC26A35A981CA914F90BE6E /* sintab.c in Sources */,
+				742DA5466EEF8EF386458679 /* smessage.c in Sources */,
+				7082203E76A200EBEE16959B /* socket.c in Sources */,
+				658C704B5E4534AAE7FEF055 /* sound_stubs.c in Sources */,
+				BC06D1EE551F09A699082C34 /* spopt.c in Sources */,
+				C7295ED11F021C214473BC4F /* stats.c in Sources */,
+				B0801EC28ECB0C66E446D293 /* string_util.c in Sources */,
+				499079D5DF808DF8A14F9AB0 /* swiftuisprite.c in Sources */,
+				38E1D773E5B3A53619DFC138 /* swiftuiwindow.c in Sources */,
+				C6889C18694A960BCC8F75C2 /* tools.c in Sources */,
+				EBC47B2504C7C74F56D02C8E /* udpopt.c in Sources */,
+				A2565F04FEAE3A2ECF7E5071 /* util.c in Sources */,
+				9256A62F2D8F4E62A2FEAF9D /* war.c in Sources */,
+				BDEA9B0A20E19668EC08959E /* warning.c in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		06838AF523EBAF657CAC065A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"$(inherited)",
+					"DEBUG=1",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Debug;
+		};
+		35F91F8E5A3E713B290007C8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.9;
+			};
+			name = Release;
+		};
+		B0F98C3E0AC6300DED2BB9B7 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/NetrekSwiftUI/Bridge",
+					"$(SRCROOT)/../../submodules/netrek-client-cow",
+				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				INFOPLIST_KEY_NSHighResolutionCapable = YES;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				OTHER_CFLAGS = (
+					"-Wno-implicit-function-declaration",
+					"-Wno-error=implicit-function-declaration",
+					"-Wno-parentheses",
+					"-Wno-format",
+					"-Wno-unused-variable",
+					"-Wno-pointer-sign",
+					"-Wno-deprecated-declarations",
+					"-Wno-non-literal-null-conversion",
+					"-Wno-deprecated-non-prototype",
+					"-Wno-int-conversion",
+					"-Wno-incompatible-pointer-types",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.netrek.swiftui;
+				PRODUCT_NAME = NetrekSwiftUI;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = NetrekSwiftUI/Bridge/NetrekBridge.h;
+			};
+			name = Release;
+		};
+		EB01BC88F464147CC60E1416 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CLANG_ENABLE_MODULES = NO;
+				COMBINE_HIDPI_IMAGES = YES;
+				GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS = NO;
+				GCC_WARN_ABOUT_MISSING_PROTOTYPES = NO;
+				GENERATE_INFOPLIST_FILE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/NetrekSwiftUI/Bridge",
+					"$(SRCROOT)/../../submodules/netrek-client-cow",
+				);
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
+				INFOPLIST_KEY_NSHighResolutionCapable = YES;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				OTHER_CFLAGS = (
+					"-Wno-implicit-function-declaration",
+					"-Wno-error=implicit-function-declaration",
+					"-Wno-parentheses",
+					"-Wno-format",
+					"-Wno-unused-variable",
+					"-Wno-pointer-sign",
+					"-Wno-deprecated-declarations",
+					"-Wno-non-literal-null-conversion",
+					"-Wno-deprecated-non-prototype",
+					"-Wno-int-conversion",
+					"-Wno-incompatible-pointer-types",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = org.netrek.swiftui;
+				PRODUCT_NAME = NetrekSwiftUI;
+				SDKROOT = macosx;
+				SWIFT_OBJC_BRIDGING_HEADER = NetrekSwiftUI/Bridge/NetrekBridge.h;
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		BE92FDAB5501AFF9E9912A9A /* Build configuration list for PBXProject "NetrekSwiftUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				06838AF523EBAF657CAC065A /* Debug */,
+				35F91F8E5A3E713B290007C8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		D8BD8B1509EF851E39EDB611 /* Build configuration list for PBXNativeTarget "NetrekSwiftUI" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EB01BC88F464147CC60E1416 /* Debug */,
+				B0F98C3E0AC6300DED2BB9B7 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = D9116C2F0DFABD3F89F42D83 /* Project object */;
+}

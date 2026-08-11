@@ -1,0 +1,4 @@
+# Paradise SDL2 client defaults
+# Disable UDP to avoid Docker port mapping issues
+tryUdp: off
+portSwap: off

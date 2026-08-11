@@ -1,0 +1,204 @@
+name: NetrekSwiftUI
+options:
+  bundleIdPrefix: org.netrek
+  deploymentTarget:
+    macOS: "13.0"
+  xcodeVersion: "16.0"
+  createIntermediateGroups: true
+
+schemes:
+  NetrekSwiftUI:
+    build:
+      targets:
+        NetrekSwiftUI: all
+    run:
+      config: Debug
+      commandLineArguments:
+        "-h localhost -p 2592": false
+      environmentVariables:
+        - variable: SRCROOT_PATH
+          value: $(SRCROOT)
+          isEnabled: true
+
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "13.0"
+    SWIFT_VERSION: "5.9"
+
+targets:
+  NetrekSwiftUI:
+    type: application
+    platform: macOS
+    sources:
+      # Swift source files
+      - path: NetrekSwiftUI/App
+        type: group
+      - path: NetrekSwiftUI/Views
+        type: group
+      - path: NetrekSwiftUI/ViewModels
+        type: group
+
+      # Our C bridge files
+      - path: NetrekSwiftUI/Bridge/swiftuiwindow.c
+        type: file
+      - path: NetrekSwiftUI/Bridge/swiftuisprite.c
+        type: file
+      - path: NetrekSwiftUI/Bridge/sound_stubs.c
+        type: file
+
+      # COW engine C source files (from submodule, compiled as-is)
+      - path: ../../submodules/netrek-client-cow/beeplite.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/censor.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/check.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/colors.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/cowmain.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/dashboard.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/dashboard3.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/data.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/death.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/defaults.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/defwin.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/distress.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/dmessage.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/docwin.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/enter.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/feature.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/findslot.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/getname.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/getship.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/helpwin.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/inform.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/interface.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/lagmeter.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/local.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/macrowin.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/map.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/myf.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/netstat.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/netstatopt.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/newwin.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/option.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/parsemeta.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/ping.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/pingstats.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/planetlist.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/playback.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/playerlist.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/ranklist.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/reserved.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/rotate.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/senddist.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/short.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/sintab.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/smessage.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/socket.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/spopt.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/stats.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/string_util.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/tools.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/udpopt.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/util.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/war.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/warning.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/input.c
+        type: file
+      - path: ../../submodules/netrek-client-cow/redraw.c
+        type: file
+
+    settings:
+      base:
+        # Our config.h (swiftui_config.h symlink) must come first in search path
+        HEADER_SEARCH_PATHS:
+          - $(SRCROOT)/NetrekSwiftUI/Bridge
+          - $(SRCROOT)/../../submodules/netrek-client-cow
+        # Bridging header for Swift ↔ C interop
+        SWIFT_OBJC_BRIDGING_HEADER: NetrekSwiftUI/Bridge/NetrekBridge.h
+        # Disable Clang modules to avoid Darwin header conflicts (login, scanw)
+        CLANG_ENABLE_MODULES: false
+        # Disable Xcode's default -Werror for implicit declarations
+        GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS: false
+        GCC_WARN_ABOUT_MISSING_PROTOTYPES: false
+        # C compiler flags to suppress COW warnings
+        OTHER_CFLAGS:
+          - -Wno-implicit-function-declaration
+          - -Wno-error=implicit-function-declaration
+          - -Wno-parentheses
+          - -Wno-format
+          - -Wno-unused-variable
+          - -Wno-pointer-sign
+          - -Wno-deprecated-declarations
+          - -Wno-non-literal-null-conversion
+          - -Wno-deprecated-non-prototype
+          - -Wno-int-conversion
+          - -Wno-incompatible-pointer-types
+        # Product info
+        PRODUCT_BUNDLE_IDENTIFIER: org.netrek.swiftui
+        PRODUCT_NAME: NetrekSwiftUI
+        INFOPLIST_KEY_NSHighResolutionCapable: true
+        INFOPLIST_KEY_NSPrincipalClass: NSApplication
+        GENERATE_INFOPLIST_FILE: true
+        INFOPLIST_KEY_LSApplicationCategoryType: "public.app-category.games"
+
+    preBuildScripts:
+      # Ensure config.h symlink and null file exist
+      - name: Setup Build Prerequisites
+        script: |
+          cd "${SRCROOT}/NetrekSwiftUI/Bridge"
+          [ -f config.h ] || ln -sf swiftui_config.h config.h
+          [ -f null ] || echo "/* intentionally empty */" > null
+          cd "${SRCROOT}"
+          [ -e pixmaps ] || ln -sf ../../submodules/netrek-client-cow/pixmaps pixmaps
+        basedOnDependencyAnalysis: false

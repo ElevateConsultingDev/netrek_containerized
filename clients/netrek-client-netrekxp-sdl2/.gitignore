@@ -1,0 +1,8 @@
+build/
+*.o
+*.log
+.DS_Store
+null
+*.dSYM/
+# machine-specific symlink to $HOME/.netrekrc
+netrekrc.txt

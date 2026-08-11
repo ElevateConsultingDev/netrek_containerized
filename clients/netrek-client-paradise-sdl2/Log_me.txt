@@ -1,0 +1,45 @@
+
+-----------------------------------------------------------------
+Started logging for server localhost at14:50:25
+-----------------------------------------------------------------
+ F3->ALL  Recruit guest is now F3 (dave@192.168.127.1)
+SRV->YOU  There are 0 players on the tournament queue
+ F3->F3   @ Paradise 3.3p0
+
+-----------------------------------------------------------------
+Started logging for server localhost at14:52:52
+-----------------------------------------------------------------
+ F4->ALL  Recruit guest is now F4 (dave@192.168.127.1)
+SRV->YOU  There are 0 players on the tournament queue
+ F4->F4   @ Paradise 3.3p0
+
+-----------------------------------------------------------------
+Started logging for server localhost at15:04:12
+-----------------------------------------------------------------
+ F0->ALL  Recruit guest is now F0 (dave@192.168.127.1)
+SRV->YOU  There are 0 players on the tournament queue
+ F0->F0   @ Paradise 3.3p0
+
+-----------------------------------------------------------------
+Started logging for server localhost at15:06:58
+-----------------------------------------------------------------
+ F7->ALL  Recruit guest is now F7 (dave@192.168.127.1)
+SRV->YOU  There are 0 players on the tournament queue
+ F7->F7   @ Paradise 3.3p0
+GOD->ALL  DreadPirate Bob (I6) was kill 1.00 for M5 (Fl)[torp]
+ I6->ALL  Recruit DreadPirate Bob (I6) leaving the game (Robot@Nowhere)
+
+-----------------------------------------------------------------
+Started logging for server localhost at15:10:53
+-----------------------------------------------------------------
+
+-----------------------------------------------------------------
+Started logging for server localhost at15:10:53
+-----------------------------------------------------------------
+
+-----------------------------------------------------------------
+Started logging for server localhost at15:16:21
+-----------------------------------------------------------------
+ R0->ALL  Recruit guest is now R0 (dave@192.168.127.1)
+SRV->YOU  There are 0 players on the tournament queue
+ R0->R0   @ Paradise 3.3p0
