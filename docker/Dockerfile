@@ -4,7 +4,7 @@ FROM debian:11
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive
 
-EXPOSE 2592 2591 3521 2593 2596 4000 4566 4577 5000 2592
+EXPOSE 2592 2591 3521 2593 2596 3592 4000 4566 4577 5000
 
 # Install build-essential (C compiler, dev tools), vim, and other utilities
 # clone the netrek repo from quozl
@@ -83,7 +83,8 @@ RUN sed -i 's/AC_INIT/AC_INIT([netrek],[1.0],[netrek@netrek.org])\nAC_CONFIG_MAC
 
 # Enable Sturgeon mode (upgrade/special weapons system)
 # config.h.in is the template; configure generates config.h from it
-RUN sed -i 's|#undef STURGEON|#define STURGEON 1|' netrek-server/include/config.h.in
+RUN sed -i 's|#undef STURGEON|#define STURGEON 1|' netrek-server/include/config.h.in && \
+    sed -i 's|#undef NEWBIESERVER|#define NEWBIESERVER 1|' netrek-server/include/config.h.in
 
 #sed in newstartd.c change int debug = 0; to int debug = 1;
 # RUN sed -i 's/debug = 0/debug = 1/g' netrek-server/newstartd/newstartd.c
@@ -111,6 +112,22 @@ ENV SOUNDDIR=/usr/local/src/netrek/netrek-client-cow/sounds
 #This uses localhost to spawn robots. For some reason 127.0.0.1 doesn't work.
 RUN sed -i 's/127.0.0.1/localhost/g' netrek-server/here/etc/sysdef && \
     sed -i 's/BIND_UDP_PORT_BASE=0/BIND_UDP_PORT_BASE=2593/' netrek-server/here/etc/sysdef && \
-    sed -i 's/STURGEON=0/STURGEON=1/' netrek-server/here/etc/sysdef
+    sed -i 's/STURGEON=0/STURGEON=1/' netrek-server/here/etc/sysdef && \
+    sed -i 's/NEWBIE=0/NEWBIE=1/' netrek-server/here/etc/sysdef && \
+    sed -i 's/MIN_NEWBIE_SLOTS=12/MIN_NEWBIE_SLOTS=15/' netrek-server/here/etc/sysdef && \
+    sed -i 's/MAX_NEWBIE_PLAYERS=8/MAX_NEWBIE_PLAYERS=16/' netrek-server/here/etc/sysdef && \
+    sed -i 's/PRET=1/PRET=0/' netrek-server/here/etc/sysdef
+
+# Enable newbie queues in ports file:
+# - Comment out default pickup queue (replaced by newbie queue 9)
+# - Uncomment newbie player queue (port 2592, queue 9)
+# - Uncomment newbie robot queue (port 3592, queue 10)
+# - Uncomment newbie observer queue (port 2593, queue 11)
+RUN sed -i 's|^2592 ntserv "ntserv"$|#2592 ntserv "ntserv"|' netrek-server/here/etc/ports && \
+    sed -i 's|^2593 ntserv "ntservobs" -q 6|#2593 ntserv "ntservobs" -q 6|' netrek-server/here/etc/ports && \
+    sed -i 's|^#2592 ntserv "ntserv" -q 9|2592 ntserv "ntserv" -q 9|' netrek-server/here/etc/ports && \
+    sed -i 's|^#3592 ntserv "ntserv" -q 10|3592 ntserv "ntserv" -q 10|' netrek-server/here/etc/ports && \
+    sed -i 's|^#2593 ntserv "ntserv" -q 11|2593 ntserv "ntserv" -q 11|' netrek-server/here/etc/ports
+
 # Ensure bash is the default shell
 CMD ["/bin/bash"]

@@ -247,12 +247,8 @@ void GetPixmaps_SDL2(W_Window t, W_Window g)
 
     pixMissing &= ~NO_HALOS;
 
-    fprintf(stderr, "sprite: pixmapDir=%s pixMissing=0x%x\n", pixmapDir, pixMissing);
-    /* Verify a sample ship sprite loaded */
-    if (shipImg[1][2].texture)
-        fprintf(stderr, "sprite: Fed/CA loaded OK: %dx%d, %d views\n",
-                shipImg[1][2].width, shipImg[1][2].height, shipImg[1][2].nviews);
-    else
+    /* Warn if sprites failed to load */
+    if (!shipImg[1][2].texture)
         fprintf(stderr, "sprite: Fed/CA FAILED to load\n");
 }
 
@@ -268,13 +264,6 @@ int W_DrawSprite(void *in, int x, int y, int winside)
     if (!sprite || !sprite->texture) return 0;
     if (sprite->view < 0 || sprite->view >= sprite->nviews) return 0;
     if (x > view || x < -view || y > view || y < -view) return 0;
-
-    static int draw_debug = 0;
-    if (draw_debug < 5) {
-        fprintf(stderr, "sprite: DrawSprite at (%d,%d) size=%dx%d view=%d/%d winside=%d\n",
-                x, y, sprite->width, sprite->height, sprite->view, sprite->nviews, winside);
-        draw_debug++;
-    }
 
     struct window *win = sprite->target_win;
     if (!win || !win->texture) return 0;

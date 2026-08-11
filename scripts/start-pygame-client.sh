@@ -4,7 +4,7 @@ set -e
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_DIR="$SCRIPT_DIR/.."
-CLIENT_DIR="$REPO_DIR/clients/pygame"
+CLIENT_DIR="$REPO_DIR/clients/netrek-client-pygame"
 VENV_DIR="$CLIENT_DIR/.venv"
 SERVER_PORT=2692
 

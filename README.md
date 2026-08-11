@@ -22,7 +22,7 @@ docker compose up -d
 ## Prerequisites
 
 - Docker and Docker Compose
-- COW SDL2 client built (`clients/cow-sdl2/build/netrek-sdl2`)
+- COW SDL2 client built (`clients/netrek-client-cow-sdl2/build/netrek-sdl2`)
 
 ## Ports
 
@@ -64,8 +64,8 @@ docker/Dockerfile               # Vanilla server image
 docker/server/entrypoint.sh     # Vanilla server startup script
 docker/paradise-server/         # Paradise server image + entrypoint
 docker/dev/                     # Development configs (bashrc, vimrc, etc.)
-clients/cow-sdl2/               # Native macOS SDL2 client (C)
-clients/pygame/                 # Pygame client source code
+clients/netrek-client-cow-sdl2/               # Native macOS SDL2 client (C)
+clients/netrek-client-pygame/                 # Pygame client source code
 scripts/                        # All startup/stop scripts
 submodules/                     # Upstream Netrek source (git submodules)
 .github/workflows/docker.yml   # CI: build all images on push

@@ -190,6 +190,7 @@ class StateMachine:
         if me and 0 <= me.shiptype < 8:
             self.chosen_ship = me.shiptype
         if self.sound:
+            self.sound.stop("intro")
             self.sound.play("enter_ship")
         # Start UDP on first entry (COW: isFirstEntry + tryUdp)
         try_udp = self.config.try_udp if self.config else True

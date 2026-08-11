@@ -230,8 +230,6 @@ struct window *findWindowAt(int sx, int sy)
 
 void W_Initialize(char *str)
 {
-    fprintf(stderr, "sdl2window: W_Initialize(\"%s\")\n", str ? str : "");
-
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
         exit(1);
@@ -299,10 +297,8 @@ void W_Initialize(char *str)
             if (!test) break; /* font file not loadable */
             int w, h;
             TTF_SizeText(test, "M", &w, &h);
-            fprintf(stderr, "sdl2window: trying %s size %d -> %dx%d\n", *fp, sz, w, h);
             if (h <= 10) {
                 sdl_fonts[1] = test;
-                fprintf(stderr, "sdl2window: selected font %s size %d (%dx%d)\n", *fp, sz, w, h);
                 /* Open the other styles at same size */
                 sdl_fonts[0] = TTF_OpenFont(*fp, sz * 3); /* big */
                 sdl_fonts[2] = TTF_OpenFont(*fp, sz);      /* highlight/bold */
@@ -325,8 +321,6 @@ void W_Initialize(char *str)
     if (sdl_fonts[1]) {
         int w, h;
         TTF_SizeText(sdl_fonts[1], "M", &w, &h);
-        fprintf(stderr, "sdl2window: font glyph size %dx%d, cell forced to 6x10\n", w, h);
-
         if (sdl_fonts[0]) {
             TTF_SizeText(sdl_fonts[0], "M", &w, &h);
             W_BigTextwidth = w;
@@ -350,8 +344,6 @@ void W_Initialize(char *str)
     /* Register SIGUSR1 for debug screenshots */
     signal(SIGUSR1, sigusr1_handler);
 
-    fprintf(stderr, "sdl2window: initialization complete (PID %d, send SIGUSR1 for screenshot)\n",
-            getpid());
 }
 
 /* ========================================================================
@@ -394,9 +386,6 @@ W_Window W_MakeWindow(char *name, int x, int y, int width, int height,
         SDL_RenderClear(sdl_renderer);
         SDL_SetRenderTarget(sdl_renderer, NULL);
     }
-
-    fprintf(stderr, "sdl2window: W_MakeWindow(\"%s\", %d,%d, %dx%d)\n",
-            name ? name : "", win->x, win->y, width, height);
 
     return W_Window2Void(win);
 }
@@ -620,10 +609,6 @@ void W_ClearWindow(W_Window window)
 {
     struct window *win = W_Void2Window(window);
     if (!win || !win->texture) return;
-
-    if (win->name && strcmp(win->name, "local") == 0) {
-        fprintf(stderr, "W_ClearWindow[local]: clearing tactical window\n");
-    }
 
     SDL_SetRenderTarget(sdl_renderer, win->texture);
 
@@ -886,15 +871,6 @@ void W_WriteText(W_Window window, int x, int y, W_Color color, char *str,
     if (!win || !win->texture || !str || len <= 0) return;
 
     /* Debug: log all writes to the tactical window ("local") */
-    if (win->name && strcmp(win->name, "local") == 0) {
-        char preview[40];
-        int plen = len < 39 ? len : 39;
-        memcpy(preview, str, plen);
-        preview[plen] = '\0';
-        fprintf(stderr, "W_WriteText[local]: mapped=%d (%d,%d) color=%d \"%s\"\n",
-                win->mapped, x, y, color, preview);
-    }
-
     /* Calculate pixel position */
     int px, py;
     switch (win->type) {
@@ -1544,15 +1520,9 @@ void W_Flush(void)
     SDL_RenderClear(sdl_renderer);
 
     /* Composite all mapped windows */
-    static int flush_debug = 0;
     for (int i = 0; i < num_windows; i++) {
         struct window *win = &windows[i];
         if (!win->mapped || !win->texture) continue;
-
-        if (flush_debug < 3) {
-            fprintf(stderr, "W_Flush: compositing win[%d]=%s %dx%d at (%d,%d)\n",
-                    i, win->name ? win->name : "?", win->width, win->height, win->x, win->y);
-        }
 
         SDL_Rect dst = {win->x, win->y, win->width, win->height};
         SDL_RenderCopy(sdl_renderer, win->texture, NULL, &dst);
@@ -1582,9 +1552,7 @@ void W_Flush(void)
         }
     }
 
-    if (flush_debug < 3) {
-        flush_debug++;
-    }
+
 
     SDL_RenderPresent(sdl_renderer);
 
