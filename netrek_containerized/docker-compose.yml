@@ -20,8 +20,8 @@ services:
 
   paradise-server:
     build:
-      context: .
-      dockerfile: docker/paradise-server/Dockerfile
+      context: ..
+      dockerfile: netrek_containerized/docker/paradise-server/Dockerfile
     image: netrek-paradise-server
     container_name: paradise-netrek-server
     ports:

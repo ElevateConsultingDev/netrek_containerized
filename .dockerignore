@@ -1,1 +1,14 @@
+# Build context for the paradise-server image is the repo root (..).
+# Keep it lean: only servers/netrek-server-paradise and
+# netrek_containerized/docker are needed. Exclude everything large/unrelated.
 **/.git
+reference_repos
+clients
+servers/netrek-server
+netrek_containerized/scripts
+netrek_containerized/.github
+netrek_containerized/.claude
+netrek_containerized/README.md
+netrek_containerized/LICENSE
+*.tgz
+.DS_Store

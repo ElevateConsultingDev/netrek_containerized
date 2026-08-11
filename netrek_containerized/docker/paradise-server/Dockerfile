@@ -15,7 +15,7 @@ RUN apt-get update && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY submodules/netrek-server-paradise /usr/local/src/netrek-server-paradise
+COPY servers/netrek-server-paradise /usr/local/src/netrek-server-paradise
 
 WORKDIR /usr/local/src/netrek-server-paradise
 
@@ -35,7 +35,7 @@ ENV NETREKDIR=/usr/local/netrek
 
 RUN mkdir -p "${NETREKDIR}/logs"
 
-COPY docker/paradise-server/entrypoint.sh /usr/local/bin/entrypoint.sh
+COPY netrek_containerized/docker/paradise-server/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
