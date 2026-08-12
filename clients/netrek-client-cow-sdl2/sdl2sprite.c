@@ -283,9 +283,9 @@ int W_DrawSprite(void *in, int x, int y, int winside)
         SDL_SetTextureAlphaMod(sprite->texture, alpha);
     }
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     SDL_RenderCopy(sdl_renderer, sprite->texture, &src, &dst);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 
     /* Reset alpha */
     if (sprite->cloak > 0) {
@@ -307,9 +307,9 @@ void W_DrawSpriteAbsolute(void *in, int x, int y)
                     sprite->width, sprite->height};
     SDL_Rect dst = {x, y, sprite->width, sprite->height};
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     SDL_RenderCopy(sdl_renderer, sprite->texture, &src, &dst);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 void W_ClearSpriteAbsolute(void *in, int x, int y)
@@ -321,11 +321,11 @@ void W_ClearSpriteAbsolute(void *in, int x, int y)
     if (!win || !win->texture) return;
 
     /* Clear the area where the sprite was drawn */
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
     SDL_Rect r = {x, y, sprite->width, sprite->height};
     SDL_RenderFillRect(sdl_renderer, &r);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 void *S_Ship(int playerno)

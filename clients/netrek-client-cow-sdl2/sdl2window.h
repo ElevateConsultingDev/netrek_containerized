@@ -111,6 +111,15 @@ struct S_Object {
 /* Maximum number of virtual windows */
 #define MAX_WINDOWS 256
 
+/* Retina supersample factor (see sdl2window.c). Shared so sprite rendering in
+ * sdl2sprite.c scales into the same RS-sized window textures. */
+#define RENDER_SCALE 2
+
+/* Target a window's supersampled texture (applies the RS draw scale) / return
+ * to the screen at 1:1. Defined in sdl2window.c. */
+void winTarget(struct window *win);
+void screenTarget(void);
+
 /* Global SDL2 state (defined in sdl2window.c) */
 extern SDL_Window   *sdl_window;
 extern SDL_Renderer *sdl_renderer;

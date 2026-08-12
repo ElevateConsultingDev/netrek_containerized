@@ -106,7 +106,7 @@ static void ilog(const char *fmt, ...)
  * DPI or window resize -- this is deliberately NOT SDL_RenderSetLogicalSize,
  * whose automatic mouse translation is wrong under HiDPI.
  * ---------------------------------------------------------------------- */
-#define RENDER_SCALE 2
+/* RENDER_SCALE lives in sdl2window.h so sdl2sprite.c uses the same value. */
 static int LOGICAL_W = 1024;   /* logical canvas size (baseWin) */
 static int LOGICAL_H = 768;
 
@@ -115,14 +115,14 @@ static int socket_pipe[2] = {-1, -1};
 
 /* Target a window's (supersampled) texture: draw calls use logical coords and
  * are scaled up by RENDER_SCALE into the RS-sized backing texture. */
-static void winTarget(struct window *win)
+void winTarget(struct window *win)
 {
     SDL_SetRenderTarget(sdl_renderer, win->texture);
     SDL_RenderSetScale(sdl_renderer, (float)RENDER_SCALE, (float)RENDER_SCALE);
 }
 
 /* Return to the screen target at 1:1 scale (the compositor sets its own). */
-static void screenTarget(void)
+void screenTarget(void)
 {
     SDL_RenderSetScale(sdl_renderer, 1.0f, 1.0f);
     SDL_SetRenderTarget(sdl_renderer, NULL);
