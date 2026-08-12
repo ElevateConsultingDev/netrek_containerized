@@ -374,6 +374,16 @@ W_Window W_MakeWindow(char *name, int x, int y, int width, int height,
     if (win->x < 0) win->x = 0;
     if (win->y < 0) win->y = 0;
 
+    /* Scaling: the COW baseWin ("netrek") defines the full canvas. Lock it as
+     * the renderer's logical size so resizing the OS window or going fullscreen
+     * scales all composited sub-windows to fit (aspect-ratio preserved, letter-
+     * boxed). SDL also maps mouse coords back into this logical space, so all
+     * existing click hit-testing keeps working unchanged. */
+    if (name && strcmp(name, "netrek") == 0 && sdl_renderer) {
+        SDL_RenderSetLogicalSize(sdl_renderer,
+                                 win->x + win->width, win->y + win->height);
+    }
+
     /* Create render target texture */
     win->texture = SDL_CreateTexture(sdl_renderer,
         SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
