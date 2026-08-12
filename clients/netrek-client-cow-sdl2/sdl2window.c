@@ -10,6 +10,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdarg.h>
 #include <unistd.h>
 #include <fcntl.h>
 #include <string.h>
@@ -70,8 +71,27 @@ SDL_Renderer *sdl_renderer = NULL;
 struct window windows[MAX_WINDOWS];
 int num_windows = 0;
 
-/* Input diagnostics: enabled by setting NETREK_INPUT_DEBUG in the environment. */
+/* Input diagnostics: opt-in via NETREK_INPUT_DEBUG=1. When on, logs raw key/
+ * mouse/focus events to /tmp/netrek-input.log (and stderr). Answers, if keys
+ * ever go dead again, whether events are arriving at the app (focus/pump) or
+ * arriving but misrouted. Kept in as a re-usable diagnostic. */
 static int input_debug = 0;
+static FILE *input_log = NULL;
+
+static void ilog(const char *fmt, ...)
+{
+    if (!input_debug) return;
+    va_list ap;
+    if (input_log) {
+        va_start(ap, fmt);
+        vfprintf(input_log, fmt, ap);
+        va_end(ap);
+        fflush(input_log);
+    }
+    va_start(ap, fmt);
+    vfprintf(stderr, fmt, ap);
+    va_end(ap);
+}
 
 /* Pipe for W_Socket() integration with select() */
 static int socket_pipe[2] = {-1, -1};
@@ -233,7 +253,12 @@ struct window *findWindowAt(int sx, int sy)
 
 void W_Initialize(char *str)
 {
-    input_debug = (getenv("NETREK_INPUT_DEBUG") != NULL);
+    input_debug = (getenv("NETREK_INPUT_DEBUG") != NULL &&
+                   getenv("NETREK_INPUT_DEBUG")[0] != '0');
+    if (input_debug) {
+        input_log = fopen("/tmp/netrek-input.log", "w");
+        ilog("[INPUT] log opened; input diagnostics ON\n");
+    }
 
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
@@ -1215,18 +1240,22 @@ void W_WriteTriangle(W_Window window, int x, int y, int s, int t, W_Color color)
     SDL_SetRenderTarget(sdl_renderer, win->texture);
     setRenderColor(color);
 
+    /* Match the X11 original exactly: the tip is anchored AT (x,y); t selects
+     * which way it points. t==0 -> base above the tip, so it points DOWN (used
+     * for planet lock, placed just above the planet to point at it). t==1 ->
+     * base below the tip, points UP (used for player lock). The prior SDL2
+     * version was both inverted and center-anchored, so lock markers pointed
+     * away from and floated off their target. */
     SDL_Point pts[4];
     if (t == 0) {
-        /* Pointing up */
-        pts[0].x = x;         pts[0].y = y - s;
-        pts[1].x = x - s;     pts[1].y = y + s;
-        pts[2].x = x + s;     pts[2].y = y + s;
+        pts[0].x = x;         pts[0].y = y;
+        pts[1].x = x + s;     pts[1].y = y - s;
+        pts[2].x = x - s;     pts[2].y = y - s;
         pts[3] = pts[0]; /* close the triangle */
     } else {
-        /* Pointing down */
-        pts[0].x = x;         pts[0].y = y + s;
-        pts[1].x = x - s;     pts[1].y = y - s;
-        pts[2].x = x + s;     pts[2].y = y - s;
+        pts[0].x = x;         pts[0].y = y;
+        pts[1].x = x + s;     pts[1].y = y + s;
+        pts[2].x = x - s;     pts[2].y = y + s;
         pts[3] = pts[0];
     }
     SDL_RenderDrawLines(sdl_renderer, pts, 4);
@@ -1288,6 +1317,42 @@ static unsigned char sdl_key_to_wlib(SDL_Keycode sym, SDL_Keymod mod)
     return 0; /* Unknown key */
 }
 
+/* Log raw SDL events (keys, mouse buttons, focus, quit) as they are pulled
+ * from the queue, tagged with which loop caught them and whether our window
+ * currently holds keyboard focus. If you press keys and see NO 'key down'
+ * lines here, the events are not reaching the app at all (focus/pump problem);
+ * if you see them here but the ship does not respond, it is internal routing. */
+static void input_debug_log_raw(const char *where, SDL_Event *e)
+{
+    if (!input_debug) return;
+    int focused = (SDL_GetKeyboardFocus() == sdl_window);
+    switch (e->type) {
+    case SDL_KEYDOWN:
+        ilog("[INPUT] %s: KEY DOWN sym=0x%x '%s' focus=%d\n", where,
+             e->key.keysym.sym, SDL_GetKeyName(e->key.keysym.sym), focused);
+        break;
+    case SDL_KEYUP:
+        ilog("[INPUT] %s: key up   sym=0x%x focus=%d\n", where,
+             e->key.keysym.sym, focused);
+        break;
+    case SDL_MOUSEBUTTONDOWN:
+        ilog("[INPUT] %s: MOUSE BUTTON %d focus=%d\n", where,
+             e->button.button, focused);
+        break;
+    case SDL_WINDOWEVENT:
+        if (e->window.event == SDL_WINDOWEVENT_FOCUS_GAINED)
+            ilog("[INPUT] %s: WINDOW focus GAINED\n", where);
+        else if (e->window.event == SDL_WINDOWEVENT_FOCUS_LOST)
+            ilog("[INPUT] %s: WINDOW focus LOST\n", where);
+        break;
+    case SDL_QUIT:
+        ilog("[INPUT] %s: QUIT\n", where);
+        break;
+    default:
+        break;
+    }
+}
+
 /* One-time dump of the window table so we can see which window the cursor
  * resolves to for key routing (COW only accepts ship-control keys whose event
  * targets the tactical "local" window). */
@@ -1301,11 +1366,11 @@ static void input_debug_dump_windows(void)
     int lw = 0, lh = 0;
     SDL_RenderGetLogicalSize(sdl_renderer, &lw, &lh);
     lx = wx; ly = wy;
-    fprintf(stderr, "[INPUT] window px=(%d,%d) logical=(%d,%d)\n", wx, wy, lw, lh);
+    ilog("[INPUT] window px=(%d,%d) logical=(%d,%d)\n", wx, wy, lw, lh);
     (void)lx; (void)ly;
     for (int i = 0; i < num_windows; i++) {
         struct window *w = &windows[i];
-        fprintf(stderr, "[INPUT]   win[%d] '%s' xywh=(%d,%d,%d,%d) mapped=%d type=%d\n",
+        ilog("[INPUT]   win[%d] '%s' xywh=(%d,%d,%d,%d) mapped=%d type=%d\n",
                 i, w->name ? w->name : "?", w->x, w->y, w->width, w->height,
                 w->mapped, w->type);
     }
@@ -1338,7 +1403,7 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
         if (input_debug) input_debug_dump_windows();
         if (key == 0) {
             if (input_debug)
-                fprintf(stderr, "[INPUT] KEYDOWN sym=0x%x mod=0x%x DROPPED (unmapped)\n",
+                ilog("[INPUT] KEYDOWN sym=0x%x mod=0x%x DROPPED (unmapped)\n",
                         sdl_ev->key.keysym.sym, sdl_ev->key.keysym.mod);
             return 0;
         }
@@ -1359,7 +1424,7 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
         wev->x = mx - (win ? win->x : 0);
         wev->y = my - (win ? win->y : 0);
         if (input_debug)
-            fprintf(stderr, "[INPUT] KEYDOWN wkey=%d '%c' mouse=(%d,%d) win=%s wev=(%d,%d)\n",
+            ilog("[INPUT] KEYDOWN wkey=%d '%c' mouse=(%d,%d) win=%s wev=(%d,%d)\n",
                     key, (key >= 32 && key < 127) ? key : '.', mx, my,
                     win ? (win->name ? win->name : "?") : "NULL", wev->x, wev->y);
         return 1;
@@ -1385,7 +1450,7 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
         int my = sdl_ev->button.y;
         struct window *win = findWindowAt(mx, my);
         if (input_debug)
-            fprintf(stderr, "[INPUT] BUTTON b=%d mouse=(%d,%d) win=%s%s\n",
+            ilog("[INPUT] BUTTON b=%d mouse=(%d,%d) win=%s%s\n",
                     sdl_ev->button.button, mx, my,
                     win ? (win->name ? win->name : "?") : "NULL",
                     win ? "" : " DROPPED (no window)");
@@ -1487,6 +1552,7 @@ static void poll_sdl_into_queue(void)
 {
     SDL_Event sdl_ev;
     while (SDL_PollEvent(&sdl_ev)) {
+        input_debug_log_raw("poll", &sdl_ev);
         if (sdl_ev.type == SDL_QUIT ||
             (sdl_ev.type == SDL_WINDOWEVENT &&
              sdl_ev.window.event == SDL_WINDOWEVENT_CLOSE)) {
@@ -1529,6 +1595,7 @@ void W_NextEvent(W_Event *wevent)
     while (evq_empty()) {
         SDL_Event sdl_ev;
         if (SDL_WaitEvent(&sdl_ev)) {
+            input_debug_log_raw("wait", &sdl_ev);
             if (sdl_ev.type == SDL_QUIT ||
                 (sdl_ev.type == SDL_WINDOWEVENT &&
                  sdl_ev.window.event == SDL_WINDOWEVENT_CLOSE)) {
