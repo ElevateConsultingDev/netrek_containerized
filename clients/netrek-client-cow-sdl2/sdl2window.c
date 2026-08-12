@@ -93,8 +93,52 @@ static void ilog(const char *fmt, ...)
     va_end(ap);
 }
 
+/* ------------------------------------------------------------------------
+ * Retina supersampling.
+ *
+ * Every sub-window is backed by a texture rendered at RENDER_SCALE x its
+ * logical size, and fonts are rasterized at RENDER_SCALE x point size, so
+ * text and vector graphics are crisp on a HiDPI display instead of a 1x
+ * buffer being upscaled by the OS. All game/layout coordinates stay in the
+ * logical space (W_Textwidth=6 etc.); the scale is applied only in the
+ * renderer via winTarget()/the compositor. Mouse input is mapped back to
+ * logical space by hand (pt_to_logical) so it stays correct regardless of
+ * DPI or window resize -- this is deliberately NOT SDL_RenderSetLogicalSize,
+ * whose automatic mouse translation is wrong under HiDPI.
+ * ---------------------------------------------------------------------- */
+#define RENDER_SCALE 2
+static int LOGICAL_W = 1024;   /* logical canvas size (baseWin) */
+static int LOGICAL_H = 768;
+
 /* Pipe for W_Socket() integration with select() */
 static int socket_pipe[2] = {-1, -1};
+
+/* Target a window's (supersampled) texture: draw calls use logical coords and
+ * are scaled up by RENDER_SCALE into the RS-sized backing texture. */
+static void winTarget(struct window *win)
+{
+    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    SDL_RenderSetScale(sdl_renderer, (float)RENDER_SCALE, (float)RENDER_SCALE);
+}
+
+/* Return to the screen target at 1:1 scale (the compositor sets its own). */
+static void screenTarget(void)
+{
+    SDL_RenderSetScale(sdl_renderer, 1.0f, 1.0f);
+    SDL_SetRenderTarget(sdl_renderer, NULL);
+}
+
+/* Map a window-point coordinate (SDL event / GetMouseState space) to logical
+ * canvas coordinates. Identity when the window is at its default size. */
+static void pt_to_logical(int px, int py, int *lx, int *ly)
+{
+    int ww = LOGICAL_W, wh = LOGICAL_H;
+    if (sdl_window) SDL_GetWindowSize(sdl_window, &ww, &wh);
+    if (ww <= 0) ww = LOGICAL_W;
+    if (wh <= 0) wh = LOGICAL_H;
+    *lx = px * LOGICAL_W / ww;
+    *ly = py * LOGICAL_H / wh;
+}
 
 /* Font handles */
 TTF_Font *sdl_fonts[4] = {NULL, NULL, NULL, NULL};
@@ -282,19 +326,22 @@ void W_Initialize(char *str)
     int win_w = 1024;
     int win_h = 768;
 
-    /* Smooth interpolation when the logical scene is scaled to the drawable
-     * (e.g. a resized window), instead of blocky nearest-neighbor. Harmless at
-     * 1:1. NOTE: SDL_WINDOW_ALLOW_HIGHDPI was tried here for retina crispness
-     * but it breaks mouse/steering: with logical-size scaling, SDL's automatic
-     * event-coordinate translation does not account for the 2x DPI drawable,
-     * so the cursor maps to the wrong point and the ship won't respond. Proper
-     * retina support needs a full 2x render pass, deferred as a separate task. */
+    /* Smooth interpolation when a texture is scaled, instead of blocky
+     * nearest-neighbor. */
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
 
+    /* Logical canvas = initial window size; all layout/mouse math uses this. */
+    LOGICAL_W = win_w;
+    LOGICAL_H = win_h;
+
+    /* HIGHDPI so the retina drawable is the full 2x pixels; combined with the
+     * RENDER_SCALE-supersampled window textures this yields crisp output. We
+     * do NOT use SDL_RenderSetLogicalSize (its HiDPI mouse translation is
+     * wrong); mouse is mapped by hand via pt_to_logical. */
     sdl_window = SDL_CreateWindow("Netrek",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         win_w, win_h,
-        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
+        SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI);
     if (!sdl_window) {
         fprintf(stderr, "SDL_CreateWindow failed: %s\n", SDL_GetError());
         exit(1);
@@ -345,11 +392,14 @@ void W_Initialize(char *str)
             int w, h;
             TTF_SizeText(test, "M", &w, &h);
             if (h <= 10) {
-                sdl_fonts[1] = test;
-                /* Open the other styles at same size */
-                sdl_fonts[0] = TTF_OpenFont(*fp, sz * 3); /* big */
-                sdl_fonts[2] = TTF_OpenFont(*fp, sz);      /* highlight/bold */
-                sdl_fonts[3] = TTF_OpenFont(*fp, sz);      /* underline */
+                /* Measured at logical size sz; open the real handles at
+                 * RENDER_SCALE x so glyphs rasterize sharp, then draw them at
+                 * logical size in renderTextOnWindow. */
+                TTF_CloseFont(test);
+                sdl_fonts[1] = TTF_OpenFont(*fp, sz * RENDER_SCALE);
+                sdl_fonts[0] = TTF_OpenFont(*fp, sz * 3 * RENDER_SCALE); /* big */
+                sdl_fonts[2] = TTF_OpenFont(*fp, sz * RENDER_SCALE);     /* bold */
+                sdl_fonts[3] = TTF_OpenFont(*fp, sz * RENDER_SCALE);     /* underline */
                 if (sdl_fonts[2]) TTF_SetFontStyle(sdl_fonts[2], TTF_STYLE_BOLD);
                 if (sdl_fonts[3]) TTF_SetFontStyle(sdl_fonts[3], TTF_STYLE_UNDERLINE);
                 break;
@@ -370,8 +420,9 @@ void W_Initialize(char *str)
         TTF_SizeText(sdl_fonts[1], "M", &w, &h);
         if (sdl_fonts[0]) {
             TTF_SizeText(sdl_fonts[0], "M", &w, &h);
-            W_BigTextwidth = w;
-            W_BigTextheight = h;
+            /* Fonts are RENDER_SCALE x; report logical metrics for layout. */
+            W_BigTextwidth = w / RENDER_SCALE;
+            W_BigTextheight = h / RENDER_SCALE;
         }
     } else {
         fprintf(stderr, "sdl2window: WARNING: no font loaded\n");
@@ -434,14 +485,14 @@ W_Window W_MakeWindow(char *name, int x, int y, int width, int height,
     /* Create render target texture */
     win->texture = SDL_CreateTexture(sdl_renderer,
         SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        width, height);
+        width * RENDER_SCALE, height * RENDER_SCALE);
     if (win->texture) {
         SDL_SetTextureBlendMode(win->texture, SDL_BLENDMODE_BLEND);
         /* Clear to black */
-        SDL_SetRenderTarget(sdl_renderer, win->texture);
+        winTarget(win);
         SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
         SDL_RenderClear(sdl_renderer);
-        SDL_SetRenderTarget(sdl_renderer, NULL);
+        screenTarget();
     }
 
     return W_Window2Void(win);
@@ -471,13 +522,13 @@ W_Window W_MakeTextWindow(char *name, int x, int y, int width, int height,
 
     win->texture = SDL_CreateTexture(sdl_renderer,
         SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        pix_width, pix_height);
+        pix_width * RENDER_SCALE, pix_height * RENDER_SCALE);
     if (win->texture) {
         SDL_SetTextureBlendMode(win->texture, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(sdl_renderer, win->texture);
+        winTarget(win);
         SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
         SDL_RenderClear(sdl_renderer);
-        SDL_SetRenderTarget(sdl_renderer, NULL);
+        screenTarget();
     }
 
     return W_Window2Void(win);
@@ -512,13 +563,13 @@ W_Window W_MakeScrollingWindow(char *name, int x, int y, int width, int height,
 
     win->texture = SDL_CreateTexture(sdl_renderer,
         SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        pix_width, pix_height);
+        pix_width * RENDER_SCALE, pix_height * RENDER_SCALE);
     if (win->texture) {
         SDL_SetTextureBlendMode(win->texture, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(sdl_renderer, win->texture);
+        winTarget(win);
         SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
         SDL_RenderClear(sdl_renderer);
-        SDL_SetRenderTarget(sdl_renderer, NULL);
+        screenTarget();
     }
 
     return W_Window2Void(win);
@@ -556,13 +607,13 @@ W_Window W_MakeMenu(char *name, int x, int y, int width, int height,
 
     win->texture = SDL_CreateTexture(sdl_renderer,
         SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        pix_width, pix_height);
+        pix_width * RENDER_SCALE, pix_height * RENDER_SCALE);
     if (win->texture) {
         SDL_SetTextureBlendMode(win->texture, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(sdl_renderer, win->texture);
+        winTarget(win);
         SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
         SDL_RenderClear(sdl_renderer);
-        SDL_SetRenderTarget(sdl_renderer, NULL);
+        screenTarget();
     }
 
     return W_Window2Void(win);
@@ -667,7 +718,7 @@ void W_ClearWindow(W_Window window)
     struct window *win = W_Void2Window(window);
     if (!win || !win->texture) return;
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
 
     if (win->background) {
         /* Restore background */
@@ -677,7 +728,7 @@ void W_ClearWindow(W_Window window)
         SDL_RenderClear(sdl_renderer);
     }
 
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 
     /* Redraw menu separators after clear */
     if (win->type == WIN_MENU) {
@@ -700,11 +751,11 @@ void W_ClearArea(W_Window window, int x, int y, int width, int height)
         ph = height * W_Textheight;
     }
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
     SDL_Rect r = {px, py, pw, ph};
     SDL_RenderFillRect(sdl_renderer, &r);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 void W_CacheClearArea(W_Window window, int x, int y, int width, int height)
@@ -739,10 +790,10 @@ void W_FlushClearAreaCache(W_Window window)
         return;
     }
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
     SDL_RenderFillRects(sdl_renderer, _rcache, _rcache_index);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
     _rcache_index = 0;
 }
 
@@ -761,11 +812,11 @@ void W_FillArea(W_Window window, int x, int y, int width, int height, W_Color co
         ph = height * W_Textheight;
     }
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     setRenderColor(color);
     SDL_Rect r = {px, py, pw, ph};
     SDL_RenderFillRect(sdl_renderer, &r);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 /* ========================================================================
@@ -840,10 +891,12 @@ static void renderTextOnWindow(struct window *win, int px, int py,
     int tw, th;
     SDL_QueryTexture(tex, NULL, NULL, &tw, &th);
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
-    SDL_Rect dst = {px, py, tw, th};
+    winTarget(win);
+    /* Glyph texture is RENDER_SCALE x; draw it at logical size so winTarget's
+     * scale renders it back at native resolution (crisp). */
+    SDL_Rect dst = {px, py, tw / RENDER_SCALE, th / RENDER_SCALE};
     SDL_RenderCopy(sdl_renderer, tex, NULL, &dst);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
     SDL_DestroyTexture(tex);
 }
 
@@ -857,11 +910,11 @@ static void redrawMenuItem(struct window *win, int n)
     int content_w = win->width - WIN_EDGE * 2;
 
     /* Clear the item's text area */
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
     SDL_Rect clr = {WIN_EDGE, py, content_w, W_Textheight};
     SDL_RenderFillRect(sdl_renderer, &clr);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 
     /* Draw the text */
     int slen = strlen(items[n].string);
@@ -880,7 +933,7 @@ static void redrawMenu(struct window *win)
     int num_items = win->height / item_h;
     if (num_items <= 0) num_items = 1;
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
 
     /* Clear entire menu */
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
@@ -894,7 +947,7 @@ static void redrawMenu(struct window *win)
         SDL_RenderDrawLine(sdl_renderer, 0, sep_y, win->width - 1, sep_y);
     }
 
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 
     /* Redraw all menu items */
     for (int i = 0; i < num_items; i++) {
@@ -993,10 +1046,12 @@ void W_MaskText(W_Window window, int x, int y, W_Color color, char *str,
     int tw, th;
     SDL_QueryTexture(tex, NULL, NULL, &tw, &th);
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
-    SDL_Rect dst = {px, py, tw, th};
+    winTarget(win);
+    /* Glyph texture is RENDER_SCALE x; draw it at logical size so winTarget's
+     * scale renders it back at native resolution (crisp). */
+    SDL_Rect dst = {px, py, tw / RENDER_SCALE, th / RENDER_SCALE};
     SDL_RenderCopy(sdl_renderer, tex, NULL, &dst);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
     SDL_DestroyTexture(tex);
 }
 
@@ -1061,11 +1116,11 @@ void W_WriteBitmap(int x, int y, W_Icon bit, W_Color color)
     SDL_Color c = getColor(color);
     SDL_SetTextureColorMod(ic->texture, c.r, c.g, c.b);
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     /* (x,y) is the top-left corner - callers already pre-center */
     SDL_Rect dst = {x, y, ic->width, ic->height};
     SDL_RenderCopy(sdl_renderer, ic->texture, NULL, &dst);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 void W_OverlayBitmap(int x, int y, W_Icon bit, W_Color color)
@@ -1079,11 +1134,11 @@ void W_OverlayBitmap(int x, int y, W_Icon bit, W_Color color)
     SDL_SetTextureColorMod(ic->texture, c.r, c.g, c.b);
     SDL_SetTextureBlendMode(ic->texture, SDL_BLENDMODE_ADD);
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     /* (x,y) is the top-left corner - callers already pre-center */
     SDL_Rect dst = {x, y, ic->width, ic->height};
     SDL_RenderCopy(sdl_renderer, ic->texture, NULL, &dst);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 
     SDL_SetTextureBlendMode(ic->texture, SDL_BLENDMODE_BLEND);
 }
@@ -1097,10 +1152,10 @@ void W_MakeLine(W_Window window, int x0, int y0, int x1, int y1, W_Color color)
     struct window *win = W_Void2Window(window);
     if (!win || !win->texture) return;
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     setRenderColor(color);
     SDL_RenderDrawLine(sdl_renderer, x0, y0, x1, y1);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 void W_CacheLine(W_Window window, int x0, int y0, int x1, int y1, int color)
@@ -1111,14 +1166,14 @@ void W_CacheLine(W_Window window, int x0, int y0, int x1, int y1, int color)
         /* Flush this color's cache - draw individual segments (NOT polyline) */
         struct window *win = W_Void2Window(window);
         if (win && win->texture) {
-            SDL_SetRenderTarget(sdl_renderer, win->texture);
+            winTarget(win);
             setRenderColor(color);
             for (int i = 0; i < idx; i++) {
                 SDL_RenderDrawLine(sdl_renderer,
                     _lcache[color][i * 2].x, _lcache[color][i * 2].y,
                     _lcache[color][i * 2 + 1].x, _lcache[color][i * 2 + 1].y);
             }
-            SDL_SetRenderTarget(sdl_renderer, NULL);
+            screenTarget();
         }
         _lcache_index[color] = 0;
         idx = 0;
@@ -1135,7 +1190,7 @@ void W_FlushLineCaches(W_Window window)
     struct window *win = W_Void2Window(window);
     if (!win || !win->texture) return;
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     for (int c = 0; c < NCOLORS; c++) {
         int idx = _lcache_index[c];
         if (idx > 0) {
@@ -1149,7 +1204,7 @@ void W_FlushLineCaches(W_Window window)
             _lcache_index[c] = 0;
         }
     }
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 void W_MakeTractLine(W_Window window, int x0, int y0, int x1, int y1, W_Color color)
@@ -1158,13 +1213,13 @@ void W_MakeTractLine(W_Window window, int x0, int y0, int x1, int y1, W_Color co
     struct window *win = W_Void2Window(window);
     if (!win || !win->texture) return;
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     setRenderColor(color);
 
     double dx = x1 - x0, dy = y1 - y0;
     double len = sqrt(dx * dx + dy * dy);
     if (len < 1.0) {
-        SDL_SetRenderTarget(sdl_renderer, NULL);
+        screenTarget();
         return;
     }
 
@@ -1186,7 +1241,7 @@ void W_MakeTractLine(W_Window window, int x0, int y0, int x1, int y1, W_Color co
         dash_on = !dash_on;
     }
 
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 void W_MakePhaserLine(W_Window window, int x0, int y0, int x1, int y1, W_Color color)
@@ -1204,7 +1259,7 @@ void W_WriteCircle(W_Window window, int x, int y, int r, W_Color color)
     struct window *win = W_Void2Window(window);
     if (!win || !win->texture) return;
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     setRenderColor(color);
 
     /* Midpoint circle algorithm */
@@ -1229,7 +1284,7 @@ void W_WriteCircle(W_Window window, int x, int y, int r, W_Color color)
         cx++;
     }
 
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 void W_WriteTriangle(W_Window window, int x, int y, int s, int t, W_Color color)
@@ -1237,7 +1292,7 @@ void W_WriteTriangle(W_Window window, int x, int y, int s, int t, W_Color color)
     struct window *win = W_Void2Window(window);
     if (!win || !win->texture) return;
 
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     setRenderColor(color);
 
     /* Match the X11 original exactly: the tip is anchored AT (x,y); t selects
@@ -1260,7 +1315,7 @@ void W_WriteTriangle(W_Window window, int x, int y, int s, int t, W_Color color)
     }
     SDL_RenderDrawLines(sdl_renderer, pts, 4);
 
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 /* ========================================================================
@@ -1386,10 +1441,7 @@ static void get_logical_mouse(int *mx, int *my)
 {
     int px, py;
     SDL_GetMouseState(&px, &py);
-    float lx = (float)px, ly = (float)py;
-    SDL_RenderWindowToLogical(sdl_renderer, px, py, &lx, &ly);
-    *mx = (int)lx;
-    *my = (int)ly;
+    pt_to_logical(px, py, mx, my);
 }
 
 static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
@@ -1446,8 +1498,8 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
 #endif
 
     case SDL_MOUSEBUTTONDOWN: {
-        int mx = sdl_ev->button.x;
-        int my = sdl_ev->button.y;
+        int mx, my;
+        pt_to_logical(sdl_ev->button.x, sdl_ev->button.y, &mx, &my);
         struct window *win = findWindowAt(mx, my);
         if (input_debug)
             ilog("[INPUT] BUTTON b=%d mouse=(%d,%d) win=%s%s\n",
@@ -1502,8 +1554,8 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
     case SDL_MOUSEMOTION: {
         /* Only report if buttons held */
         if (sdl_ev->motion.state == 0) return 0;
-        int mx = sdl_ev->motion.x;
-        int my = sdl_ev->motion.y;
+        int mx, my;
+        pt_to_logical(sdl_ev->motion.x, sdl_ev->motion.y, &mx, &my);
         struct window *win = findWindowAt(mx, my);
         if (!win) return 0;
 
@@ -1668,9 +1720,22 @@ void W_Flush(void)
 {
     if (!sdl_renderer) return;
 
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
     SDL_RenderClear(sdl_renderer);
+
+    /* Composite scale: map the logical canvas onto the actual drawable (which
+     * is HiDPI-doubled and/or resized). Window textures are RENDER_SCALE x
+     * their logical size, so when the drawable is RENDER_SCALE x logical (the
+     * retina default) each copy lands 1:1 and stays crisp. Dst rects below
+     * stay in logical coordinates. */
+    {
+        int out_w = LOGICAL_W, out_h = LOGICAL_H;
+        SDL_GetRendererOutputSize(sdl_renderer, &out_w, &out_h);
+        float csx = LOGICAL_W ? (float)out_w / (float)LOGICAL_W : 1.0f;
+        float csy = LOGICAL_H ? (float)out_h / (float)LOGICAL_H : 1.0f;
+        SDL_RenderSetScale(sdl_renderer, csx, csy);
+    }
 
     /* Composite all mapped windows */
     for (int i = 0; i < num_windows; i++) {
@@ -1733,14 +1798,15 @@ void W_TileWindow(W_Window window, W_Icon bit)
 
     win->background = SDL_CreateTexture(sdl_renderer,
         SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        win->width, win->height);
+        win->width * RENDER_SCALE, win->height * RENDER_SCALE);
     if (!win->background) return;
 
     SDL_SetRenderTarget(sdl_renderer, win->background);
+    SDL_RenderSetScale(sdl_renderer, (float)RENDER_SCALE, (float)RENDER_SCALE);
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
     SDL_RenderClear(sdl_renderer);
 
-    /* Tile the icon across the background */
+    /* Tile the icon across the background (logical coords, scaled to RS tex) */
     SDL_Color white = {255, 255, 255, 255};
     SDL_SetTextureColorMod(ic->texture, white.r, white.g, white.b);
     for (int ty = 0; ty < win->height; ty += ic->height) {
@@ -1749,7 +1815,7 @@ void W_TileWindow(W_Window window, W_Icon bit)
             SDL_RenderCopy(sdl_renderer, ic->texture, NULL, &dst);
         }
     }
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 void W_UnTileWindow(W_Window window)
@@ -1858,13 +1924,13 @@ void W_ResizeWindow(W_Window window, int neww, int newh)
     if (win->texture) SDL_DestroyTexture(win->texture);
     win->texture = SDL_CreateTexture(sdl_renderer,
         SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
-        neww, newh);
+        neww * RENDER_SCALE, newh * RENDER_SCALE);
     if (win->texture) {
         SDL_SetTextureBlendMode(win->texture, SDL_BLENDMODE_BLEND);
-        SDL_SetRenderTarget(sdl_renderer, win->texture);
+        winTarget(win);
         SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
         SDL_RenderClear(sdl_renderer);
-        SDL_SetRenderTarget(sdl_renderer, NULL);
+        screenTarget();
     }
 }
 
@@ -1923,10 +1989,10 @@ void W_FlushScrollingWindow(W_Window window)
     int vis_height = (win->height - MENU_PAD * 2) / W_Textheight;
 
     /* Clear the window and redraw all visible lines */
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
     SDL_RenderClear(sdl_renderer);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 
     /* Walk the list from index (top of visible area) */
     struct stringList *item = sw->index;
@@ -2050,7 +2116,7 @@ void W_Halo(int x, int y, W_Color color)
 
     /* Draw a circle on the galactic map around a planet (mplanet_width/2) */
     int r = 8;
-    SDL_SetRenderTarget(sdl_renderer, win->texture);
+    winTarget(win);
     setRenderColor(color);
 
     /* Midpoint circle algorithm */
@@ -2075,7 +2141,7 @@ void W_Halo(int x, int y, W_Color color)
         }
     }
 
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
 }
 
 /* ========================================================================
@@ -2134,7 +2200,7 @@ void W_CameraSnap(W_Window window)
         SDL_PIXELFORMAT_RGBA8888);
     if (!surf) return;
 
-    SDL_SetRenderTarget(sdl_renderer, NULL);
+    screenTarget();
     SDL_RenderReadPixels(sdl_renderer, NULL, SDL_PIXELFORMAT_RGBA8888,
                          surf->pixels, surf->pitch);
 
