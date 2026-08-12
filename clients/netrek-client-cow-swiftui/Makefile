@@ -12,7 +12,7 @@ SHELL = /bin/sh
 BUILD = build
 
 # COW source directory
-COW = ../../submodules/netrek-client-cow
+COW = ../netrek-client-cow
 
 # Bridge source directory
 BRIDGE = NetrekSwiftUI/Bridge
@@ -137,7 +137,7 @@ $(SWIFTUI_C_OBJ): $(BUILD)/%.o: $(BRIDGE)/%.c $(CONFIG_H) | $(BUILD)
 
 # Create pixmaps symlink for sprite loading
 pixmaps:
-	ln -sf ../../submodules/netrek-client-cow/pixmaps pixmaps
+	ln -sf ../netrek-client-cow/pixmaps pixmaps
 
 clean:
 	rm -rf $(BUILD) $(BRIDGE)/config.h $(BRIDGE)/null pixmaps

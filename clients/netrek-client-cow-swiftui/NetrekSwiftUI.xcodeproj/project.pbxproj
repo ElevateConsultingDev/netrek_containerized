@@ -349,7 +349,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"${SRCROOT}/NetrekSwiftUI/Bridge\"\n[ -f config.h ] || ln -sf swiftui_config.h config.h\n[ -f null ] || echo \"/* intentionally empty */\" > null\ncd \"${SRCROOT}\"\n[ -e pixmaps ] || ln -sf ../../submodules/netrek-client-cow/pixmaps pixmaps\n";
+			shellScript = "cd \"${SRCROOT}/NetrekSwiftUI/Bridge\"\n[ -f config.h ] || ln -sf swiftui_config.h config.h\n[ -f null ] || echo \"/* intentionally empty */\" > null\ncd \"${SRCROOT}\"\n[ -e pixmaps ] || ln -sf ../netrek-client-cow/pixmaps pixmaps\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -556,7 +556,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NetrekSwiftUI/Bridge",
-					"$(SRCROOT)/../../submodules/netrek-client-cow",
+					"$(SRCROOT)/../netrek-client-cow",
 				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHighResolutionCapable = YES;
@@ -596,7 +596,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				HEADER_SEARCH_PATHS = (
 					"$(SRCROOT)/NetrekSwiftUI/Bridge",
-					"$(SRCROOT)/../../submodules/netrek-client-cow",
+					"$(SRCROOT)/../netrek-client-cow",
 				);
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.games";
 				INFOPLIST_KEY_NSHighResolutionCapable = YES;

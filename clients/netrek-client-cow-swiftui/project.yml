@@ -47,115 +47,115 @@ targets:
         type: file
 
       # COW engine C source files (from submodule, compiled as-is)
-      - path: ../../submodules/netrek-client-cow/beeplite.c
+      - path: ../netrek-client-cow/beeplite.c
         type: file
-      - path: ../../submodules/netrek-client-cow/censor.c
+      - path: ../netrek-client-cow/censor.c
         type: file
-      - path: ../../submodules/netrek-client-cow/check.c
+      - path: ../netrek-client-cow/check.c
         type: file
-      - path: ../../submodules/netrek-client-cow/colors.c
+      - path: ../netrek-client-cow/colors.c
         type: file
-      - path: ../../submodules/netrek-client-cow/cowmain.c
+      - path: ../netrek-client-cow/cowmain.c
         type: file
-      - path: ../../submodules/netrek-client-cow/dashboard.c
+      - path: ../netrek-client-cow/dashboard.c
         type: file
-      - path: ../../submodules/netrek-client-cow/dashboard3.c
+      - path: ../netrek-client-cow/dashboard3.c
         type: file
-      - path: ../../submodules/netrek-client-cow/data.c
+      - path: ../netrek-client-cow/data.c
         type: file
-      - path: ../../submodules/netrek-client-cow/death.c
+      - path: ../netrek-client-cow/death.c
         type: file
-      - path: ../../submodules/netrek-client-cow/defaults.c
+      - path: ../netrek-client-cow/defaults.c
         type: file
-      - path: ../../submodules/netrek-client-cow/defwin.c
+      - path: ../netrek-client-cow/defwin.c
         type: file
-      - path: ../../submodules/netrek-client-cow/distress.c
+      - path: ../netrek-client-cow/distress.c
         type: file
-      - path: ../../submodules/netrek-client-cow/dmessage.c
+      - path: ../netrek-client-cow/dmessage.c
         type: file
-      - path: ../../submodules/netrek-client-cow/docwin.c
+      - path: ../netrek-client-cow/docwin.c
         type: file
-      - path: ../../submodules/netrek-client-cow/enter.c
+      - path: ../netrek-client-cow/enter.c
         type: file
-      - path: ../../submodules/netrek-client-cow/feature.c
+      - path: ../netrek-client-cow/feature.c
         type: file
-      - path: ../../submodules/netrek-client-cow/findslot.c
+      - path: ../netrek-client-cow/findslot.c
         type: file
-      - path: ../../submodules/netrek-client-cow/getname.c
+      - path: ../netrek-client-cow/getname.c
         type: file
-      - path: ../../submodules/netrek-client-cow/getship.c
+      - path: ../netrek-client-cow/getship.c
         type: file
-      - path: ../../submodules/netrek-client-cow/helpwin.c
+      - path: ../netrek-client-cow/helpwin.c
         type: file
-      - path: ../../submodules/netrek-client-cow/inform.c
+      - path: ../netrek-client-cow/inform.c
         type: file
-      - path: ../../submodules/netrek-client-cow/interface.c
+      - path: ../netrek-client-cow/interface.c
         type: file
-      - path: ../../submodules/netrek-client-cow/lagmeter.c
+      - path: ../netrek-client-cow/lagmeter.c
         type: file
-      - path: ../../submodules/netrek-client-cow/local.c
+      - path: ../netrek-client-cow/local.c
         type: file
-      - path: ../../submodules/netrek-client-cow/macrowin.c
+      - path: ../netrek-client-cow/macrowin.c
         type: file
-      - path: ../../submodules/netrek-client-cow/map.c
+      - path: ../netrek-client-cow/map.c
         type: file
-      - path: ../../submodules/netrek-client-cow/myf.c
+      - path: ../netrek-client-cow/myf.c
         type: file
-      - path: ../../submodules/netrek-client-cow/netstat.c
+      - path: ../netrek-client-cow/netstat.c
         type: file
-      - path: ../../submodules/netrek-client-cow/netstatopt.c
+      - path: ../netrek-client-cow/netstatopt.c
         type: file
-      - path: ../../submodules/netrek-client-cow/newwin.c
+      - path: ../netrek-client-cow/newwin.c
         type: file
-      - path: ../../submodules/netrek-client-cow/option.c
+      - path: ../netrek-client-cow/option.c
         type: file
-      - path: ../../submodules/netrek-client-cow/parsemeta.c
+      - path: ../netrek-client-cow/parsemeta.c
         type: file
-      - path: ../../submodules/netrek-client-cow/ping.c
+      - path: ../netrek-client-cow/ping.c
         type: file
-      - path: ../../submodules/netrek-client-cow/pingstats.c
+      - path: ../netrek-client-cow/pingstats.c
         type: file
-      - path: ../../submodules/netrek-client-cow/planetlist.c
+      - path: ../netrek-client-cow/planetlist.c
         type: file
-      - path: ../../submodules/netrek-client-cow/playback.c
+      - path: ../netrek-client-cow/playback.c
         type: file
-      - path: ../../submodules/netrek-client-cow/playerlist.c
+      - path: ../netrek-client-cow/playerlist.c
         type: file
-      - path: ../../submodules/netrek-client-cow/ranklist.c
+      - path: ../netrek-client-cow/ranklist.c
         type: file
-      - path: ../../submodules/netrek-client-cow/reserved.c
+      - path: ../netrek-client-cow/reserved.c
         type: file
-      - path: ../../submodules/netrek-client-cow/rotate.c
+      - path: ../netrek-client-cow/rotate.c
         type: file
-      - path: ../../submodules/netrek-client-cow/senddist.c
+      - path: ../netrek-client-cow/senddist.c
         type: file
-      - path: ../../submodules/netrek-client-cow/short.c
+      - path: ../netrek-client-cow/short.c
         type: file
-      - path: ../../submodules/netrek-client-cow/sintab.c
+      - path: ../netrek-client-cow/sintab.c
         type: file
-      - path: ../../submodules/netrek-client-cow/smessage.c
+      - path: ../netrek-client-cow/smessage.c
         type: file
-      - path: ../../submodules/netrek-client-cow/socket.c
+      - path: ../netrek-client-cow/socket.c
         type: file
-      - path: ../../submodules/netrek-client-cow/spopt.c
+      - path: ../netrek-client-cow/spopt.c
         type: file
-      - path: ../../submodules/netrek-client-cow/stats.c
+      - path: ../netrek-client-cow/stats.c
         type: file
-      - path: ../../submodules/netrek-client-cow/string_util.c
+      - path: ../netrek-client-cow/string_util.c
         type: file
-      - path: ../../submodules/netrek-client-cow/tools.c
+      - path: ../netrek-client-cow/tools.c
         type: file
-      - path: ../../submodules/netrek-client-cow/udpopt.c
+      - path: ../netrek-client-cow/udpopt.c
         type: file
-      - path: ../../submodules/netrek-client-cow/util.c
+      - path: ../netrek-client-cow/util.c
         type: file
-      - path: ../../submodules/netrek-client-cow/war.c
+      - path: ../netrek-client-cow/war.c
         type: file
-      - path: ../../submodules/netrek-client-cow/warning.c
+      - path: ../netrek-client-cow/warning.c
         type: file
-      - path: ../../submodules/netrek-client-cow/input.c
+      - path: ../netrek-client-cow/input.c
         type: file
-      - path: ../../submodules/netrek-client-cow/redraw.c
+      - path: ../netrek-client-cow/redraw.c
         type: file
 
     settings:
@@ -163,7 +163,7 @@ targets:
         # Our config.h (swiftui_config.h symlink) must come first in search path
         HEADER_SEARCH_PATHS:
           - $(SRCROOT)/NetrekSwiftUI/Bridge
-          - $(SRCROOT)/../../submodules/netrek-client-cow
+          - $(SRCROOT)/../netrek-client-cow
         # Bridging header for Swift ↔ C interop
         SWIFT_OBJC_BRIDGING_HEADER: NetrekSwiftUI/Bridge/NetrekBridge.h
         # Disable Clang modules to avoid Darwin header conflicts (login, scanw)
@@ -200,5 +200,5 @@ targets:
           [ -f config.h ] || ln -sf swiftui_config.h config.h
           [ -f null ] || echo "/* intentionally empty */" > null
           cd "${SRCROOT}"
-          [ -e pixmaps ] || ln -sf ../../submodules/netrek-client-cow/pixmaps pixmaps
+          [ -e pixmaps ] || ln -sf ../netrek-client-cow/pixmaps pixmaps
         basedOnDependencyAnalysis: false

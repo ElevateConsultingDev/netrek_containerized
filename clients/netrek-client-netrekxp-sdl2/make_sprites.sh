@@ -3,7 +3,7 @@
 # Layout: 8 columns (ship types) x 32 rows (directions)
 # Ship type order: SC DD CA BB AS SB GA AT (matches struct.h indices 0-7)
 
-SRCDIR="../../submodules/netrek-client-netrekxp/resources/ships"
+SRCDIR="../netrek-client-netrekxp/resources/ships"
 OUTDIR="bitmaps/shiplib"
 mkdir -p "$OUTDIR"
 

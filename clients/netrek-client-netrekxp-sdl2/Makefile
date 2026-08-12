@@ -11,7 +11,7 @@ SHELL = /bin/sh
 BUILD = build
 
 # NetrekXP source directories
-XP = ../../submodules/netrek-client-netrekxp
+XP = ../netrek-client-netrekxp
 XP_SRC = $(XP)/src
 XP_INC = $(XP)/include
 

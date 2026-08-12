@@ -11,7 +11,7 @@ SHELL = /bin/sh
 BUILD = build
 
 # Paradise source directory
-PARADISE = ../../submodules/netrek-client-paradise
+PARADISE = ../../reference_repos/netrek-client-paradise
 
 # SDL2 flags
 SDL2_CFLAGS = $(shell pkg-config --cflags sdl2 SDL2_ttf SDL2_image SDL2_mixer 2>/dev/null)

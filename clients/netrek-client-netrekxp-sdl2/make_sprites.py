@@ -6,7 +6,7 @@ Ship type order: SC DD CA BB AS SB GA AT (indices 0-7)
 import os
 from PIL import Image
 
-SRCDIR = "../../submodules/netrek-client-netrekxp/resources/ships"
+SRCDIR = "../netrek-client-netrekxp/resources/ships"
 OUTDIR = "bitmaps/shiplib"
 os.makedirs(OUTDIR, exist_ok=True)
 

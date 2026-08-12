@@ -11,7 +11,7 @@ SHELL = /bin/sh
 BUILD = build
 
 # COW source directory
-COW = ../../submodules/netrek-client-cow
+COW = ../netrek-client-cow
 
 # SDL2 flags
 SDL2_CFLAGS = $(shell pkg-config --cflags sdl2 SDL2_ttf SDL2_image SDL2_mixer)
