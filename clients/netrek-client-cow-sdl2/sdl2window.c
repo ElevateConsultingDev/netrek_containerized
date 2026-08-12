@@ -257,6 +257,15 @@ void W_Initialize(char *str)
     int win_w = 1024;
     int win_h = 768;
 
+    /* Smooth interpolation when the logical scene is scaled to the drawable
+     * (e.g. a resized window), instead of blocky nearest-neighbor. Harmless at
+     * 1:1. NOTE: SDL_WINDOW_ALLOW_HIGHDPI was tried here for retina crispness
+     * but it breaks mouse/steering: with logical-size scaling, SDL's automatic
+     * event-coordinate translation does not account for the 2x DPI drawable,
+     * so the cursor maps to the wrong point and the ship won't respond. Proper
+     * retina support needs a full 2x render pass, deferred as a separate task. */
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+
     sdl_window = SDL_CreateWindow("Netrek",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         win_w, win_h,
