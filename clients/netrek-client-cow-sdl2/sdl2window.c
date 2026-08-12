@@ -329,6 +329,9 @@ void W_Initialize(char *str)
     /* Smooth interpolation when a texture is scaled, instead of blocky
      * nearest-neighbor. */
     SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "best");
+    /* Let SDL_RaiseWindow actually take focus (no-op without this on macOS),
+     * so a terminal-launched window is focused without a click. */
+    SDL_SetHint(SDL_HINT_FORCE_RAISEWINDOW, "1");
 
     /* Logical canvas = initial window size; all layout/mouse math uses this. */
     LOGICAL_W = win_w;
