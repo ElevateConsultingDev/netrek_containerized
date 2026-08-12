@@ -70,6 +70,9 @@ SDL_Renderer *sdl_renderer = NULL;
 struct window windows[MAX_WINDOWS];
 int num_windows = 0;
 
+/* Input diagnostics: enabled by setting NETREK_INPUT_DEBUG in the environment. */
+static int input_debug = 0;
+
 /* Pipe for W_Socket() integration with select() */
 static int socket_pipe[2] = {-1, -1};
 
@@ -230,6 +233,8 @@ struct window *findWindowAt(int sx, int sy)
 
 void W_Initialize(char *str)
 {
+    input_debug = (getenv("NETREK_INPUT_DEBUG") != NULL);
+
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
         fprintf(stderr, "SDL_Init failed: %s\n", SDL_GetError());
         exit(1);
@@ -267,6 +272,14 @@ void W_Initialize(char *str)
         fprintf(stderr, "SDL_CreateRenderer failed: %s\n", SDL_GetError());
         exit(1);
     }
+
+    /* macOS: a bare binary launched from the terminal (no .app bundle) does
+     * not reliably become the focused foreground app, so the window opens but
+     * keyboard/mouse focus stays with Terminal until you click away and back.
+     * Explicitly raise the window to key-and-front, and pump the event queue
+     * once so the activation takes effect before the game loop starts. */
+    SDL_RaiseWindow(sdl_window);
+    SDL_PumpEvents();
 
     /* Create pipe for W_Socket() integration with select() */
     if (pipe(socket_pipe) < 0) {
@@ -1266,6 +1279,45 @@ static unsigned char sdl_key_to_wlib(SDL_Keycode sym, SDL_Keymod mod)
     return 0; /* Unknown key */
 }
 
+/* One-time dump of the window table so we can see which window the cursor
+ * resolves to for key routing (COW only accepts ship-control keys whose event
+ * targets the tactical "local" window). */
+static void input_debug_dump_windows(void)
+{
+    static int dumped = 0;
+    if (dumped) return;
+    dumped = 1;
+    int lx, ly, wx, wy;
+    SDL_GetWindowSize(sdl_window, &wx, &wy);
+    int lw = 0, lh = 0;
+    SDL_RenderGetLogicalSize(sdl_renderer, &lw, &lh);
+    lx = wx; ly = wy;
+    fprintf(stderr, "[INPUT] window px=(%d,%d) logical=(%d,%d)\n", wx, wy, lw, lh);
+    (void)lx; (void)ly;
+    for (int i = 0; i < num_windows; i++) {
+        struct window *w = &windows[i];
+        fprintf(stderr, "[INPUT]   win[%d] '%s' xywh=(%d,%d,%d,%d) mapped=%d type=%d\n",
+                i, w->name ? w->name : "?", w->x, w->y, w->width, w->height,
+                w->mapped, w->type);
+    }
+}
+
+/* Current mouse position in renderer LOGICAL coordinates. SDL_GetMouseState
+ * returns physical window pixels; once SDL_RenderSetLogicalSize is active and
+ * the window is resized, those diverge from the logical coords SDL puts in
+ * button/motion events. Keyboard- and wheel-triggered actions (e.g. firing a
+ * phaser toward the cursor) attach the mouse position this way, so they must
+ * use the same logical space as the aim math or they aim at the wrong point. */
+static void get_logical_mouse(int *mx, int *my)
+{
+    int px, py;
+    SDL_GetMouseState(&px, &py);
+    float lx = (float)px, ly = (float)py;
+    SDL_RenderWindowToLogical(sdl_renderer, px, py, &lx, &ly);
+    *mx = (int)lx;
+    *my = (int)ly;
+}
+
 static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
 {
     memset(wev, 0, sizeof(W_Event));
@@ -1274,7 +1326,13 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
     case SDL_KEYDOWN: {
         unsigned char key = sdl_key_to_wlib(sdl_ev->key.keysym.sym,
                                             sdl_ev->key.keysym.mod);
-        if (key == 0) return 0;
+        if (input_debug) input_debug_dump_windows();
+        if (key == 0) {
+            if (input_debug)
+                fprintf(stderr, "[INPUT] KEYDOWN sym=0x%x mod=0x%x DROPPED (unmapped)\n",
+                        sdl_ev->key.keysym.sym, sdl_ev->key.keysym.mod);
+            return 0;
+        }
 
         wev->type = W_EV_KEY;
         wev->key = key;
@@ -1286,11 +1344,15 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
 
         /* Determine which window has focus - use mouse position */
         int mx, my;
-        SDL_GetMouseState(&mx, &my);
+        get_logical_mouse(&mx, &my);
         struct window *win = findWindowAt(mx, my);
         wev->Window = win ? W_Window2Void(win) : NULL;
         wev->x = mx - (win ? win->x : 0);
         wev->y = my - (win ? win->y : 0);
+        if (input_debug)
+            fprintf(stderr, "[INPUT] KEYDOWN wkey=%d '%c' mouse=(%d,%d) win=%s wev=(%d,%d)\n",
+                    key, (key >= 32 && key < 127) ? key : '.', mx, my,
+                    win ? (win->name ? win->name : "?") : "NULL", wev->x, wev->y);
         return 1;
     }
 
@@ -1302,7 +1364,7 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
         wev->type = W_EV_KEY_OFF;
         wev->key = key;
         int mx, my;
-        SDL_GetMouseState(&mx, &my);
+        get_logical_mouse(&mx, &my);
         struct window *win = findWindowAt(mx, my);
         wev->Window = win ? W_Window2Void(win) : NULL;
         return 1;
@@ -1313,6 +1375,11 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
         int mx = sdl_ev->button.x;
         int my = sdl_ev->button.y;
         struct window *win = findWindowAt(mx, my);
+        if (input_debug)
+            fprintf(stderr, "[INPUT] BUTTON b=%d mouse=(%d,%d) win=%s%s\n",
+                    sdl_ev->button.button, mx, my,
+                    win ? (win->name ? win->name : "?") : "NULL",
+                    win ? "" : " DROPPED (no window)");
         if (!win) return 0;
 
         wev->type = W_EV_BUTTON;
@@ -1345,7 +1412,7 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
 
     case SDL_MOUSEWHEEL: {
         int mx, my;
-        SDL_GetMouseState(&mx, &my);
+        get_logical_mouse(&mx, &my);
         struct window *win = findWindowAt(mx, my);
         if (!win) return 0;
 
@@ -2086,7 +2153,7 @@ int checkMappedPref(char *name, int preferred)
 
 void findMouse(int *x, int *y)
 {
-    SDL_GetMouseState(x, y);
+    get_logical_mouse(x, y);
 }
 
 int findMouseInWin(int *x, int *y, W_Window w)
@@ -2094,7 +2161,7 @@ int findMouseInWin(int *x, int *y, W_Window w)
     struct window *win = W_Void2Window(w);
     if (!win) return 0;
     int mx, my;
-    SDL_GetMouseState(&mx, &my);
+    get_logical_mouse(&mx, &my);
     *x = mx - win->x;
     *y = my - win->y;
     return (*x >= 0 && *x < win->width && *y >= 0 && *y < win->height);
