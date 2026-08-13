@@ -103,7 +103,9 @@ struct colors {
 struct S_Object {
     SDL_Texture *texture;       /* RGBA with transparency */
     int     view, nviews;
-    int     width, height;
+    int     width, height;      /* source frame size in the texture */
+    int     disp_w, disp_h;     /* on-screen (logical) size; = source unless a
+                                   hi-res sheet is downscaled to canonical size */
     int     cloak;
     struct window *target_win;  /* which window to draw on */
 };

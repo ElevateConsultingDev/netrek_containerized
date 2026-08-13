@@ -25,6 +25,10 @@ extern SDL_Renderer *sdl_renderer;
 #define NUM_BG_IMGS 5
 #define NUM_PL_IMGS 11
 
+/* Canonical on-screen ship size (px, logical). COW ship bitmaps are 20x20; the
+ * hi-res strips are downscaled to this so they render crisp, not oversized. */
+#define SHIP_DISP 20
+
 #define PL_PIX_UKN 0
 #define PL_PIX_ROCK 1
 #define PL_PIX_AGRI 2
@@ -103,6 +107,8 @@ static int ReadFileToSprite(const char *filename, struct S_Object *sprite,
     sprite->nviews = nviews;
     sprite->width = width;
     sprite->height = height / nviews;
+    sprite->disp_w = sprite->width;   /* default: draw 1:1 with the source */
+    sprite->disp_h = sprite->height;
     sprite->cloak = 0;
     sprite->target_win = target;
 
@@ -163,12 +169,22 @@ void GetPixmaps_SDL2(W_Window t, W_Window g)
 
     GetPixmapDir();
 
-    /* Ship sprites → draw on tactical */
+    /* Ship sprites → draw on tactical. Prefer the hi-res set in "<dir>-hr"
+     * (80px/frame strips from tools/gen_hires_ships.py); those are drawn at the
+     * canonical SHIP_DISP px so they're just crisper, not bigger. Fall back to
+     * the standard 20px pixmaps when the hi-res set is absent. */
     for (i = 0; i < NUMTEAM + 1; i++) {
         missing = 0;
         for (j = 0; j < NUM_TYPES; j++) {
-            snprintf(path, sizeof(path), "%s/%s/%s", pixmapDir, teamnames[i], shipfiles[j]);
-            missing += ReadFileToSprite(path, &shipImg[i][j], tactical_win);
+            struct stat sb;
+            snprintf(path, sizeof(path), "%s-hr/%s/%s", pixmapDir, teamnames[i], shipfiles[j]);
+            if (stat(path, &sb) == 0 &&
+                ReadFileToSprite(path, &shipImg[i][j], tactical_win) == 0) {
+                shipImg[i][j].disp_w = shipImg[i][j].disp_h = SHIP_DISP;
+            } else {
+                snprintf(path, sizeof(path), "%s/%s/%s", pixmapDir, teamnames[i], shipfiles[j]);
+                missing += ReadFileToSprite(path, &shipImg[i][j], tactical_win);
+            }
         }
         if (missing == NUM_TYPES) {
             pixMissing |= reremap[i];
@@ -268,13 +284,15 @@ int W_DrawSprite(void *in, int x, int y, int winside)
     struct window *win = sprite->target_win;
     if (!win || !win->texture) return 0;
 
-    int dx = x - sprite->width / 2;
-    int dy = y - sprite->height / 2;
+    int dx = x - sprite->disp_w / 2;
+    int dy = y - sprite->disp_h / 2;
 
-    /* Source rect: select the correct frame from the sprite sheet */
+    /* Source rect: select the correct frame from the sprite sheet. dst uses the
+     * display size so a hi-res source is downscaled to the canonical on-screen
+     * size (crisper) rather than drawn oversized. */
     SDL_Rect src = {0, sprite->view * sprite->height,
                     sprite->width, sprite->height};
-    SDL_Rect dst = {dx, dy, sprite->width, sprite->height};
+    SDL_Rect dst = {dx, dy, sprite->disp_w, sprite->disp_h};
 
     /* Handle cloaking: apply alpha from cloak sprite */
     if (sprite->cloak > 0 && !(pixFlags & NO_CLK_PIX) && cloakImg.texture) {
@@ -305,7 +323,7 @@ void W_DrawSpriteAbsolute(void *in, int x, int y)
 
     SDL_Rect src = {0, sprite->view * sprite->height,
                     sprite->width, sprite->height};
-    SDL_Rect dst = {x, y, sprite->width, sprite->height};
+    SDL_Rect dst = {x, y, sprite->disp_w, sprite->disp_h};
 
     winTarget(win);
     SDL_RenderCopy(sdl_renderer, sprite->texture, &src, &dst);
@@ -323,7 +341,7 @@ void W_ClearSpriteAbsolute(void *in, int x, int y)
     /* Clear the area where the sprite was drawn */
     winTarget(win);
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
-    SDL_Rect r = {x, y, sprite->width, sprite->height};
+    SDL_Rect r = {x, y, sprite->disp_w, sprite->disp_h};
     SDL_RenderFillRect(sdl_renderer, &r);
     screenTarget();
 }
