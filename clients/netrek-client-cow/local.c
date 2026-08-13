@@ -152,6 +152,22 @@ static void DrawPlanets(void)
 		      W_White);
 	}
 
+      if ((showArmy == 1 || showArmy == 3) && ((l->pl_info & me->p_team)
+
+#ifdef RECORDGAME
+	  || playback
+#endif
+
+	  ))
+	{
+	  /* Army count for planets we have info on (last-known if not current).
+	   * Sits inside the planet box, so the box's clearzone erases it. */
+	  char armbuf[8];
+	  int len = sprintf(armbuf, "%d", l->pl_armies);
+	  W_MaskText(w, dx - (W_Textwidth * len / 2), dy - (planet_height / 4),
+		     W_White, armbuf, len, W_BoldFont);
+	}
+
       if (namemode)
 	{
 	  W_MaskText(w, dx - (planet_width / 2), dy + (planet_height / 2),

@@ -419,6 +419,7 @@ int     showIND = 0;
 int     newPlist = 0;
 int     agriCAPS = 1;     /* uppercase AGRI planet names on the galactic */
 int     agriColor = 2;    /* 1=white 2=yellow 3=grey else planet's own color */
+int     showArmy = 1;     /* army count by planets: 0 none 1 local 2 gal 3 both */
 
 /* tried to automate this as much as possible... the entries are * the
  * character, string identifier, and the default macro for * each distress

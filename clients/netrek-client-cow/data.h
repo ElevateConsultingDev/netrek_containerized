@@ -347,6 +347,7 @@ extern int showIND;
 extern int newPlist;
 extern int agriCAPS;
 extern int agriColor;
+extern int showArmy;
 
 
 extern struct dmacro_list *distmacro;
