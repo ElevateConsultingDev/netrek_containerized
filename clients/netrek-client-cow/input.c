@@ -1301,10 +1301,12 @@ int getcourse(W_Window ww, int x, int y)
       return ((unsigned char) nint((atan2((double) (x - me_x),
 			     (double) (me_y - y)) / 3.14159 * 128.) + 0.5));
     }
-  else
-    return ((unsigned char) nint((atan2((double) (x - TWINSIDE / 2),
+  else {
+    int c = (unsigned char) nint((atan2((double) (x - TWINSIDE / 2),
 					(double) (TWINSIDE / 2 - y))
-				  / 3.14159 * 128.) + 0.5));
+				  / 3.14159 * 128.) + 0.5);
+    return c;
+  }
 }
 
 static void detmine(void)

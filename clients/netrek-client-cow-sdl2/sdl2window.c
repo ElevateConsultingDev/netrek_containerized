@@ -105,16 +105,24 @@ void screenTarget(void)
     SDL_SetRenderTarget(sdl_renderer, NULL);
 }
 
-/* Map a window-point coordinate (SDL event / GetMouseState space) to logical
- * canvas coordinates. Identity when the window is at its default size. */
+/* Map an SDL mouse-event point (window-point space) to logical canvas coords.
+ * SDL events are in window POINTS; the logical canvas maps to points by the
+ * uniform scale s = points/LOGICAL, so logical = point / s. This is the ONLY
+ * mouse transform (we do NOT use SDL_RenderSetLogicalSize, whose event watcher
+ * would translate a second time). MUST use the same uniform scale the
+ * compositor uses (there in drawable space = s * dpi, but the ratio is what
+ * keeps drawn angle == fired angle). */
 static void pt_to_logical(int px, int py, int *lx, int *ly)
 {
     int ww = LOGICAL_W, wh = LOGICAL_H;
-    if (sdl_window) SDL_GetWindowSize(sdl_window, &ww, &wh);
+    if (sdl_window) SDL_GetWindowSize(sdl_window, &ww, &wh);  /* points */
     if (ww <= 0) ww = LOGICAL_W;
     if (wh <= 0) wh = LOGICAL_H;
-    *lx = px * LOGICAL_W / ww;
-    *ly = py * LOGICAL_H / wh;
+    float sx = (float)ww / LOGICAL_W, sy = (float)wh / LOGICAL_H;
+    float s = sx < sy ? sx : sy;   /* uniform (letterbox), matches W_Flush */
+    if (s <= 0) s = 1.0f;
+    *lx = (int)(px / s);
+    *ly = (int)(py / s);
 }
 
 /* Font handles */
@@ -302,9 +310,11 @@ void W_Initialize(char *str)
     LOGICAL_H = win_h;
 
     /* HIGHDPI so the retina drawable is the full 2x pixels; combined with the
-     * RENDER_SCALE-supersampled window textures this yields crisp output. We
-     * do NOT use SDL_RenderSetLogicalSize (its HiDPI mouse translation is
-     * wrong); mouse is mapped by hand via pt_to_logical. */
+     * RENDER_SCALE-supersampled window textures this yields crisp output.
+     * SDL_RenderSetLogicalSize (set once the "netrek" baseWin is created)
+     * owns ALL scaling: it maps the logical canvas onto the drawable AND
+     * translates mouse event coords back into logical space, so render and
+     * input can never drift out of sync. */
     sdl_window = SDL_CreateWindow("Netrek",
         SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED,
         win_w, win_h,
@@ -436,14 +446,15 @@ W_Window W_MakeWindow(char *name, int x, int y, int width, int height,
     if (win->x < 0) win->x = 0;
     if (win->y < 0) win->y = 0;
 
-    /* Scaling: the COW baseWin ("netrek") defines the full canvas. Lock it as
-     * the renderer's logical size so resizing the OS window or going fullscreen
-     * scales all composited sub-windows to fit (aspect-ratio preserved, letter-
-     * boxed). SDL also maps mouse coords back into this logical space, so all
-     * existing click hit-testing keeps working unchanged. */
-    if (name && strcmp(name, "netrek") == 0 && sdl_renderer) {
-        SDL_RenderSetLogicalSize(sdl_renderer,
-                                 win->x + win->width, win->y + win->height);
+    /* Scaling: the COW baseWin ("netrek") defines the full logical canvas.
+     * We do NOT use SDL_RenderSetLogicalSize: its render-side scaling is
+     * silently disabled by our per-frame SDL_SetRenderTarget switches, while
+     * its mouse-event watcher keeps translating -- so render and mouse drift
+     * apart. Instead W_Flush scales the composite by hand and pt_to_logical
+     * scales the mouse by hand, each exactly once. */
+    if (name && strcmp(name, "netrek") == 0) {
+        LOGICAL_W = win->x + win->width;
+        LOGICAL_H = win->y + win->height;
     }
 
     /* Create render target texture */
@@ -1336,19 +1347,27 @@ static unsigned char sdl_key_to_wlib(SDL_Keycode sym, SDL_Keymod mod)
     return 0; /* Unknown key */
 }
 
-/* Current mouse position in renderer logical coordinates (SDL_GetMouseState
- * returns physical window pixels; pt_to_logical maps them back). Keyboard- and
- * wheel-triggered actions (e.g. firing toward the cursor) use this so they aim
- * in the same logical space as the rest of the layout. */
+/* Raw window-point mouse position, cached from motion/button events. NOT read
+ * from SDL_GetMouseState: once SDL_RenderSetScale is active, GetMouseState
+ * returns scale-polluted coords, which pt_to_logical would then scale a second
+ * time (aim drifts as the window grows). Events carry raw points, so cache. */
+static int last_mouse_px = 0, last_mouse_py = 0;
+
+/* Current mouse position in logical canvas coordinates, for keyboard/wheel
+ * actions that fire toward the cursor. */
 static void get_logical_mouse(int *mx, int *my)
 {
-    int px, py;
-    SDL_GetMouseState(&px, &py);
-    pt_to_logical(px, py, mx, my);
+    pt_to_logical(last_mouse_px, last_mouse_py, mx, my);
 }
 
 static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
 {
+    if (sdl_ev->type == SDL_MOUSEMOTION) {
+        last_mouse_px = sdl_ev->motion.x; last_mouse_py = sdl_ev->motion.y;
+    } else if (sdl_ev->type == SDL_MOUSEBUTTONDOWN ||
+               sdl_ev->type == SDL_MOUSEBUTTONUP) {
+        last_mouse_px = sdl_ev->button.x; last_mouse_py = sdl_ev->button.y;
+    }
     memset(wev, 0, sizeof(W_Event));
 
     switch (sdl_ev->type) {
@@ -1610,25 +1629,24 @@ void W_Flush(void)
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
     SDL_RenderClear(sdl_renderer);
 
-    /* Composite scale: map the logical canvas onto the actual drawable (which
-     * is HiDPI-doubled and/or resized). Window textures are RENDER_SCALE x
-     * their logical size, so when the drawable is RENDER_SCALE x logical (the
-     * retina default) each copy lands 1:1 and stays crisp. Dst rects below
-     * stay in logical coordinates. */
-    {
-        int out_w = LOGICAL_W, out_h = LOGICAL_H;
-        SDL_GetRendererOutputSize(sdl_renderer, &out_w, &out_h);
-        float csx = LOGICAL_W ? (float)out_w / (float)LOGICAL_W : 1.0f;
-        float csy = LOGICAL_H ? (float)out_h / (float)LOGICAL_H : 1.0f;
-        SDL_RenderSetScale(sdl_renderer, csx, csy);
-    }
+    /* Composite scale: the default target IS the drawable (HiDPI pixels), so
+     * scale the logical canvas up to fill it. cs = drawable / LOGICAL, uniform
+     * (letterbox). This is drawable-space; pt_to_logical works in point-space,
+     * so cs = pt_to_logical's s * dpi -- both derive from the same window and
+     * cannot drift. Window textures are RENDER_SCALE x logical, so on the 2x
+     * retina drawable each copy lands ~1:1 and text/vectors stay crisp. */
+    int out_w = LOGICAL_W, out_h = LOGICAL_H;
+    SDL_GetRendererOutputSize(sdl_renderer, &out_w, &out_h);
+    float csx = (float)out_w / (float)LOGICAL_W;
+    float csy = (float)out_h / (float)LOGICAL_H;
+    float cs = csx < csy ? csx : csy;
 
-    /* Composite all mapped windows */
     for (int i = 0; i < num_windows; i++) {
         struct window *win = &windows[i];
         if (!win->mapped || !win->texture) continue;
 
-        SDL_Rect dst = {win->x, win->y, win->width, win->height};
+        SDL_Rect dst = {(int)(win->x * cs), (int)(win->y * cs),
+                        (int)(win->width * cs), (int)(win->height * cs)};
         SDL_RenderCopy(sdl_renderer, win->texture, NULL, &dst);
 
         /* Draw border if configured */
