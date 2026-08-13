@@ -10,6 +10,10 @@
 /*
  * Feature defines (same as upstream COW)
  */
+/* SDL2 backend uses the deferred AddToScrolling + W_FlushScrollingWindow model
+ * (like the WIN32 backend), so shared code must flush scrolling windows each
+ * frame. Gated in redraw.c alongside WIN32. */
+#define SDL2BACKEND
 #define RCD
 #define PING
 #define SHORT_PACKETS

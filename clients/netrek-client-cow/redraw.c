@@ -53,7 +53,7 @@ void intrupt(fd_set *readfds) {
 
 		updateMaxStats(0);	/* update the max stats <isae> */
 
-#ifdef WIN32
+#if defined(WIN32) || defined(SDL2BACKEND)
 		W_FlushScrollingWindow(messwa);
 		W_FlushScrollingWindow(messwt);
 		W_FlushScrollingWindow(messwi);
