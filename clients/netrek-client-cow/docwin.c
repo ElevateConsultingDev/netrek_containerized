@@ -56,7 +56,7 @@ void showdocs(int atline)
   center = GWINSIDE / 2 - (length * W_Textwidth) / 2;
   W_WriteText(docwin, center, W_Textheight, textColor,
 	      buf, length, W_BoldFont);
-  snprintf(buf, sizeof(buf), "feedback to: quozl@us.netrek.org");
+  snprintf(buf, sizeof(buf), "feedback to: dave@elevateconsulting.dev");
   length = strlen(buf);
   center = GWINSIDE / 2 - (length * W_Textwidth) / 2;
   W_WriteText(docwin, center, 3 * W_Textheight, textColor,
@@ -222,7 +222,7 @@ void showxtrekrc(int atline)
   center = GWINSIDE / 2 - (length * W_Textwidth) / 2;
   W_WriteText(xtrekrcwin, center, W_Textheight, textColor,
 	      buf, length, W_BoldFont);
-  snprintf(buf, sizeof(buf), "feedback to: quozl@us.netrek.org");
+  snprintf(buf, sizeof(buf), "feedback to: dave@elevateconsulting.dev");
   length = strlen(buf);
   center = GWINSIDE / 2 - (length * W_Textwidth) / 2;
   W_WriteText(xtrekrcwin, center, 3 * W_Textheight, textColor,

@@ -2,7 +2,7 @@
 
 /* store the version info here */
 
-#define mvers "3.3"
-#define version "COW 3.3"
+#define mvers "0.9"
+#define version "Netrek SDL2 0.9"
 #define LIBMAJOR 3
 #define LIBMINOR 3

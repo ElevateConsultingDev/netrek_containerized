@@ -77,7 +77,7 @@ static void redraw_readme(void)
   {
     "--                                             --",
     "",
-    "netrek-client-cow maintainer: quozl@us.netrek.org",
+    "Netrek SDL2 - dave@elevateconsulting.dev",
     "bug reports welcome",
     "",
     "--                                             --",

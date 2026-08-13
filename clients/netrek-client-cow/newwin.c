@@ -1290,7 +1290,7 @@ void showMotd(W_Window w, int atline)
   center = TWINSIDE / 2 - (length * W_Textwidth) / 2;
   W_WriteText(w, center, W_Textheight, W_Cyan, buf, length, W_BoldFont);
 
-  show_motd_heading(w, "feedback to: quozl@us.netrek.org", 3, W_Cyan);
+  show_motd_heading(w, "feedback to: dave@elevateconsulting.dev", 3, W_Cyan);
 
   if (me == NULL) {
     show_motd_heading(w, "while you are in the queue", 5, W_Grey);
