@@ -1,0 +1,25 @@
+# Production STURGEON server (EC2). Standalone compose (not an override of
+# docker-compose.yml) with 1:1 host->container port mapping so UDP works
+# natively -- unlike the local dev compose which remaps ports. Same image and
+# entrypoint as local, so behavior matches what was tested.
+services:
+  server:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+    image: vanilla-netrek-image
+    container_name: vanilla-netrek-server
+    ports:
+      - "2592:2592"              # player queue (TCP)
+      - "2593:2593"              # observer queue (TCP)
+      - "2593-2629:2593-2629/udp" # game UDP (1:1, no remap)
+    entrypoint: ["/bin/bash", "/opt/netrek/server-entrypoint.sh"]
+    volumes:
+      - ./docker/server/entrypoint.sh:/opt/netrek/server-entrypoint.sh:ro
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "netrekd"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 5s
