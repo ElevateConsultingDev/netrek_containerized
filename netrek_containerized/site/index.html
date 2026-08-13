@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Netrek — Elevate STURGEON Server</title>
+<meta name="description" content="Private STURGEON Netrek server hosted by Elevate Consulting, plus where to download a client that works with it.">
+<style>
+  :root{
+    --bg:#05070a; --panel:#0d1219; --panel2:#111926; --edge:#1d2b3a;
+    --green:#39ff8b; --green-dim:#1e7f4c; --cyan:#4fd6ff; --amber:#ffcf4a;
+    --text:#cfe6d8; --muted:#7d93a3; --red:#ff5a5a;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{
+    background:radial-gradient(1200px 700px at 50% -10%, #0b1a12 0%, var(--bg) 60%) fixed, var(--bg);
+    color:var(--text); font-family:var(--mono); line-height:1.55;
+    -webkit-font-smoothing:antialiased; padding:0 20px 80px;
+  }
+  a{color:var(--cyan); text-decoration:none}
+  a:hover{text-decoration:underline}
+  .wrap{max-width:900px; margin:0 auto}
+  header{text-align:center; padding:64px 0 28px}
+  .logo{font-size:clamp(38px,9vw,76px); font-weight:800; letter-spacing:.18em;
+    color:var(--green); text-shadow:0 0 24px rgba(57,255,139,.35); margin:0}
+  .tag{color:var(--muted); letter-spacing:.32em; text-transform:uppercase; font-size:13px; margin-top:10px}
+  .rule{height:1px;background:linear-gradient(90deg,transparent,var(--green-dim),transparent);margin:22px 0}
+  .card{background:linear-gradient(180deg,var(--panel),var(--panel2)); border:1px solid var(--edge);
+    border-radius:14px; padding:24px 26px; margin:20px 0; box-shadow:0 0 0 1px rgba(0,0,0,.3), 0 18px 40px -30px #000}
+  h2{color:var(--green); font-size:14px; letter-spacing:.22em; text-transform:uppercase; margin:0 0 16px}
+  h2 .num{color:var(--green-dim); margin-right:10px}
+  .kv{display:grid; grid-template-columns:130px 1fr; gap:8px 14px; font-size:15px}
+  .kv .k{color:var(--muted)}
+  .kv .v{color:var(--text)}
+  .badge{display:inline-block; padding:2px 9px; border-radius:999px; font-size:12px;
+    border:1px solid var(--green-dim); color:var(--green); letter-spacing:.05em}
+  code,.mono{font-family:var(--mono)}
+  .conn{background:#04110a; border:1px solid var(--green-dim); border-radius:10px; padding:12px 14px;
+    color:var(--green); font-size:16px; display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap}
+  .conn b{color:#eafff2}
+  .note{color:var(--muted); font-size:13.5px}
+  .grid{display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:14px; margin-top:6px}
+  .client{background:#0a1017; border:1px solid var(--edge); border-radius:12px; padding:18px}
+  .client h3{margin:0 0 6px; color:#eafff2; font-size:16px}
+  .client .os{color:var(--amber); font-size:12px; letter-spacing:.14em; text-transform:uppercase}
+  .client p{font-size:13.5px; color:var(--muted); margin:8px 0 12px; min-height:38px}
+  .btn{display:inline-block; padding:8px 14px; border-radius:8px; font-size:13.5px;
+    border:1px solid var(--green-dim); color:var(--green); background:#04140c}
+  .btn:hover{background:#06210f; text-decoration:none}
+  .steps{counter-reset:s; padding:0; margin:0; list-style:none}
+  .steps li{position:relative; padding:8px 0 8px 40px; border-bottom:1px dashed #16222f; font-size:14.5px}
+  .steps li:last-child{border-bottom:0}
+  .steps li::before{counter-increment:s; content:counter(s); position:absolute; left:0; top:6px;
+    width:26px; height:26px; border-radius:50%; border:1px solid var(--green-dim); color:var(--green);
+    display:grid; place-items:center; font-size:13px}
+  .warn{border-color:#5a4a10; background:#150f02}
+  .warn h2{color:var(--amber)}
+  .email{color:var(--amber); font-weight:700}
+  footer{text-align:center; color:var(--muted); font-size:12.5px; margin-top:40px}
+  .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--amber);margin-right:7px;vertical-align:middle;box-shadow:0 0 8px var(--amber)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1 class="logo">NETREK</h1>
+    <div class="tag">Elevate &nbsp;·&nbsp; STURGEON Server</div>
+  </header>
+
+  <div class="card">
+    <h2><span class="num">01</span>The Server</h2>
+    <div class="conn">
+      <span><b>sturgeon.elevateconsulting.dev</b> &nbsp;·&nbsp; port <b>2592</b></span>
+      <span class="badge">STURGEON + bots</span>
+    </div>
+    <div class="rule"></div>
+    <div class="kv">
+      <div class="k">Variant</div><div class="v">STURGEON — earn in-game ship upgrades &amp; special weapons</div>
+      <div class="k">Mode</div><div class="v">NEWBIE — robots fill out the game so you're never flying alone</div>
+      <div class="k">Availability</div><div class="v"><span class="dot"></span>Ephemeral &amp; private — started on demand for scheduled games</div>
+      <div class="k">Access</div><div class="v">IP-restricted (see below) — not open to the public internet</div>
+    </div>
+  </div>
+
+  <div class="card warn">
+    <h2><span class="num">02</span>Get Access — Whitelist Required</h2>
+    <p>This server only accepts connections from <strong>approved IP addresses</strong>. Before you can
+    connect, your public IP has to be added to the allow-list.</p>
+    <ol class="steps">
+      <li>Find your public IP: open <a href="https://checkip.amazonaws.com" target="_blank" rel="noopener">checkip.amazonaws.com</a> (or search “what is my IP”).</li>
+      <li>Email it to <a class="email" href="mailto:dave@elevateconsulting.dev?subject=Netrek%20server%20access&amp;body=Please%20whitelist%20my%20IP%20for%20the%20STURGEON%20server.%0A%0AMy%20public%20IP%3A%20">dave@elevateconsulting.dev</a> and ask to be whitelisted.</li>
+      <li>Once you get the go-ahead, connect with any client below.</li>
+    </ol>
+    <p class="note">Tip: home IPs can change. If you suddenly can't connect, re-check your IP and email again.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">03</span>Get a Client</h2>
+    <div class="grid">
+      <div class="client">
+        <div class="os">Windows &nbsp;·&nbsp; recommended</div>
+        <h3>Netrek XP&nbsp;2009</h3>
+        <p>The standard Windows client — one-click installer, STURGEON-aware. Best pick for Windows players.</p>
+        <a class="btn" href="https://netrek.org/files/NetrekXP_2009/netrekinstall2009v1.exe">Download installer →</a>
+      </div>
+      <div class="client">
+        <div class="os">macOS</div>
+        <h3>Netrek SDL2&nbsp;0.9</h3>
+        <p>Native retina SDL2 client (a modernized COW). Build from source — needs SDL2 via Homebrew.</p>
+        <a class="btn" href="https://github.com/ElevateConsultingDev/netrek-sdl2" target="_blank" rel="noopener">Get it →</a>
+      </div>
+      <div class="client">
+        <div class="os">Linux / Source</div>
+        <h3>Netrek COW</h3>
+        <p>The classic “Client Of Win” X11 client, plus client listings for every platform.</p>
+        <a class="btn" href="https://netrek.org/downloads/clients/" target="_blank" rel="noopener">All clients →</a>
+      </div>
+    </div>
+    <p class="note" style="margin-top:16px">All of the above speak the standard Netrek protocol and work with this server.
+    Netrek is free and open source — see <a href="https://www.netrek.org/" target="_blank" rel="noopener">netrek.org</a> for more clients and docs.</p>
+  </div>
+
+  <div class="card">
+    <h2><span class="num">04</span>Connect</h2>
+    <ol class="steps">
+      <li>Make sure your IP is whitelisted (step&nbsp;02) and the server is up for your session.</li>
+      <li>Point your client at server <code>sturgeon.elevateconsulting.dev</code>, port <code>2592</code>.</li>
+      <li>Pick a team, press a fighter slot to enter, and fly.</li>
+    </ol>
+    <p class="note" style="margin-top:14px">Recommended client setting for this server: <code>tryShort: off</code> in your
+    <code>.netrekrc</code> (avoids a short-packet stream desync). UDP is fine to leave on.</p>
+  </div>
+
+  <footer>
+    Hosted by Elevate Consulting · <a href="mailto:dave@elevateconsulting.dev">dave@elevateconsulting.dev</a><br>
+    Netrek is a free, open-source multiplayer game — <a href="https://www.netrek.org/" target="_blank" rel="noopener">netrek.org</a>
+  </footer>
+
+</div>
+</body>
+</html>
