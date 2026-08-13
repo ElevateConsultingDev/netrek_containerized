@@ -345,6 +345,8 @@ extern char cloakChars[3];
 
 extern int showIND;
 extern int newPlist;
+extern int agriCAPS;
+extern int agriColor;
 
 
 extern struct dmacro_list *distmacro;

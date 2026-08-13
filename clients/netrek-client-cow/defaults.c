@@ -552,6 +552,8 @@ void resetdefaults(void)
 
   keepInfo = intDefault("keepInfo", keepInfo);
   showPlanetOwner = booleanDefault("showPlanetOwner", showPlanetOwner);
+  agriCAPS = booleanDefault("agriCAPS", agriCAPS);
+  agriColor = intDefault("agriColor", agriColor);
   newDashboard = intDefault("newDashboard", newDashboard);
   ROMVLVS = booleanDefault("ROMVLVS", ROMVLVS);
   client_ups = intDefault("updatespersec", client_ups);

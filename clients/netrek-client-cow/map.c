@@ -276,6 +276,17 @@ inline static W_Icon
     }
 }
 
+static W_Color getAgriColor(struct planet *l)
+{
+  switch (agriColor)
+    {
+    case 1:  return W_White;
+    case 2:  return W_Yellow;
+    case 3:  return W_Grey;
+    default: return planetColor(l);
+    }
+}
+
 static void DrawPlanets()
 /*
  *  Draw the planets on the galactic map.
@@ -387,8 +398,25 @@ static void DrawPlanets()
 #endif
 
 
-      W_WriteText(mapw, dx - (mplanet_width / 2), dy + (mplanet_height / 2),
-		  planetColor(l), l->pl_name, 3, planetFont(l));
+      if ((l->pl_flags & PLAGRI) && agriCAPS && ((l->pl_info & me->p_team)
+
+#ifdef RECORDGAME
+		  || playback
+#endif
+
+	  ))
+	{
+	  /* AGRI planets (faster army growth): name in caps + agri color. */
+	  char agri_name[3];
+	  agri_name[0] = toupper(l->pl_name[0]);
+	  agri_name[1] = toupper(l->pl_name[1]);
+	  agri_name[2] = toupper(l->pl_name[2]);
+	  W_WriteText(mapw, dx - (mplanet_width / 2), dy + (mplanet_height / 2),
+		      getAgriColor(l), agri_name, 3, planetFont(l));
+	}
+      else
+	W_WriteText(mapw, dx - (mplanet_width / 2), dy + (mplanet_height / 2),
+		    planetColor(l), l->pl_name, 3, planetFont(l));
 
       if (showIND && ((l->pl_info & me->p_team)
 
