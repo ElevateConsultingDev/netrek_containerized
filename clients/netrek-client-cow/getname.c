@@ -77,7 +77,7 @@ static void redraw_readme(void)
   {
     "--                                             --",
     "",
-    "Netrek SDL2 - dave@elevateconsulting.dev",
+    "Netrek COM - dave@elevateconsulting.dev",
     "bug reports welcome",
     "",
     "--                                             --",

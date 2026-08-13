@@ -1,3 +1,13 @@
+/*
+ * Netrek Client of Mac (COM)
+ * Copyright (C) 2026 Dave King / Elevate Consulting
+ *
+ * Part of Netrek Client of Mac, a native SDL2 fork of netrek-client-cow.
+ * The SDL2 backend and Mac-specific code in this file are original work.
+ * Licensed under the GNU General Public License, version 2 or later.
+ * SPDX-License-Identifier: GPL-2.0-or-later
+ */
+
 /* sdl2window.c - SDL2 implementation of Wlib
  *
  * Replaces x11window.c for macOS/SDL2 builds.
