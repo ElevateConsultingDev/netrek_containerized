@@ -98,20 +98,28 @@ int main(int argc, char **argv) {
         SDL_Event e;
         while (SDL_PollEvent(&e)) {
             if (e.type == SDL_QUIT) run = 0;
+            if (e.type == SDL_MOUSEWHEEL) {
+                big += e.wheel.y * 12;
+            }
             if (e.type == SDL_KEYDOWN) {
                 SDL_Keycode k = e.key.keysym.sym;
                 if (k == SDLK_ESCAPE) run = 0;
                 else if (k == SDLK_n) smooth = 0;
                 else if (k == SDLK_s) smooth = 1;
-                else if (k >= SDLK_1 && k <= SDLK_6) big = 24 * (k - SDLK_1 + 1);
+                else if (k == SDLK_EQUALS || k == SDLK_PLUS || k == SDLK_KP_PLUS) big += 12;
+                else if (k == SDLK_MINUS || k == SDLK_KP_MINUS) big -= 12;
+                else if (k >= SDLK_1 && k <= SDLK_9) big = 24 * (k - SDLK_1 + 1);
+                else if (k == SDLK_0) big = 320;
             }
+            if (big < 16) big = 16;
+            if (big > 480) big = 480;
         }
         SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, smooth ? "best" : "0");
         SDL_SetRenderDrawColor(R, 8, 11, 16, 255);
         SDL_RenderClear(R);
 
         char hdr[128];
-        snprintf(hdr, sizeof hdr, "filter: %s   zoom: %dpx   [N]earest [S]mooth [1-6]zoom [Esc]",
+        snprintf(hdr, sizeof hdr, "filter: %s   zoom: %dpx   [scroll or +/-] zoom  [1-9/0] presets  [N]earest [S]mooth  [Esc]",
                  smooth ? "SMOOTH" : "NEAREST", big);
         label(20, 12, hdr);
 
