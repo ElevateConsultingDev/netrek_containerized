@@ -110,3 +110,9 @@ clean:
 	rm -rf $(BUILD) config.h null
 
 .PHONY: all clean null
+
+# Standalone sprite viewer for iterating on art/scaling (no server needed).
+preview: tools/sprite_preview.c
+	$(CC) tools/sprite_preview.c -o build/sprite_preview \
+	  $(shell pkg-config --cflags --libs sdl2 SDL2_image SDL2_ttf)
+	@echo "run: ./build/sprite_preview   (from this dir)"
