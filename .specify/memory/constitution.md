@@ -1,50 +1,76 @@
-# [PROJECT_NAME] Constitution
-<!-- Example: Spec Constitution, TaskFlow Constitution, etc. -->
+# Netrek @ Elevate Constitution
+
+Governing principles for the Netrek project at Elevate Consulting: a private
+STURGEON game server, the **Netrek COM** (Client of Mac) client, and the public
+documentation site at `netrek.elevateconsulting.dev`.
 
 ## Core Principles
 
-### [PRINCIPLE_1_NAME]
-<!-- Example: I. Library-First -->
-[PRINCIPLE_1_DESCRIPTION]
-<!-- Example: Every feature starts as a standalone library; Libraries must be self-contained, independently testable, documented; Clear purpose required - no organizational-only libraries -->
+### I. The Match Is the Product
+Everything exists to get real games played — first Dave vs Ron, then whoever
+Dave invites. A working, reachable, private STURGEON server and a client that
+plays cleanly on a Mac outrank polish, features, and elegance. When trading off,
+choose what a player at the keyboard actually feels: connect, fly, fight.
 
-### [PRINCIPLE_2_NAME]
-<!-- Example: II. CLI Interface -->
-[PRINCIPLE_2_DESCRIPTION]
-<!-- Example: Every library exposes functionality via CLI; Text in/out protocol: stdin/args → stdout, errors → stderr; Support JSON + human-readable formats -->
+### II. Netrek COM Is the Canonical Mac Client
+The SDL2 Mac client (Netrek COM — *Client Of Mac*, a modernized COW) is owned,
+branded, and maintained here as the authoritative Mac Netrek client. It becomes
+"de facto" by being the best-documented, most welcoming, canonical repo — not by
+restriction. Dave holds copyright on the original Mac/SDL2 code; original COW /
+Netrek code keeps its authors' copyright. Bug reports and PRs are actively
+invited and made easy.
 
-### [PRINCIPLE_3_NAME]
-<!-- Example: III. Test-First (NON-NEGOTIABLE) -->
-[PRINCIPLE_3_DESCRIPTION]
-<!-- Example: TDD mandatory: Tests written → User approved → Tests fail → Then implement; Red-Green-Refactor cycle strictly enforced -->
+### III. Private by Default, Ephemeral by Design
+The game server is never open to the public internet. Access is by IP allow-list
+only (email-to-enroll for guests; auto-enroll for the operator). Compute is
+ephemeral — started for sessions, stopped otherwise — with a stable Elastic IP
+and DNS so it can be reached the same way every time. No standing open ports, no
+secrets in the repo (macOS Keychain / local files only).
 
-### [PRINCIPLE_4_NAME]
-<!-- Example: IV. Integration Testing -->
-[PRINCIPLE_4_DESCRIPTION]
-<!-- Example: Focus areas requiring integration tests: New library contract tests, Contract changes, Inter-service communication, Shared schemas -->
+### IV. Documentation Is Authoritative and Code-Sourced
+The public site is the source of truth for how the server behaves. Game-mechanics
+docs (STURGEON costs, menus, weapons) are written from the **actual server
+source**, not hearsay, so they match what runs. Third-party copyrighted material
+is linked, not copied; freely-licensed docs we own (GPL COW manuals) may be
+hosted with attribution intact. Everything is styled to one consistent identity.
 
-### [PRINCIPLE_5_NAME]
-<!-- Example: V. Observability, VI. Versioning & Breaking Changes, VII. Simplicity -->
-[PRINCIPLE_5_DESCRIPTION]
-<!-- Example: Text I/O ensures debuggability; Structured logging required; Or: MAJOR.MINOR.BUILD format; Or: Start simple, YAGNI principles -->
+### V. Respect the GPL Lineage
+The client is a derivative of GPL COW and is therefore GPL (v2-or-later). That is
+embraced, not fought: forks are permitted, contributions flow back under the same
+license, copyright headers are honest about who wrote what. Copyleft is the
+mechanism by which the canonical client stays canonical.
 
-## [SECTION_2_NAME]
-<!-- Example: Additional Constraints, Security Requirements, Performance Standards, etc. -->
+## Infrastructure & Technology Constraints
 
-[SECTION_2_CONTENT]
-<!-- Example: Technology stack requirements, compliance standards, deployment policies, etc. -->
+- **Cloud**: AWS profile `elevate`, region `us-west-2`. Ephemeral EC2 + Elastic
+  IP + a single security group locked to allow-listed IPs. Managed via the
+  `prod-*.sh` scripts; IDs live in `prod-env.sh`.
+- **DNS/edge**: Cloudflare for `elevateconsulting.dev`. `sturgeon.*` is DNS-only
+  (raw game protocol); `netrek.*` is Cloudflare-proxied (HTTPS for a `.dev`
+  HSTS domain) fronting GitHub Pages.
+- **Server**: containerized Netrek (`quozl/netrek` + STURGEON/NEWBIE), 1:1 port
+  mapping on prod so UDP works natively.
+- **Client**: COW + an SDL2 backend, built with Homebrew SDL2 on macOS. Client
+  config (`~/.netrekrc`) requires `tryShort: off` for this server.
+- **Public artifacts**: only the Netrek COM client source and the docs site are
+  public (`ElevateConsultingDev/netrek-clients`); server infra IDs stay private.
 
-## [SECTION_3_NAME]
-<!-- Example: Development Workflow, Review Process, Quality Gates, etc. -->
+## Development Workflow
 
-[SECTION_3_CONTENT]
-<!-- Example: Code review requirements, testing gates, deployment approval process, etc. -->
+- Commit in small, coherent chunks as work completes; keep diffs minimal and
+  reuse existing patterns over adding new ones.
+- **Verify from the artifact, not inference** — confirm a deploy, a served page,
+  or a firewall rule by reading the actual result before claiming success.
+- Diagnose bugs at the root (the shared function all callers route through), not
+  the symptom the report names.
+- Match surrounding code style; no unrequested abstractions or scope creep.
 
 ## Governance
-<!-- Example: Constitution supersedes all other practices; Amendments require documentation, approval, migration plan -->
 
-[GOVERNANCE_RULES]
-<!-- Example: All PRs/reviews must verify compliance; Complexity must be justified; Use [GUIDANCE_FILE] for runtime development guidance -->
+This constitution guides decisions when priorities conflict; the ranked
+principles above break ties (I outranks V). Amendments are made by editing this
+file with a version bump and a one-line rationale. Anything that would open the
+server publicly, publish secrets/infra IDs, or relicense the client away from GPL
+requires explicit owner approval and is presumed denied otherwise.
 
-**Version**: [CONSTITUTION_VERSION] | **Ratified**: [RATIFICATION_DATE] | **Last Amended**: [LAST_AMENDED_DATE]
-<!-- Example: Version: 2.1.1 | Ratified: 2025-06-13 | Last Amended: 2025-07-16 -->
+**Version**: 1.0.0 | **Ratified**: 2026-08-13 | **Last Amended**: 2026-08-13
