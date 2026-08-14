@@ -24,6 +24,7 @@
 
 static SDL_Renderer *R;
 static TTF_Font *F;
+static int panx = 0, pany = 0;   /* view pan offset */
 
 static SDL_Texture *load(const char *path) {
     SDL_Surface *s = IMG_Load(path);
@@ -39,7 +40,7 @@ static void label(int x, int y, const char *txt) {
     SDL_Surface *s = TTF_RenderText_Blended(F, txt, c);
     if (!s) return;
     SDL_Texture *t = SDL_CreateTextureFromSurface(R, s);
-    SDL_Rect d = {x, y, s->w, s->h};
+    SDL_Rect d = {x + panx, y + pany, s->w, s->h};
     SDL_RenderCopy(R, t, NULL, &d);
     SDL_DestroyTexture(t);
     SDL_FreeSurface(s);
@@ -52,10 +53,10 @@ static void show(SDL_Texture *t, const char *name, int *x, int y, int big) {
     int frame = (h > w && h % w == 0) ? w : h;     /* ship strips: 1st frame */
     SDL_Rect src = {0, 0, w, frame > 0 ? frame : h};
     /* native */
-    SDL_Rect n = {*x, y, src.w, src.h};
+    SDL_Rect n = {*x + panx, y + pany, src.w, src.h};
     SDL_RenderCopy(R, t, &src, &n);
     /* upscaled */
-    SDL_Rect u = {*x + src.w + 10, y, big, big};
+    SDL_Rect u = {*x + src.w + 10 + panx, y + pany, big, big};
     SDL_RenderCopy(R, t, &src, &u);
     label(*x, y + (big > 44 ? big : 44) + 4, name);
     *x += src.w + 10 + big + 34;
@@ -101,6 +102,9 @@ int main(int argc, char **argv) {
             if (e.type == SDL_MOUSEWHEEL) {
                 big += e.wheel.y * 12;
             }
+            if (e.type == SDL_MOUSEMOTION && (e.motion.state & SDL_BUTTON_LMASK)) {
+                panx += e.motion.xrel; pany += e.motion.yrel;   /* drag to pan */
+            }
             if (e.type == SDL_KEYDOWN) {
                 SDL_Keycode k = e.key.keysym.sym;
                 if (k == SDLK_ESCAPE) run = 0;
@@ -108,6 +112,11 @@ int main(int argc, char **argv) {
                 else if (k == SDLK_s) smooth = 1;
                 else if (k == SDLK_EQUALS || k == SDLK_PLUS || k == SDLK_KP_PLUS) big += 12;
                 else if (k == SDLK_MINUS || k == SDLK_KP_MINUS) big -= 12;
+                else if (k == SDLK_LEFT)  panx += 60;
+                else if (k == SDLK_RIGHT) panx -= 60;
+                else if (k == SDLK_UP)    pany += 60;
+                else if (k == SDLK_DOWN)  pany -= 60;
+                else if (k == SDLK_r)     { panx = pany = 0; }   /* reset view */
                 else if (k >= SDLK_1 && k <= SDLK_9) big = 24 * (k - SDLK_1 + 1);
                 else if (k == SDLK_0) big = 320;
             }
@@ -119,7 +128,7 @@ int main(int argc, char **argv) {
         SDL_RenderClear(R);
 
         char hdr[128];
-        snprintf(hdr, sizeof hdr, "filter: %s   zoom: %dpx   [scroll or +/-] zoom  [1-9/0] presets  [N]earest [S]mooth  [Esc]",
+        snprintf(hdr, sizeof hdr, "filter:%s zoom:%dpx  [scroll/+/-]zoom [drag or arrows]pan [R]eset [1-9/0]presets [N/S]filter [Esc]",
                  smooth ? "SMOOTH" : "NEAREST", big);
         label(20, 12, hdr);
 
