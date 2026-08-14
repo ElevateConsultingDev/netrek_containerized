@@ -39,6 +39,23 @@ extern SDL_Renderer *sdl_renderer;
  * hi-res strips are downscaled to this so they render crisp, not oversized. */
 #define SHIP_DISP 20
 
+/* Canonical on-screen galactic planet size (px, logical). The hi-res color
+ * planet textures (120px) downscale to this. */
+#define PLANET_DISP 18
+
+/* Hi-res color planet textures (from netrekxp planlibm/color, GPL). Each is a
+ * 5-frame owner-tint strip: frame 0=Fed 1=Ind 2=Kli 3=Ori 4=Rom, matching how
+ * netrekxp colors a planet by its owner. Loaded from Planets/Color/; when
+ * absent we fall back to the old low-res Map/ sprites. */
+enum { CP_ROCK1, CP_ROCK2, CP_AGRI1, CP_AGRI2, CP_EARTH,
+       CP_KLINGUS, CP_ROMULUS, CP_ORION, CP_UNKNOWN, NUM_CP };
+static const char cpfiles[NUM_CP][14] = {
+    "rock1.png", "rock2.png", "agri1.png", "agri2.png", "earth.png",
+    "klingus.png", "romulus.png", "orion.png", "unknown.png"
+};
+static struct S_Object cpImg[NUM_CP];
+static int have_color_planets = 0;
+
 #define PL_PIX_UKN 0
 #define PL_PIX_ROCK 1
 #define PL_PIX_AGRI 2
@@ -250,6 +267,16 @@ void GetPixmaps_SDL2(W_Window t, W_Window g)
             fprintf(stderr, "map pixmaps not available\n");
     }
 
+    /* Hi-res color planet textures (optional; all-or-nothing). */
+    have_color_planets = 1;
+    for (i = 0; i < NUM_CP; i++) {
+        snprintf(path, sizeof(path), "%s/Planets/Color/%s", pixmapDir, cpfiles[i]);
+        if (ReadFileToSprite(path, &cpImg[i], galactic_win) != 0)
+            have_color_planets = 0;
+        else
+            cpImg[i].disp_w = cpImg[i].disp_h = PLANET_DISP;
+    }
+
     /* Cloak sprite → draw on tactical */
     snprintf(path, sizeof(path), "%s/Misc/%s", pixmapDir, cloakfile);
     if (ReadFileToSprite(path, &cloakImg, tactical_win)) {
@@ -418,11 +445,46 @@ void *S_mPlanet(int planetno)
 
     if (pixFlags & NO_MAP_PIX) return NULL;
 
-    if ((this->pl_info & me->p_team)
+    int haveinfo = (this->pl_info & me->p_team)
 #ifdef RECORDGAME
         || playback
 #endif
-       ) {
+        ;
+
+    /* Hi-res color planets: pick a texture by planet (netrekxp logic) and tint
+     * it by owner via the sprite frame. */
+    if (have_color_planets) {
+        if (!haveinfo) { cpImg[CP_UNKNOWN].view = 0; return (void *)&cpImg[CP_UNKNOWN]; }
+        int tex;
+        if (this->pl_flags & PLHOME) {
+            if      (!strcmp(this->pl_name, "Earth"))   tex = CP_EARTH;
+            else if (!strcmp(this->pl_name, "Klingus")) tex = CP_KLINGUS;
+            else if (!strcmp(this->pl_name, "Romulus")) tex = CP_ROMULUS;
+            else if (!strcmp(this->pl_name, "Orion"))   tex = CP_ORION;
+            else tex = CP_ROCK1;
+        } else if (this->pl_flags & PLCORE) {
+            tex = (this->pl_flags & PLAGRI) ? CP_AGRI1 : CP_ROCK1;
+        } else if (this->pl_flags & PLAGRI) {
+            tex = CP_AGRI2;
+        } else {
+            tex = CP_ROCK2;
+        }
+        int frame;                     /* owner -> tint frame */
+        switch (this->pl_owner) {
+            case FED: frame = 0; break;
+            case KLI: frame = 2; break;
+            case ORI: frame = 3; break;
+            case ROM: frame = 4; break;
+            default:  frame = 1; break; /* IND / NOBODY */
+        }
+        sprite = &cpImg[tex];
+        if (frame >= sprite->nviews) frame = 0;
+        sprite->view = frame;
+        return (void *)sprite;
+    }
+
+    /* Fallback: original low-res Map/ sprites. */
+    if (haveinfo) {
         if ((this->pl_flags & PLAGRI) && (F_agri_pix))
             sprite = &mplanetImg[PL_PIX_AGRI];
         else

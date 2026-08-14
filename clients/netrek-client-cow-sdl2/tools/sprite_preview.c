@@ -87,6 +87,12 @@ int main(int argc, char **argv) {
         {"Planets/Map/Ind.png","Ind"}, {"Planets/Map/UNKN.png","unkn"},
         {"Planets/Map/army.png","army"}, {"Planets/Map/repair.png","rpr"},
         {"Planets/Map/fuel.png","fuel"}, {NULL,NULL}};
+    struct { const char *sub, *name; } cplanets[] = {
+        {"Planets/Color/rock1.png","rock1"}, {"Planets/Color/rock2.png","rock2"},
+        {"Planets/Color/agri1.png","agri1"}, {"Planets/Color/agri2.png","agri2"},
+        {"Planets/Color/earth.png","earth"}, {"Planets/Color/klingus.png","klingus"},
+        {"Planets/Color/romulus.png","romulus"}, {"Planets/Color/orion.png","orion"},
+        {"Planets/Color/unknown.png","unknown"}, {NULL,NULL}};
     struct { const char *sub, *name; } ships[] = {
         {"Fed/SC.png","SC 20px"}, {"Fed/DD.png","DD"}, {"Fed/CA.png","CA"},
         {"Fed/BB.png","BB"}, {"Fed/SB.png","SB"}, {NULL,NULL}};
@@ -138,6 +144,15 @@ int main(int argc, char **argv) {
             snprintf(p, sizeof p, "%s/%s", dir, planets[i].sub);
             SDL_Texture *t = load(p);
             show(t, planets[i].name, &x, y, big);
+            if (t) SDL_DestroyTexture(t);
+            if (x > 1120) { x = 20; y += big + 40; }
+        }
+        y += big + 60;
+        label(20, y, "COLOR PLANETS (netrekxp, frame 0 = Fed tint)"); y += 22; x = 20;
+        for (int i = 0; cplanets[i].sub; i++) {
+            snprintf(p, sizeof p, "%s/%s", dir, cplanets[i].sub);
+            SDL_Texture *t = load(p);
+            show(t, cplanets[i].name, &x, y, big);
             if (t) SDL_DestroyTexture(t);
             if (x > 1120) { x = 20; y += big + 40; }
         }
