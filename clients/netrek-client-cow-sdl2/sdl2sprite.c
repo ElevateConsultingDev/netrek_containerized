@@ -267,6 +267,13 @@ void GetPixmaps_SDL2(W_Window t, W_Window g)
             fprintf(stderr, "map pixmaps not available\n");
     }
 
+    /* Galactic resource overlays are drawn small and side-by-side (man on the
+     * left, repair/fuel on the right, see map.c) so they don't cover each
+     * other or the planet. */
+    mplanetImg[PL_PIX_ARMY].disp_w   = mplanetImg[PL_PIX_ARMY].disp_h   = 9;
+    mplanetImg[PL_PIX_REPAIR].disp_w = mplanetImg[PL_PIX_REPAIR].disp_h = 9;
+    mplanetImg[PL_PIX_FUEL].disp_w   = mplanetImg[PL_PIX_FUEL].disp_h   = 9;
+
     /* Hi-res color planet textures (optional; all-or-nothing). Off by default
      * -- COW's Map/ bitmaps are the default look; rc `colorPlanets: 1` opts in
      * to the netrekxp-style color/owner-tinted planets. */
@@ -501,7 +508,8 @@ void *S_mPlanet(int planetno)
 void *S_mArmy(int planetno)
 {
     struct planet *this = &planets[planetno];
-    if ((pixFlags & NO_MAP_PIX) || (showgalactic != 1)) return NULL;
+    /* armies man: resource mode 1 and the combined "show all" mode 2 */
+    if ((pixFlags & NO_MAP_PIX) || (showgalactic != 1 && showgalactic != 2)) return NULL;
     if (((this->pl_info & me->p_team)
 #ifdef RECORDGAME
          || playback
@@ -517,7 +525,7 @@ void *S_mArmy(int planetno)
 void *S_mRepair(int planetno)
 {
     struct planet *this = &planets[planetno];
-    if ((pixFlags & NO_MAP_PIX) || (showgalactic != 1)) return NULL;
+    if ((pixFlags & NO_MAP_PIX) || (showgalactic != 1 && showgalactic != 2)) return NULL;
     if (((this->pl_info & me->p_team)
 #ifdef RECORDGAME
          || playback
@@ -533,7 +541,7 @@ void *S_mRepair(int planetno)
 void *S_mFuel(int planetno)
 {
     struct planet *this = &planets[planetno];
-    if ((pixFlags & NO_MAP_PIX) || (showgalactic != 1)) return NULL;
+    if ((pixFlags & NO_MAP_PIX) || (showgalactic != 1 && showgalactic != 2)) return NULL;
     if (((this->pl_info & me->p_team)
 #ifdef RECORDGAME
          || playback
@@ -549,7 +557,8 @@ void *S_mFuel(int planetno)
 void *S_mOwner(int planetno)
 {
     struct planet *this = &planets[planetno];
-    if ((pixFlags & NO_MAP_PIX) || (showgalactic != 0)) return NULL;
+    /* owner colors: mode 0, and the combined "show all" mode 2 */
+    if ((pixFlags & NO_MAP_PIX) || (showgalactic != 0 && showgalactic != 2)) return NULL;
     if ((this->pl_info & me->p_team)
 #ifdef RECORDGAME
         || playback

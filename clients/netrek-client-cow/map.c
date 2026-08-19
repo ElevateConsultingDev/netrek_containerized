@@ -379,9 +379,11 @@ static void DrawPlanets()
 	  if (!(pixFlags & NO_MAP_PIX))
 	    {
 	      W_DrawSprite(sprite, dx, dy, GWINSIDE);
-	      W_DrawSprite(S_mArmy(l->pl_no), dx, dy, GWINSIDE);
-	      W_DrawSprite(S_mRepair(l->pl_no), dx, dy, GWINSIDE);
-	      W_DrawSprite(S_mFuel(l->pl_no), dx, dy, GWINSIDE);
+	      /* Resource overlays laid out side-by-side: armies man on the left,
+	       * repair/fuel on the right, so they don't cover each other. */
+	      W_DrawSprite(S_mArmy(l->pl_no), dx - 5, dy, GWINSIDE);
+	      W_DrawSprite(S_mRepair(l->pl_no), dx + 4, dy, GWINSIDE);
+	      W_DrawSprite(S_mFuel(l->pl_no), dx + 4, dy, GWINSIDE);
 	      W_DrawSprite(S_mOwner(l->pl_no), dx, dy, GWINSIDE);
 	      if (!(pixFlags & NO_HALOS))
 		W_Halo(dx, dy, planetColor(l));
@@ -417,6 +419,22 @@ static void DrawPlanets()
       else
 	W_WriteText(mapw, dx - (mplanet_width / 2), dy + (mplanet_height / 2),
 		    planetColor(l), l->pl_name, 3, planetFont(l));
+
+      /* Netrek COM: combined "show all" mode (2) -- army count on planets we
+       * have info on, alongside owner colors and fuel/repair icons. */
+      if (showgalactic == 2 && ((l->pl_info & me->p_team)
+
+#ifdef RECORDGAME
+	  || playback
+#endif
+
+	  ))
+	{
+	  char armbuf[8];
+	  int len = sprintf(armbuf, "%d", l->pl_armies);
+	  W_MaskText(mapw, dx - (W_Textwidth * len / 2), dy - (mplanet_height / 4),
+		     W_White, armbuf, len, W_BoldFont);
+	}
 
       if (showIND && ((l->pl_info & me->p_team)
 

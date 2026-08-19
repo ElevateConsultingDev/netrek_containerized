@@ -1896,9 +1896,15 @@ static void Key65(W_Event * data)
 
 static void Key66(void)
 {
+  static const char *gname[] = { "owner", "resources", "show all", "plain", "plain" };
+  char buf[64];
+
   showgalactic++;
   if (showgalactic > 4)
     showgalactic = 0;
+
+  sprintf(buf, "galactic planet display: %d (%s)", showgalactic, gname[showgalactic]);
+  warning(buf);
 
   redrawall = 2;
 }
@@ -2074,9 +2080,15 @@ static void Key85(void)
 /* I really should get paid for this... */
 static void Key86(void)
 {
+  static const char *lname[] = { "off", "owner", "resources", "MOO", "rabbit ears" };
+  char buf[64];
+
   showlocal++;
   if (showlocal > 4)
     showlocal = 0;
+
+  sprintf(buf, "tactical planet display: %d (%s)", showlocal, lname[showlocal]);
+  warning(buf);
 }
 
 static void Key87(W_Event * data)
