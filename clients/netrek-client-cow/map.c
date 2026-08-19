@@ -418,21 +418,6 @@ static void DrawPlanets()
 	W_WriteText(mapw, dx - (mplanet_width / 2), dy + (mplanet_height / 2),
 		    planetColor(l), l->pl_name, 3, planetFont(l));
 
-      if ((showArmy == 2 || showArmy == 3) && ((l->pl_info & me->p_team)
-
-#ifdef RECORDGAME
-	  || playback
-#endif
-
-	  ))
-	{
-	  /* Army count for planets we have info on (last-known if not current). */
-	  char armbuf[8];
-	  int len = sprintf(armbuf, "%d", l->pl_armies);
-	  W_MaskText(mapw, dx - (W_Textwidth * len / 2), dy - (mplanet_height / 4),
-		     W_White, armbuf, len, W_BoldFont);
-	}
-
       if (showIND && ((l->pl_info & me->p_team)
 
 #ifdef RECORDGAME
