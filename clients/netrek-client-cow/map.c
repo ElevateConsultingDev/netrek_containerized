@@ -506,8 +506,8 @@ static void gu_update()
   /* Netrek COM: the viewRange ring overlaps map content, so force a full
    * galactic repaint whenever it's shown -- the incremental redraw can't
    * cleanly erase a large circle, which otherwise leaves holes in the map. */
-  if (viewRange && me->p_ship.s_type != STARBASE
-      && !(me->p_armies == 0 && viewRange == 2))
+  if ((viewRange && me->p_ship.s_type != STARBASE
+       && !(me->p_armies == 0 && viewRange == 2)) || viewBox)
     redrawall = 1;
 
   old_flags = me->p_flags & PFOBSERV;
@@ -778,6 +778,26 @@ void
       int rad = cloaked ? (GWINSIDE / 7) : (GWINSIDE / 3);
 
       W_WriteCircle(mapw, cx, cy, rad, cloaked ? W_Yellow : W_Red);
+    }
+
+  /* Netrek COM: viewBox (from netrekxp) -- four dots on the galactic at the
+   * corners of the tactical view. Piggybacks on the redrawall force above,
+   * so no erase bookkeeping is needed. */
+  if (viewBox && me->p_status == PALIVE)
+    {
+      int cx = me->p_x * GWINSIDE / GWIDTH;
+      int cy = me->p_y * GWINSIDE / GWIDTH;
+      int vd = (SCALE * TWINSIDE / 2) / (GWIDTH / GWINSIDE);
+      int k;
+
+      for (k = 0; k < 4; k++)
+	{
+	  int px = cx + ((k & 1) ? vd : -vd);
+	  int py = cy + ((k & 2) ? vd : -vd);
+
+	  if (px > 0 && px < GWINSIDE && py > 0 && py < GWINSIDE)
+	    W_MakeLine(mapw, px - 1, py, px + 1, py, W_White);
+	}
     }
 
   /* Draw the lock symbol (if needed */

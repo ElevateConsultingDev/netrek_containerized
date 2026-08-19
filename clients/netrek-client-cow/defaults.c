@@ -556,6 +556,7 @@ void resetdefaults(void)
   agriColor = intDefault("agriColor", agriColor);
   showArmy = intDefault("showArmy", showArmy);
   viewRange = intDefault("viewRange", viewRange);
+  viewBox = booleanDefault("viewBox", viewBox);
   colorPlanets = booleanDefault("colorPlanets", colorPlanets);
   newDashboard = intDefault("newDashboard", newDashboard);
   ROMVLVS = booleanDefault("ROMVLVS", ROMVLVS);

@@ -349,6 +349,7 @@ extern int agriCAPS;
 extern int agriColor;
 extern int showArmy;
 extern int viewRange;
+extern int viewBox;
 extern int colorPlanets;
 
 
