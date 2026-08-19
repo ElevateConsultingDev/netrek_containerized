@@ -12,8 +12,8 @@ docker compose up -d
 ./scripts/start-server.sh
 
 # Connect a client
-./scripts/start-vanilla-client.sh    # Vanilla (port 2692)
-./scripts/start-paradise-client.sh   # Paradise (port 2792)
+./scripts/start-com-client.sh        # Netrek COM (SDL2/Mac) -> vanilla (port 2692)
+./scripts/start-vanilla-client.sh    # Upstream X11 client via XQuartz -> vanilla
 
 # Stop everything
 ./scripts/stop.sh
@@ -40,8 +40,9 @@ docker compose up -d
 |--------|-------------|
 | `scripts/start-server.sh` | Start vanilla server |
 | `scripts/start-paradise.sh` | Start Paradise server |
-| `scripts/start-vanilla-client.sh` | COW SDL2 client → vanilla (port 2692) |
-| `scripts/start-paradise-client.sh` | COW SDL2 client → Paradise (port 2792) |
+| `scripts/start-com-client.sh` | Netrek COM (SDL2/Mac) client → vanilla (port 2692) |
+| `scripts/start-com-paradise-client.sh` | Netrek COM (SDL2/Mac) client → Paradise (port 2792) |
+| `scripts/start-vanilla-client.sh` | Upstream vanilla X11 client (in-container) via XQuartz |
 | `scripts/start-pygame-client.sh` | Pygame client → vanilla (port 2692) |
 | `scripts/connect.sh` | Shell into vanilla server container |
 | `scripts/connect-paradise.sh` | Shell into Paradise server container |
