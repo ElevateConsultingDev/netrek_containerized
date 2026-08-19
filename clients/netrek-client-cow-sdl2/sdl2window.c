@@ -1382,6 +1382,12 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
 
     switch (sdl_ev->type) {
     case SDL_KEYDOWN: {
+        /* Cmd-F (macOS) toggles fullscreen; consume it so it never reaches the game. */
+        if ((sdl_ev->key.keysym.mod & KMOD_GUI) && sdl_ev->key.keysym.sym == SDLK_f) {
+            if (full_screen_enabled) W_FullScreenOff(NULL);
+            else W_FullScreenOn(NULL);
+            return 0;
+        }
         unsigned char key = sdl_key_to_wlib(sdl_ev->key.keysym.sym,
                                             sdl_ev->key.keysym.mod);
         if (key == 0) return 0;
