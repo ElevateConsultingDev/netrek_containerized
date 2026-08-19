@@ -349,6 +349,7 @@ extern int agriCAPS;
 extern int agriColor;
 extern int showArmy;
 extern int viewRange;
+extern int colorPlanets;
 
 
 extern struct dmacro_list *distmacro;

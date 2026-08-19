@@ -267,9 +267,11 @@ void GetPixmaps_SDL2(W_Window t, W_Window g)
             fprintf(stderr, "map pixmaps not available\n");
     }
 
-    /* Hi-res color planet textures (optional; all-or-nothing). */
-    have_color_planets = 1;
-    for (i = 0; i < NUM_CP; i++) {
+    /* Hi-res color planet textures (optional; all-or-nothing). Off by default
+     * -- COW's Map/ bitmaps are the default look; rc `colorPlanets: 1` opts in
+     * to the netrekxp-style color/owner-tinted planets. */
+    have_color_planets = colorPlanets;
+    for (i = 0; colorPlanets && i < NUM_CP; i++) {
         snprintf(path, sizeof(path), "%s/Planets/Color/%s", pixmapDir, cpfiles[i]);
         if (ReadFileToSprite(path, &cpImg[i], galactic_win) != 0)
             have_color_planets = 0;
