@@ -1,0 +1,43 @@
+{
+  "name": "@netrek/server",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "nest start --watch",
+    "build": "nest build",
+    "start": "node dist/main",
+    "lint": "eslint --max-warnings 25",
+    "check-types": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@nestjs/common": "^11.1.19",
+    "@nestjs/config": "^4.0.4",
+    "@nestjs/core": "^11.1.19",
+    "@nestjs/event-emitter": "^3.0.1",
+    "@nestjs/platform-express": "^11.1.19",
+    "@nestjs/platform-socket.io": "^11.1.19",
+    "@nestjs/testing": "^11.1.19",
+    "@nestjs/websockets": "^11.1.19",
+    "@netrek/shared": "workspace:*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
+    "dotenv": "^17.3.1",
+    "express": "^5.2.1",
+    "jose": "^6.2.3",
+    "reflect-metadata": "^0.2.2",
+    "rxjs": "^7.8.2",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^11.0.21",
+    "@netrek/typescript-config": "workspace:*",
+    "@types/express": "^5.0.6",
+    "@types/node": "^22.15.3",
+    "@vitest/coverage-v8": "^4.1.2",
+    "tsx": "^4.21.0",
+    "typescript": "5.9.2",
+    "unplugin-swc": "^1.5.9",
+    "vitest": "^4.1.2"
+  }
+}
