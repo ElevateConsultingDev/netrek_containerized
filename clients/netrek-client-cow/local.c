@@ -160,12 +160,20 @@ static void DrawPlanets(void)
 
 	  ))
 	{
-	  /* Army count for planets we have info on (last-known if not current).
-	   * Sits inside the planet box, so the box's clearzone erases it. */
+	  /* Army count for planets we have info on (last-known if not
+	   * current). Drawn at 12 o'clock, above the planet-lock triangle
+	   * (which sits at dy - 20 with size 4). */
 	  char armbuf[8];
 	  int len = sprintf(armbuf, "%d", l->pl_armies);
-	  W_MaskText(w, dx - (W_Textwidth * len / 2), dy - (planet_height / 4),
+	  int ax = dx - (W_Textwidth * len / 2);
+	  int ay = dy - 26 - W_Textheight;
+	  W_MaskText(w, ax, ay,
 		     W_White, armbuf, len, W_BoldFont);
+	  clearzone[0][clearcount] = ax;
+	  clearzone[1][clearcount] = ay;
+	  clearzone[2][clearcount] = W_Textwidth * len;
+	  clearzone[3][clearcount] = W_Textheight;
+	  clearcount++;
 	}
 
       if (namemode)
