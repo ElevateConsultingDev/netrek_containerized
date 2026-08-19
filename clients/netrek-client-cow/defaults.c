@@ -555,6 +555,7 @@ void resetdefaults(void)
   agriCAPS = booleanDefault("agriCAPS", agriCAPS);
   agriColor = intDefault("agriColor", agriColor);
   showArmy = intDefault("showArmy", showArmy);
+  viewRange = intDefault("viewRange", viewRange);
   newDashboard = intDefault("newDashboard", newDashboard);
   ROMVLVS = booleanDefault("ROMVLVS", ROMVLVS);
   client_ups = intDefault("updatespersec", client_ups);

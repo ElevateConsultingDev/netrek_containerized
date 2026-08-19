@@ -499,6 +499,13 @@ static void gu_update()
       context->gameup == old_gameup &&
       context->tournament_remain == old_tournament_remain) return;
 
+  /* Netrek COM: the viewRange ring overlaps map content, so force a full
+   * galactic repaint whenever it's shown -- the incremental redraw can't
+   * cleanly erase a large circle, which otherwise leaves holes in the map. */
+  if (viewRange && me->p_ship.s_type != STARBASE
+      && !(me->p_armies == 0 && viewRange == 2))
+    redrawall = 1;
+
   old_flags = me->p_flags & PFOBSERV;
   old_gameup = context->gameup;
   old_tournament_remain = context->tournament_remain;
@@ -623,6 +630,7 @@ void
 	  W_WriteTriangle(mapw, clearlmark[0], clearlmark[1],
 			  clearlmark[2], clearlmark[3], backColor);
 	}
+
 
 
       /* Erase the ships */
@@ -752,6 +760,21 @@ void
 #endif
     }
 
+
+  /* Netrek COM: viewRange -- ring on the galactic showing how close an enemy
+   * must be to detect you. Cloaked shrinks it (MAXDISTCLOAK = GWIDTH/7 ->
+   * GWINSIDE/7 px) vs uncloaked (MAXDISTVIS = GWIDTH/3 -> GWINSIDE/3 px).
+   * 0=off, 1=always, 2=only while carrying armies. */
+  if (viewRange && me->p_ship.s_type != STARBASE
+      && !(me->p_armies == 0 && viewRange == 2))
+    {
+      int cloaked = (me->p_flags & PFCLOAK) != 0;
+      int cx = me->p_x * GWINSIDE / GWIDTH;
+      int cy = me->p_y * GWINSIDE / GWIDTH;
+      int rad = cloaked ? (GWINSIDE / 7) : (GWINSIDE / 3);
+
+      W_WriteCircle(mapw, cx, cy, rad, cloaked ? W_Yellow : W_Red);
+    }
 
   /* Draw the lock symbol (if needed */
 
