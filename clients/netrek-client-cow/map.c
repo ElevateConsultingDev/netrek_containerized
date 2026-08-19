@@ -379,11 +379,12 @@ static void DrawPlanets()
 	  if (!(pixFlags & NO_MAP_PIX))
 	    {
 	      W_DrawSprite(sprite, dx, dy, GWINSIDE);
-	      /* Resource overlays laid out side-by-side: armies man on the left,
-	       * repair/fuel on the right, so they don't cover each other. */
-	      W_DrawSprite(S_mArmy(l->pl_no), dx - 5, dy, GWINSIDE);
-	      W_DrawSprite(S_mRepair(l->pl_no), dx + 4, dy, GWINSIDE);
-	      W_DrawSprite(S_mFuel(l->pl_no), dx + 4, dy, GWINSIDE);
+	      /* Resource overlay sprites are pre-positioned within their 16x16
+	       * frames (man left, wrench centre, fuel right), so draw them all
+	       * centred on the planet and they compose correctly. */
+	      W_DrawSprite(S_mArmy(l->pl_no), dx, dy, GWINSIDE);
+	      W_DrawSprite(S_mRepair(l->pl_no), dx, dy, GWINSIDE);
+	      W_DrawSprite(S_mFuel(l->pl_no), dx, dy, GWINSIDE);
 	      W_DrawSprite(S_mOwner(l->pl_no), dx, dy, GWINSIDE);
 	      if (!(pixFlags & NO_HALOS))
 		W_Halo(dx, dy, planetColor(l));
