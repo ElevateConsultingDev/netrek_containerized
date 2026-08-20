@@ -39,11 +39,25 @@ kills n                     set kills to n (accepts fractions, e.g. 2.5)\n\
 rank n                      set rank index to n (server may recompute it)\n\
 show-player                 print slot, name, kills, rank, armies and stats\n\
 show-upgrades               print sturgeon upgrades held by this ship\n\
+upgrade TYPE N              grant sturgeon upgrade TYPE N times, free.\n\
+                            Negative N takes them back. TYPE is the index\n\
+                            show-upgrades prints: 8 engine cooling, 5 warp.\n\
 stat NAME VALUE             set a career stat. NAME is one of\n\
                             kills deaths armsbomb planets ticks maxkills\n\
                             DI is derived from these, not stored.\n\
 ");
 }
+
+/* Calling sturgeon_apply_upgrade() links sturgeon.o, which drags in genspkt.o
+ * and with it the ntserv message-bounce entry points. This tool never reaches
+ * any of them, so satisfy the linker and leave them empty. */
+#ifdef STURGEON
+int bounceSBStats(int from) { (void)from; return 0; }
+int bounceWhois(int from) { (void)from; return 0; }
+int bounceSessionStats(int from) { (void)from; return 0; }
+int bounceUDPStats(int from) { (void)from; return 0; }
+int bouncePingStats(int from) { (void)from; return 0; }
+#endif
 
 struct torp *t_find(struct player *me, int status)
 {
@@ -79,6 +93,39 @@ int setship(const char *cmds)
   if (!(token = strtok (NULL, delimiters))) return 0;
 
 #ifdef STURGEON
+  /* Grant a sturgeon upgrade for free. Setting p_upgradelist alone would show
+   * the upgrade but do nothing: the ship stats it buys live in p_ship, and
+   * sturgeon_apply_upgrade() is what actually moves them. That is the same
+   * call the server makes when reapplying upgrades after a refit, and it only
+   * touches the player struct, so it is safe from here.
+   *
+   * This does not charge kills, and does not touch p_upgrades (the tally the
+   * upgrade cap and STURGEON_LITE work from), so a granted upgrade is free
+   * and does not count against a limit. */
+  if (!strcmp(token, "upgrade")) {
+    int type, n;
+    if (!(token = strtok (NULL, delimiters))) return 0;
+    type = atoi(token);
+    if (!(token = strtok (NULL, delimiters))) return 0;
+    n = atoi(token);
+    if (type < 0 || type > UPG_DETDMG) {
+      fprintf(stderr, "upgrade type must be 0..%d\n", UPG_DETDMG);
+      return 0;
+    }
+    if (n > 0) {
+      me->p_upgradelist[type] += n;
+      sturgeon_apply_upgrade(type, me, n);
+    } else if (n < 0) {                 /* take some back */
+      int have = me->p_upgradelist[type];
+      int take = (-n > have) ? have : -n;
+      if (take) {
+        me->p_upgradelist[type] -= take;
+        sturgeon_unapply_upgrade(type, me, take);
+      }
+    }
+    goto state_1;
+  }
+
   /* Sturgeon upgrades. p_upgradelist is indexed by the UPG_* constants and
    * upgradename[] runs parallel to it, so index 8 is engine cooling in both.
    * The name table has one entry fewer than NUMUPGRADES, hence the bound. */
@@ -93,6 +140,12 @@ int setship(const char *cmds)
     printf("  kills spent %.2f  rank credit %.2f  free %d  undo %d\n",
            me->p_upgrades, me->p_rankcredit,
            me->p_free_upgrade, me->p_undo_upgrade);
+    /* the stats the upgrades actually move, so a grant can be seen to work */
+    printf("  ship: maxwarp %d  maxfuel %d  maxshield %d  maxdamage %d"
+           "  egncool %d  wpncool %d\n",
+           me->p_ship.s_maxspeed, me->p_ship.s_maxfuel,
+           me->p_ship.s_maxshield, me->p_ship.s_maxdamage,
+           me->p_ship.s_egncoolrate, me->p_ship.s_wpncoolrate);
     for (i = 0; i < NUMUPGRADES && i < names; i++) {
       if (!me->p_upgradelist[i]) continue;
       printf("  [%2d] %-26s %d\n", i, upgradename[i], me->p_upgradelist[i]);

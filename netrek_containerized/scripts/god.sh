@@ -18,6 +18,8 @@
 #   ./god.sh player F0 rank 8            set rank index
 #   ./god.sh player F0 stat tkills 200   set a stat; DI is derived from these
 #   ./god.sh upgrades F0                 print sturgeon upgrades held
+#   ./god.sh upgrade F0 8 3              grant upgrade 8 (engine cool) x3
+#   ./god.sh upgrade F0 8 -1             take one back
 #   ./god.sh di F0 25                    rough DI bump (see note below)
 #
 # DI is not a stored value. The client shows ratings * (ticks/36000), where
@@ -86,6 +88,12 @@ case "$cmd" in
 
   upgrades)
     s=$(slot_of "${1:?player slot or id}")
+    run "./lib/tools/setship $s show-upgrades" ;;
+
+  upgrade)
+    s=$(slot_of "${1:?player slot or id}")
+    t="${2:?upgrade index, see 'upgrades'}"; n="${3:-1}"
+    run "./lib/tools/setship $s upgrade $t $n"
     run "./lib/tools/setship $s show-upgrades" ;;
 
   di)
