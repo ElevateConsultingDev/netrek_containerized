@@ -34,3 +34,23 @@ Tests, and what each caught before it was fixed:
    `pad3 - 4` and then `strcpy`d an unrelated length into it)
 
 All three abort on the pre-fix code and are clean after.
+
+
+## Extrapolation test (tests/extrap_test.c)
+
+Calls the real `extrap_apply()` / `extrap_restore()` from `redraw.c`, linked
+against the client's own objects. Build the normal client first, then:
+
+    cc -g -O0 -Wno-implicit-function-declaration -Wno-pointer-sign -Wno-format \
+       -I. -I../netrek-client-cow $(pkg-config --cflags sdl2) \
+       -c tests/extrap_test.c -o /tmp/e.o
+    OBJS=$(ls build/*.o | grep -v /main.o)     # bash; zsh does not word-split
+    cc -g -o /tmp/extrap_test /tmp/e.o $OBJS \
+       $(pkg-config --libs sdl2 SDL2_ttf SDL2_image SDL2_mixer) -lm
+    /tmp/extrap_test
+
+It checks the direction convention (dir 0 is north, dir 64 is east), that a
+torp takes its speed from the ship that fired it, that objects which are not
+alive or not moving stay put, that restore is exact, that 500 apply/restore
+cycles accumulate no drift, that a late packet clamps to one update instead
+of flinging things away, and that `extrapolate: off` disables it.

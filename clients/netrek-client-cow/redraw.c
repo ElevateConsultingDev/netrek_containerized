@@ -31,6 +31,115 @@ static time_t lastread;
 static int needredraw = 0;
 static unsigned long lastredraw = 0;
 
+/* ------------------------------------------------------------------------
+ * Dead reckoning between server updates.
+ *
+ * The server sends positions server_ups times a second (commonly 10 or 25),
+ * so drawing raw p_x/p_y makes everything step rather than glide. Between
+ * updates we advance each moving object along the course the server last
+ * reported, then put the authoritative values back before returning, so
+ * nothing outside the draw ever sees a predicted position.
+ *
+ * Applying the offset to the objects rather than to each drawing site means
+ * the tactical, the phaser and tractor beams, and the lock triangle all stay
+ * consistent with each other for free.
+ *
+ * Velocity is speed * WARP1 per update along p_dir; the trig tables are
+ * indexed by the direction byte directly (Cos[0]=0, Sin[0]=-1, so 0 is up).
+ * Torps carry no speed of their own, so it comes from the ship that fired.
+ * ------------------------------------------------------------------------ */
+unsigned long last_update_ms = 0;       /* set by the position packet handlers */
+
+static int extrap_on = 0;               /* offsets currently applied? */
+static int save_px[MAXPLAYER], save_py[MAXPLAYER];
+static int save_tx[MAXPLAYER * MAXTORP], save_ty[MAXPLAYER * MAXTORP];
+
+/* Fraction of an update elapsed, clamped to one interval so a late or
+ * dropped packet coasts to a stop instead of flinging things off-screen. */
+static double extrap_frac(void)
+{
+	unsigned long now;
+	double f;
+
+	if (!extrapolate || last_update_ms == 0 || server_ups <= 0) return 0.0;
+	now = msetime();
+	if (now <= last_update_ms) return 0.0;
+	f = (double) (now - last_update_ms) * (double) server_ups / 1000.0;
+	if (f > 1.0) f = 1.0;
+	return f;
+}
+
+void extrap_apply(void)
+{
+	double f = extrap_frac();
+	int i;
+
+	if (extrap_on || f <= 0.0) return;
+	extrap_on = 1;
+
+	for (i = 0; i < MAXPLAYER; i++) {
+		struct player *j = &players[i];
+		save_px[i] = j->p_x;
+		save_py[i] = j->p_y;
+		if (j->p_status != PALIVE || j->p_speed <= 0) continue;
+		double d = (double) j->p_speed * WARP1 * f;
+		j->p_x += (int) (d * Cos[j->p_dir]);
+		j->p_y += (int) (d * Sin[j->p_dir]);
+	}
+
+	for (i = 0; i < MAXPLAYER * MAXTORP; i++) {
+		struct torp *t = &torps[i];
+		save_tx[i] = t->t_x;
+		save_ty[i] = t->t_y;
+		if (t->t_status != TMOVE) continue;
+		if (t->t_owner < 0 || t->t_owner >= MAXPLAYER) continue;
+		int speed = players[t->t_owner].p_ship.s_torpspeed;
+		if (speed <= 0) continue;
+		double d = (double) speed * WARP1 * f;
+		t->t_x += (int) (d * Cos[t->t_dir]);
+		t->t_y += (int) (d * Sin[t->t_dir]);
+	}
+}
+
+void extrap_restore(void)
+{
+	int i;
+
+	if (!extrap_on) return;
+	extrap_on = 0;
+	for (i = 0; i < MAXPLAYER; i++) {
+		players[i].p_x = save_px[i];
+		players[i].p_y = save_py[i];
+	}
+	for (i = 0; i < MAXPLAYER * MAXTORP; i++) {
+		torps[i].t_x = save_tx[i];
+		torps[i].t_y = save_ty[i];
+	}
+}
+
+/* Draw an in-between frame if one is due.
+ *
+ * Drawing only when a packet arrives means every frame is drawn at the
+ * instant of an update, when no time has yet elapsed, so dead reckoning
+ * would never actually displace anything. The input loop calls this on a
+ * clock so motion is carried between updates. Turning off `extrapolate`
+ * restores the old packet-driven-only behaviour exactly. */
+#define FRAME_INTERVAL_MS 16		/* ~60 fps */
+
+void redraw_if_due(void)
+{
+	unsigned long now;
+
+	if (!extrapolate || me == NULL) return;
+	/* Only while actually flying: the entry and outfit screens are static,
+	 * and drawing them at 60 fps is pure heat. */
+	if (me->p_status != PALIVE) return;
+	now = msetime();
+	if (now < lastredraw + FRAME_INTERVAL_MS) return;
+	lastredraw = now;
+	redraw();
+}
+
 void intrupt(fd_set *readfds) {
 	time_t  time(time_t *);
 	unsigned long t;
@@ -87,6 +196,11 @@ void redraw(void) {
 	}
 
 	run_clock(lastread);		/* for hosers who don't know what a Xclock is */
+
+	/* Advance moving objects to where they should be right now; undone at
+	 * the end of this function, before anything else can observe them. */
+	extrap_apply();
+
 	clearLocal();
 
 #ifdef BEEPLITE
@@ -135,6 +249,9 @@ void redraw(void) {
 	/* XFIX: last since its least accurate information */
 	map();
 	W_FlushWindow(mapw);
+
+	/* Put the server's own numbers back before anyone else reads them. */
+	extrap_restore();
 
 	/* automatic step down in response to display lag */
         if (visual_l > 40000 && client_ups >= 25) {

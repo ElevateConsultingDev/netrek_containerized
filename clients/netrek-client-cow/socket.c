@@ -29,6 +29,7 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "interface.h"          /* msetime() returns unsigned long */
 #include "packets.h"
 #include "ltd_stats.h"
 #include "wtext.h"
@@ -1565,6 +1566,9 @@ void    handlePlayer(struct player_spacket *packet)
 
 
   pl = &players[(unsigned char) packet->pnum];
+
+  /* Start of a fresh set of positions: dead reckoning measures from here. */
+  last_update_ms = msetime();
 
   pl->p_dir = packet->dir;
   pl->p_speed = packet->speed;

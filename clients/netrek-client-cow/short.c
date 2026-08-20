@@ -13,6 +13,7 @@
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
+#include "interface.h"          /* msetime() returns unsigned long */
 #include "packets.h"
 
 #include "distress.h"
@@ -520,9 +521,12 @@ void    handleVPlayer(unsigned char *sbuf)
 
   numofplayers = (unsigned char) sbuf[1] & 0x3f;
 
+  /* Start of a fresh set of positions: dead reckoning measures from here. */
+  last_update_ms = msetime();
+
 #ifdef CORRUPTED_PACKETS
   /* should do something clever here - jmn if(pl_no < 0 || pl_no >= * *
-   * MAXPLAYER){ fprintf(stderr, "handleVPlayer: bad index %d\n", pl_no); * * 
+   * MAXPLAYER){ fprintf(stderr, "handleVPlayer: bad index %d\n", pl_no); * *
    * return; } */
 #endif
 

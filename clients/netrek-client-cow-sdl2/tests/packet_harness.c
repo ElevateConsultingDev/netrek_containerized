@@ -115,6 +115,8 @@ int main(int argc, char **argv) {
 /* additional stubs: only symbols data.o does not already define */
 void W_SetSensitive(W_Window w, int b) { (void)w; (void)b; }
 unsigned char numofbits[256];
+unsigned long last_update_ms = 0;
+unsigned long msetime(void) { return 0; }
 int vtisize[9];
 
 int gather_stats = 0;

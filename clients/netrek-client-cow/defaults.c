@@ -494,8 +494,12 @@ int booleanDefault(char *def, int preferred)
   if (str == NULL)
     return (preferred);
 
+  /* "1" and "yes" are what people actually write in an rc file; before they
+   * were silently false, so an option written as `foo: 1` turned foo off. */
   if ((strncmpi(str, "on", 2) == 0) ||
-      (strncmpi(str, "true", 4) == 0))
+      (strncmpi(str, "true", 4) == 0) ||
+      (strncmpi(str, "yes", 3) == 0) ||
+      (str[0] == '1'))
     {
       return (1);
     }
@@ -557,6 +561,7 @@ void resetdefaults(void)
   showArmy = intDefault("showArmy", showArmy);
   viewRange = intDefault("viewRange", viewRange);
   viewBox = booleanDefault("viewBox", viewBox);
+  extrapolate = booleanDefault("extrapolate", extrapolate);
   colorPlanets = booleanDefault("colorPlanets", colorPlanets);
   newDashboard = intDefault("newDashboard", newDashboard);
   ROMVLVS = booleanDefault("ROMVLVS", ROMVLVS);

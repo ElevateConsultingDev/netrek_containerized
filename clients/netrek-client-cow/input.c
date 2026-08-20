@@ -716,6 +716,11 @@ void input()
       }
     }
 
+    /* Carry motion between server updates: without a frame drawn part-way
+     * through an update interval, dead reckoning has no elapsed time to work
+     * with and nothing moves any more smoothly than before. */
+    redraw_if_due();
+
     if (flush) {
       W_Flush();
       flush = 0;
