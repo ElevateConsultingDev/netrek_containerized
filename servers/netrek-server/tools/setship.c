@@ -16,7 +16,8 @@
 static void usage(void)
 {
   fprintf(stderr, "\
-Usage: setship SLOT get\n\
+Usage: setship menu             list every sturgeon upgrade and its cost\n\
+       setship SLOT get\n\
        setship SLOT COMMAND [COMMAND ...]\n\
 \n\
 position x y                move ship to x y coordinate\n\
@@ -80,6 +81,23 @@ int setship(const char *cmds)
   copy = strdup(cmds);
   token = strtok(copy, delimiters);
   if (!token) { usage(); return 1; }
+
+#ifdef STURGEON
+  /* The upgrade table is the same for everyone, so this one is answerable
+   * without a player: no slot, and no need for anyone to be in the game.
+   * Costs come from the server's own tables so they cannot drift out of
+   * step with what it actually charges. */
+  if (!strcmp(token, "menu")) {
+    int i;
+    printf("   ## %-26s %6s %6s\n", "UPGRADE", "COST", "THEN+");
+    for (i = 1; i <= UPG_DETDMG; i++)
+      printf("   %2d %-26s %6.2f %6.2f\n",
+             i, upgradename[i], baseupgradecost[i], adderupgradecost[i]);
+    printf("\nCOST is the first one; each later one adds THEN+ to it.\n");
+    return 0;
+  }
+#endif
+
   openmem(0);
 
  state_0:

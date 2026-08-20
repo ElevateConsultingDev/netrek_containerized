@@ -22,7 +22,8 @@
 #   ./god.sh player F0 rank 8            set rank index
 #   ./god.sh player F0 stat kills 200    set a stat; DI is derived from these
 #                                        (kills deaths armsbomb planets ticks)
-#   ./god.sh upgrades F0                 print sturgeon upgrades held
+#   ./god.sh upgrades                    the upgrade table and its costs
+#   ./god.sh upgrades F0                 the same, plus what F0 holds
 #   ./god.sh upgrade F0 8 3              grant upgrade 8 (engine cool) x3
 #   ./god.sh upgrade F0 8 -1             take one back
 #   ./god.sh di F0 25                    rough DI bump (see note below)
@@ -111,7 +112,9 @@ case "$cmd" in
     run "./lib/tools/setship $s show-player" ;;
 
   upgrades)
-    s=$(slot_of "${1:?player slot or id}")
+    # no player given: the table alone, which needs nobody in the game
+    if [ $# -eq 0 ]; then run "./lib/tools/setship menu"; exit 0; fi
+    s=$(slot_of "$1")
     run "./lib/tools/setship $s show-upgrades" ;;
 
   upgrade)
