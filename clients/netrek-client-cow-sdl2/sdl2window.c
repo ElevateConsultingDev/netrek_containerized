@@ -221,6 +221,10 @@ static int evq_pop(W_Event *ev)
     return 1;
 }
 
+/* rapidFire state: which mouse button is held, and when to repeat it */
+static int    held_button = 0;      /* SDL button id currently down, 0 = none */
+static Uint32 held_next   = 0;      /* when the next repeat is due */
+
 /* Root window placeholder */
 static struct window myroot;
 
@@ -1401,6 +1405,9 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
     } else if (sdl_ev->type == SDL_MOUSEBUTTONDOWN ||
                sdl_ev->type == SDL_MOUSEBUTTONUP) {
         last_mouse_px = sdl_ev->button.x; last_mouse_py = sdl_ev->button.y;
+        if (sdl_ev->type == SDL_MOUSEBUTTONUP &&
+            sdl_ev->button.button == held_button)
+            held_button = 0;                     /* rapidFire: released */
     }
     memset(wev, 0, sizeof(W_Event));
 
@@ -1451,6 +1458,9 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
 
     case SDL_MOUSEBUTTONDOWN: {
         int mx, my;
+        /* remember it for rapidFire; cleared on the matching BUTTONUP */
+        held_button = sdl_ev->button.button;
+        held_next = SDL_GetTicks() + (Uint32) rapidFire;
         pt_to_logical(sdl_ev->button.x, sdl_ev->button.y, &mx, &my);
         struct window *win = findWindowAt(mx, my);
         if (!win) return 0;
@@ -1547,6 +1557,46 @@ static int translate_sdl_event(SDL_Event *sdl_ev, W_Event *wev)
 }
 
 /* Poll SDL and enqueue any translated events */
+/* rapidFire: keep firing while a mouse button is held.
+ *
+ * SDL sends one BUTTONDOWN and one BUTTONUP, so holding the button normally
+ * fires once. When rapidFire is set we synthesise further button events at
+ * that interval from the button that is still down, at wherever the pointer
+ * is now, so aim follows the mouse while held. The server still applies fuel
+ * and weapon cooling, so this cannot fire faster than the ship allows. */
+static int synth_held_button(W_Event *wev)
+{
+    int mx, my;
+    struct window *win;
+
+    if (!rapidFire || !held_button) return 0;
+    if (SDL_GetTicks() < held_next) return 0;
+    held_next = SDL_GetTicks() + (Uint32) rapidFire;
+
+    get_logical_mouse(&mx, &my);
+    win = findWindowAt(mx, my);
+    if (!win || win->type == WIN_MENU) return 0;   /* menus must not repeat */
+
+    wev->type = W_EV_BUTTON;
+    wev->Window = W_Window2Void(win);
+    wev->x = mx - win->x;
+    wev->y = my - win->y;
+    switch (held_button) {
+    case SDL_BUTTON_LEFT:   wev->key = W_LBUTTON; break;
+    case SDL_BUTTON_MIDDLE: wev->key = W_MBUTTON; break;
+    case SDL_BUTTON_RIGHT:  wev->key = W_RBUTTON; break;
+    default: return 0;
+    }
+#ifdef SHIFTED_MOUSE
+    {
+        SDL_Keymod mod = SDL_GetModState();
+        if (mod & KMOD_SHIFT) wev->key |= W_SHIFT_BUTTON;
+        if (mod & KMOD_CTRL)  wev->key |= W_CTRL_BUTTON;
+    }
+#endif
+    return 1;
+}
+
 static void poll_sdl_into_queue(void)
 {
     SDL_Event sdl_ev;
@@ -1563,6 +1613,12 @@ static void poll_sdl_into_queue(void)
             evq_push(&tmp);
         }
     }
+    /* rapidFire: a held button keeps firing */
+    {
+        W_Event rep;
+        while (synth_held_button(&rep)) evq_push(&rep);
+    }
+
     /* Wake select() if events are queued */
     if (!evq_empty()) {
         char dummy = 'e';

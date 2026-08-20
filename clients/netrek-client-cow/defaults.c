@@ -562,6 +562,7 @@ void resetdefaults(void)
   viewRange = intDefault("viewRange", viewRange);
   viewBox = booleanDefault("viewBox", viewBox);
   weaponsOnMap = booleanDefault("weaponsOnMap", weaponsOnMap);
+  rapidFire = intDefault("rapidFire", rapidFire);
   extrapolate = booleanDefault("extrapolate", extrapolate);
   colorPlanets = booleanDefault("colorPlanets", colorPlanets);
   newDashboard = intDefault("newDashboard", newDashboard);
