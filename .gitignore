@@ -1,3 +1,6 @@
 .DS_Store
 *.log
 clients/netrek-client-cow-sdl2/build-asan/
+
+# client message log (runtime artifact from the message-logging option)
+Log_me.txt
