@@ -2601,13 +2601,14 @@ void    handlePlanetLoc(struct planet_loc_spacket *packet)
   int pl_no = packet->pnum;
   struct planet *pl;
 
-#ifdef CORRUPTED_PACKETS
+  /* Range and termination checks on wire data are unconditional: the name
+   * field fills the packet and need not be terminated by the server. */
   if (pl_no < 0 || pl_no >= MAXPLANETS)
     {
       fprintf(stderr, "handlePlanetLoc: bad index\n");
       return;
     }
-#endif
+  packet->name[sizeof(packet->name) - 1] = '\0';
 
   pl = &planets[pl_no];
   pl_update[pl_no].plu_x = pl->pl_x;
@@ -4884,18 +4885,25 @@ void print_opacket(char *packet, int size)
 
 #endif /* PACKET_LOG */
 
+/* Copy s2 into s1, space-padded, where length is the size of the destination
+ * buffer. Always leaves a terminator: callers treat the result as a C string
+ * (e.g. p_monitor formatted with %s), and the source field from the wire is
+ * not guaranteed to be terminated. */
 char   *
         strcpyp_return(register char *s1, register char *s2, register int length)
 {
-  while (length && *s2)
+  register int room = length - 1;
+
+  if (room < 0)
+    return s1;
+
+  while (room && *s2)
     {
       *s1++ = *s2++;
-      length--;
+      room--;
     }
-  if (length > 0)
-    {
-      while (length--)
-	*s1++ = ' ';
-    }
+  while (room-- > 0)
+    *s1++ = ' ';
+  *s1 = '\0';
   return s1;
 }

@@ -591,7 +591,7 @@ void resetdefaults(void)
   if (RSA_Client >= 0)
     {
       RSA_Client = booleanDefault("useRsa", RSA_Client);
-      sprintf(tmp, "useRSA.%s", serverName);
+      snprintf(tmp, sizeof(tmp), "useRSA.%s", serverName);
       RSA_Client = booleanDefault(tmp, RSA_Client);
 
     }
@@ -850,6 +850,10 @@ void shipchange(int type)
         return 1;
 #endif
 
+/* Smallest buffer any caller passes as `found` (docwin.c and initDefaults
+ * both use char[256]; parsemeta.c uses PATH_MAX). */
+#define FINDFILE_MAX 256
+
 int     findfile(char *fname, char *found)
 {
   int     accessible;
@@ -864,13 +868,13 @@ int     findfile(char *fname, char *found)
   accessible = access(fname, R_OK);
   if ((strlen(fname) > 0) && (accessible == 0))
     {
-      strcpy(found, fname);
+      snprintf(found, FINDFILE_MAX, "%s", fname);
       return 1;
     }
 
   /* Check home directory next */
   home = getenv("HOME");
-  if (home)
+  if (home && *home)
     {
       int     len = strlen(home);
 
@@ -881,9 +885,9 @@ int     findfile(char *fname, char *found)
 #endif
 
 	  )
-	sprintf(found, "%s%s", home, fname);
+	snprintf(found, FINDFILE_MAX, "%s%s", home, fname);
       else
-	sprintf(found, "%s/%s", home, fname);
+	snprintf(found, FINDFILE_MAX, "%s/%s", home, fname);
     }
   CHECK_FILE;
 

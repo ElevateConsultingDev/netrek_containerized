@@ -457,7 +457,7 @@ static void version_r(struct sockaddr_in *address) {
       grow(1);
       sp = serverlist + num_servers;
       num_servers++;
-      strncpy(sp->address,host,LINE);
+      snprintf(sp->address, LINE, "%s", host);
       sp->port = port;
       sp->age = age;
       sp->when = now;
@@ -561,7 +561,7 @@ static void version_s(struct sockaddr_in *address)
   }
 
   /* add or update the entry */
-  strncpy(sp->address, host, LINE);
+  snprintf(sp->address, LINE, "%s", host);
   sp->port = port;
   sp->age = 0;
   sp->when = now;
@@ -574,7 +574,7 @@ static void version_s(struct sockaddr_in *address)
     sp->status = statusOpen;
   }
   sp->typeflag = type;
-  strncpy(sp->comment, comment, LINE);
+  snprintf(sp->comment, LINE, "%s", comment);
   sp->pid = -1;
   sp->exitstatus = 0;
   sp->observer = 0;
@@ -614,7 +614,8 @@ static int ReadMetasRecv(int x)
 
   /* so we have data back from a metaserver or server */
   length = sizeof(address);
-  bytes = recvfrom(msock, packet, MAXMETABYTES, 0,
+  /* leave room for the terminator written below */
+  bytes = recvfrom(msock, packet, MAXMETABYTES - 1, 0,
                    (struct sockaddr *)&address, &length );
   if (bytes < 0) {
     perror("ReadMetasRecv: recvfrom");
@@ -963,7 +964,7 @@ static void add_commit()
   grow(1);
   sp = serverlist + num_servers;
   num_servers++;
-  strncpy(sp->address, add_buffer, LINE);
+  snprintf(sp->address, LINE, "%s", add_buffer);
   sp->port = 2592;
   sp->age = 0;
   sp->when = time(NULL);
@@ -972,7 +973,7 @@ static void add_commit()
   sp->players = 0;
   sp->status = statusNobody;
   sp->typeflag = 'U';
-  strncpy(sp->comment, add_buffer, LINE);
+  snprintf(sp->comment, LINE, "%s", add_buffer);
   sp->pid = -1;
   sp->exitstatus = 0;
   sp->observer = 0;
