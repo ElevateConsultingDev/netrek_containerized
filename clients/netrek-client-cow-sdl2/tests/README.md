@@ -49,8 +49,16 @@ against the client's own objects. Build the normal client first, then:
        $(pkg-config --libs sdl2 SDL2_ttf SDL2_image SDL2_mixer) -lm
     /tmp/extrap_test
 
-It checks the direction convention (dir 0 is north, dir 64 is east), that a
-torp takes its speed from the ship that fired it, that objects which are not
-alive or not moving stay put, that restore is exact, that 500 apply/restore
-cycles accumulate no drift, that a late packet clamps to one update instead
-of flinging things away, and that `extrapolate: off` disables it.
+It checks the direction convention (dir 0 is north, dir 64 is east), that
+torps are left alone (see below), that objects which are not alive stay put,
+that restore is exact, that 500 apply/restore cycles accumulate no drift,
+that a late packet clamps to one update instead of flinging things away, and
+that `extrapolate: off` disables it.
+
+Ships are reckoned but torps are not. Short packets carry a ship's direction
+and speed (`handleVPlayer` sets `p_dir` and `p_speed`, direction quantised to
+16 steps), but the short torp handler `handleVTorp` sends position deltas
+only and never sets `t_dir`. A torp's stored direction is therefore stale, or
+belongs to whatever previously occupied that slot, and reckoning along it
+sends torps off at visibly wrong angles. Smoothing torps properly means
+deriving velocity from successive reported positions instead.

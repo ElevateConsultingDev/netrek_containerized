@@ -46,13 +46,18 @@ static unsigned long lastredraw = 0;
  *
  * Velocity is speed * WARP1 per update along p_dir; the trig tables are
  * indexed by the direction byte directly (Cos[0]=0, Sin[0]=-1, so 0 is up).
- * Torps carry no speed of their own, so it comes from the ship that fired.
+ *
+ * Ships only. Torps are deliberately left alone: the short-packet torp
+ * handler (handleVTorp) sends position deltas and never sets t_dir, so a
+ * torp's stored direction is stale or belongs to whatever previously used
+ * that slot. Reckoning along it sent torps off at wrong angles. Doing this
+ * properly means deriving velocity from successive reported positions
+ * rather than from a direction field that is not transmitted.
  * ------------------------------------------------------------------------ */
 unsigned long last_update_ms = 0;       /* set by the position packet handlers */
 
 static int extrap_on = 0;               /* offsets currently applied? */
 static int save_px[MAXPLAYER], save_py[MAXPLAYER];
-static int save_tx[MAXPLAYER * MAXTORP], save_ty[MAXPLAYER * MAXTORP];
 
 /* Fraction of an update elapsed, clamped to one interval so a late or
  * dropped packet coasts to a stop instead of flinging things off-screen. */
@@ -86,19 +91,6 @@ void extrap_apply(void)
 		j->p_x += (int) (d * Cos[j->p_dir]);
 		j->p_y += (int) (d * Sin[j->p_dir]);
 	}
-
-	for (i = 0; i < MAXPLAYER * MAXTORP; i++) {
-		struct torp *t = &torps[i];
-		save_tx[i] = t->t_x;
-		save_ty[i] = t->t_y;
-		if (t->t_status != TMOVE) continue;
-		if (t->t_owner < 0 || t->t_owner >= MAXPLAYER) continue;
-		int speed = players[t->t_owner].p_ship.s_torpspeed;
-		if (speed <= 0) continue;
-		double d = (double) speed * WARP1 * f;
-		t->t_x += (int) (d * Cos[t->t_dir]);
-		t->t_y += (int) (d * Sin[t->t_dir]);
-	}
 }
 
 void extrap_restore(void)
@@ -110,10 +102,6 @@ void extrap_restore(void)
 	for (i = 0; i < MAXPLAYER; i++) {
 		players[i].p_x = save_px[i];
 		players[i].p_y = save_py[i];
-	}
-	for (i = 0; i < MAXPLAYER * MAXTORP; i++) {
-		torps[i].t_x = save_tx[i];
-		torps[i].t_y = save_ty[i];
 	}
 }
 

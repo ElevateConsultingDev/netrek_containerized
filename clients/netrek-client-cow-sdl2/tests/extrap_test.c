@@ -63,7 +63,9 @@ int main(void)
     players[3].p_x = 50000;
     players[3].p_y = 50000;
 
-    /* a moving torp takes its speed from the firing ship (12) */
+    /* Torps must NOT be reckoned: the short-packet handler never sets
+     * t_dir, so the stored direction is stale or belongs to whatever last
+     * used the slot, and moving along it sends torps off at wrong angles. */
     torps[8].t_status = TMOVE;      /* player 1's first torp slot */
     torps[8].t_owner = 1;
     torps[8].t_dir = 64;
@@ -84,19 +86,18 @@ int main(void)
     CHECK(abs(players[2].p_x - 50000) <= 2,                 "p2 x unchanged");
     /* not alive => untouched */
     CHECK(players[3].p_x == 50000 && players[3].p_y == 50000, "dead player still");
-    /* torp: 12*20*0.5 = 120 */
-    CHECK(torps[8].t_x > 50100 && torps[8].t_x < 50140,     "torp moved ~120");
+    CHECK(torps[8].t_x == 50000 && torps[8].t_y == 50000,   "torp NOT reckoned");
 
     /* restore must be exact for every slot */
     extrap_restore();
     CHECK(players[1].p_x == 50000 && players[1].p_y == 50000, "p1 restored");
     CHECK(players[2].p_x == 50000 && players[2].p_y == 50000, "p2 restored");
-    CHECK(torps[8].t_x == 50000 && torps[8].t_y == 50000,     "torp restored");
+    CHECK(torps[8].t_x == 50000 && torps[8].t_y == 50000,     "torp untouched");
 
     /* repeated apply/restore cycles must not accumulate drift */
     for (int i = 0; i < 500; i++) { extrap_apply(); extrap_restore(); }
     CHECK(players[1].p_x == 50000 && players[1].p_y == 50000, "no drift over 500 frames");
-    CHECK(torps[8].t_x == 50000 && torps[8].t_y == 50000,     "torp no drift");
+    CHECK(torps[8].t_x == 50000 && torps[8].t_y == 50000,     "torp still untouched");
 
     /* a stale timestamp clamps to one update, it does not fling anything away */
     last_update_ms = msetime() - 5000;      /* 125 updates late */
