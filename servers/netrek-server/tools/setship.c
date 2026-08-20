@@ -35,6 +35,12 @@ captain                     mark a player as a draft captain\n\
 damage n                    set damage to n\n\
 shields n                   set shields remaining to n\n\
 fuel n                      set fuel remaining to n\n\
+kills n                     set kills to n (accepts fractions, e.g. 2.5)\n\
+rank n                      set rank index to n (server may recompute it)\n\
+show-player                 print slot, name, kills, rank, armies and stats\n\
+stat NAME VALUE             set a career stat. NAME is one of\n\
+                            kills deaths armsbomb planets ticks maxkills\n\
+                            DI is derived from these, not stored.\n\
 ");
 }
 
@@ -70,6 +76,18 @@ int setship(const char *cmds)
 
  state_1:
   if (!(token = strtok (NULL, delimiters))) return 0;
+
+  if (!strcmp(token, "show-player")) {
+    printf("slot %d name '%s' kills %.2f rank %d armies %d",
+           me->p_no, me->p_name, me->p_kills, me->p_stats.st_rank, me->p_armies);
+    printf(" damage %d shields %d fuel %d\n",
+           me->p_damage, me->p_shield, me->p_fuel);
+    printf("  stats   kills %d deaths %d armsbomb %d planets %d ticks %d\n",
+           ltd_kills(me, LTD_TOTAL), ltd_deaths(me, LTD_TOTAL),
+           ltd_armies_bombed(me, LTD_TOTAL), ltd_planets_taken(me, LTD_TOTAL),
+           ltd_ticks(me, LTD_TOTAL));
+    goto state_1;
+  }
 
   if (!strcmp(token, "show-position")) {
     printf("frame %d", context->frame);
@@ -266,6 +284,62 @@ int setship(const char *cmds)
   if (!strcmp(token, "fuel")) {
     if (!(token = strtok (NULL, delimiters))) return 0;
     me->p_fuel = atoi(token);
+    goto state_1;
+  }
+
+  /* kills is a float: 2.5 kills is a real and common value */
+  if (!strcmp(token, "kills")) {
+    if (!(token = strtok (NULL, delimiters))) return 0;
+    me->p_kills = atof(token);
+    goto state_1;
+  }
+
+  /* Career stats. This server is built with LTD_STATS, so the counters the
+   * client sees are summed out of p_stats.ltd[race][ship] rather than the
+   * flat st_* fields. Write into the player's current race/ship slot and the
+   * LTD_TOTAL rollup picks it up on the next read.
+   *
+   * DI is not stored anywhere: the client computes it as
+   * ratings * (tticks / 36000), and the ratings come from these counters. So
+   * DI is raised by setting kills/bomb/planets and giving the player enough
+   * ticks to have plausibly earned them. */
+  if (!strcmp(token, "stat")) {
+    char *name;
+    double v;
+#ifdef LTD_STATS
+    struct ltd_stats *ltd =
+      &me->p_stats.ltd[ltd_race(me->p_team)][me->p_ship.s_type];
+#endif
+    if (!(name  = strtok (NULL, delimiters))) return 0;
+    if (!(token = strtok (NULL, delimiters))) return 0;
+    v = atof(token);
+#ifdef LTD_STATS
+         if (!strcmp(name, "kills"))    ltd->kills.total   = (unsigned int) v;
+    else if (!strcmp(name, "maxkills")) ltd->kills.max     = v;
+    else if (!strcmp(name, "deaths"))   ltd->deaths.total  = (unsigned int) v;
+    else if (!strcmp(name, "armsbomb")) ltd->bomb.armies   = (unsigned int) v;
+    else if (!strcmp(name, "planets"))  ltd->planets.taken = (unsigned int) v;
+    else if (!strcmp(name, "ticks"))    ltd->ticks.total   = (unsigned int) v;
+    else { fprintf(stderr, "unknown stat '%s'\n", name); return 0; }
+#else
+    struct stats *st = &me->p_stats;
+         if (!strcmp(name, "kills"))    st->st_tkills    = (int) v;
+    else if (!strcmp(name, "maxkills")) st->st_maxkills  = v;
+    else if (!strcmp(name, "deaths"))   st->st_tlosses   = (int) v;
+    else if (!strcmp(name, "armsbomb")) st->st_tarmsbomb = (int) v;
+    else if (!strcmp(name, "planets"))  st->st_tplanets  = (int) v;
+    else if (!strcmp(name, "ticks"))    st->st_tticks    = (int) v;
+    else { fprintf(stderr, "unknown stat '%s'\n", name); return 0; }
+#endif
+    goto state_1;
+  }
+
+  /* Rank is an index into the server's rank table. The server recomputes it
+   * from career stats at the usual points, so treat this as "for this life"
+   * rather than a permanent promotion. */
+  if (!strcmp(token, "rank")) {
+    if (!(token = strtok (NULL, delimiters))) return 0;
+    me->p_stats.st_rank = atoi(token);
     goto state_1;
   }
 
