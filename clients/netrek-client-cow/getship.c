@@ -125,5 +125,9 @@ void    getshipdefaults()
 
 void getship(struct ship *shipp, int s_type)
 {
+  /* s_type reaches here straight from the wire; clamp to the table rather
+   * than reading past shipvals[NUM_TYPES]. */
+  if (s_type < 0 || s_type >= NUM_TYPES)
+    s_type = CRUISER;
   memcpy((char *) shipp, (char *) &(shipvals[s_type]), sizeof(struct ship));
 }
