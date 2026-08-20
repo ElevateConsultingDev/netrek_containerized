@@ -146,12 +146,18 @@ int setship(const char *cmds)
            me->p_ship.s_maxspeed, me->p_ship.s_maxfuel,
            me->p_ship.s_maxshield, me->p_ship.s_maxdamage,
            me->p_ship.s_egncoolrate, me->p_ship.s_wpncoolrate);
-    for (i = 0; i < NUMUPGRADES && i < names; i++) {
-      if (!me->p_upgradelist[i]) continue;
-      printf("  [%2d] %-26s %d\n", i, upgradename[i], me->p_upgradelist[i]);
-      any = 1;
+    /* Every upgrade, not just the ones held, so this doubles as the menu of
+     * indices to hand to 'upgrade'. Cost is what the NEXT one would cost:
+     * base + level * adder, the same sum the server charges. */
+    printf("   ## %-26s %5s %6s\n", "UPGRADE", "HAVE", "NEXT");
+    for (i = 1; i < NUMUPGRADES && i < names; i++) {
+      int lvl = me->p_upgradelist[i];
+      printf("  %s%2d %-26s %5d %6.2f\n",
+             lvl ? "*" : " ", i, upgradename[i], lvl,
+             baseupgradecost[i] + lvl * adderupgradecost[i]);
+      if (lvl) any = 1;
     }
-    if (!any) printf("  (no upgrades)\n");
+    if (!any) printf("  (none held; * marks ones you have)\n");
     goto state_1;
   }
 #endif
