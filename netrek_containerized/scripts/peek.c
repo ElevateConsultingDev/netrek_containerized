@@ -15,6 +15,7 @@
 #include "config.h"
 #include <stdio.h>
 #include <math.h>
+#include <string.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -32,7 +33,10 @@ int main(void)
 
     for (i = 0; i < MAXPLAYER; i++) {
 	struct player *p = &players[i];
-	int bot = (p->p_flags & (PFROBOT | PFBPROBOT)) != 0;
+	/* login check as well as the flags: a bot is not PFBPROBOT until it
+	   sends its first OggV packet, a second or two after connecting */
+	int bot = (p->p_flags & (PFROBOT | PFBPROBOT)) != 0 ||
+		  !strcmp(p->p_login, "robot!");
 	int nearest = -1;
 	double ndist = 0;
 
@@ -53,7 +57,8 @@ int main(void)
 	    double d;
 
 	    if (q->p_status != PALIVE || q == p) continue;
-	    if (!(q->p_flags & (PFROBOT | PFBPROBOT))) continue;
+	    if (!(q->p_flags & (PFROBOT | PFBPROBOT)) &&
+		strcmp(q->p_login, "robot!")) continue;
 	    if (q->p_team == p->p_team) continue;
 	    d = hypot((double)(q->p_x - p->p_x), (double)(q->p_y - p->p_y));
 	    if (nearest < 0 || d < ndist) { nearest = k; ndist = d; }
