@@ -67,6 +67,8 @@ int team2 = 0;
 static void cleanup(int);
 void checkmess();
 static void obliterate(int wflag, char kreason);
+#define BOTLOGDIR "/tmp"        /* robot<pid>.out.log per bot */
+
 static void start_a_robot(char *team);
 static void stop_a_robot(void);
 #ifndef ROBOTS_STAY_IF_PLAYERS_LEAVE
@@ -836,6 +838,8 @@ start_a_robot(char *team)
         argv[argc++] = "-I";
         argv[argc++] = "-C";
         argv[argc++] = COMFILE;
+        argv[argc++] = "-l";            /* decision trace -> BOTLOGDIR */
+        argv[argc++] = BOTLOGDIR;
         argv[argc++] = NULL;
 
         execv(path, argv);
