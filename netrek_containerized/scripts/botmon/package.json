@@ -1,0 +1,9 @@
+{
+  "name": "botmon",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Live view of what each netrek og bot is doing",
+  "main": "botmon.js",
+  "scripts": { "start": "node botmon.js" },
+  "dependencies": { "blessed": "^0.1.81" }
+}

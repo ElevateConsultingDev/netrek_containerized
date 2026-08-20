@@ -60,7 +60,7 @@ keep_reading:
       if (isServerDead())
          exitRobot(0);
       if(!pollmode){
-	 mprintf("sending wakeup packet\n");
+	 pktprintf("sending wakeup packet\n");
 	 sendWarReq(me->p_hostile);
       }
    }

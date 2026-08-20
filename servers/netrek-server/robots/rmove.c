@@ -712,6 +712,44 @@ int isTractoringMe(struct Enemy *enemy_buf)
 	    (enemy_buf->e_tractor == me->p_no));
 }
 
+/* Robots used to have perfect knowledge: get_nearest() scanned every player
+   at any range, cloaked or not, so a cloaked carrier on the far side of the
+   galaxy still pulled robots onto him.  Give robots the same eyes the daemon
+   gives a human (udplayersight() in ntserv/daemon.c): cloaked ships detected
+   within GWIDTH/7, uncloaked within GWIDTH/3, plus anyone a human enemy has
+   already spotted (PFSEEN), who is on everyone's galactic. */
+
+static int can_see(struct player *j, int dist)
+{
+    if (j->p_flags & PFSEEN) return 1;
+    return dist < ((j->p_flags & PFCLOAK) ? GWIDTH/7 : GWIDTH/3);
+}
+
+/* Log target changes to the server logfile (here/var/logfile), same
+   fopen-append pattern as ntserv/main.c.  Only on a change, so a robot
+   deciding 10x a second does not flood the log. */
+
+static void log_target(int who, int dist)
+{
+    static int last = -1;
+    FILE *f;
+
+    if (who == last) return;
+    last = who;
+    f = fopen(LogFileName, "a");
+    if (!f) return;
+    if (who < 0)
+	fprintf(f, "robot %s (%s): no visible enemy, going home\n",
+		roboname, me->p_mapchars);
+    else
+	fprintf(f, "robot %s (%s): chasing %s (%s) dist %d%s%s\n",
+		roboname, me->p_mapchars, players[who].p_name,
+		players[who].p_mapchars, dist,
+		(players[who].p_flags & PFCLOAK) ? " cloaked" : "",
+		(players[who].p_armies > 0) ? " carrying" : "");
+    fclose(f);
+}
+
 struct Enemy ebuf;
 
 struct Enemy *
@@ -745,7 +783,9 @@ get_nearest()
 	dy = j->p_y - me->p_y;
 	tdist = hypot(dx, dy);
 
-	if (j->p_status != POUTFIT) { /* ignore target if outfitting */
+	if (j->p_status != POUTFIT && can_see(j, tdist)) { /* ignore target if
+							     outfitting or out
+							     of sight */
 	    ebuf.e_info = target;
 	    ebuf.e_dist = tdist;
 	    ebuf.e_flags &= ~(E_INTRUDER);
@@ -770,7 +810,8 @@ get_nearest()
 		
 		/* if target's teammate is too close, mark as nearest */
 
-		if ((tdist < ebuf.e_dist) && (tdist < 15000)) {
+		if ((tdist < ebuf.e_dist) && (tdist < 15000) &&
+		    can_see(j, tdist)) {
 		    ebuf.e_info = i;
 		    ebuf.e_dist = tdist;
 		    ebuf.e_flags &= ~(E_INTRUDER);
@@ -811,7 +852,7 @@ get_nearest()
 		    break;
 		}
 		
-		if (tdist < ebuf.e_dist) {
+		if ((tdist < ebuf.e_dist) && can_see(j, tdist)) {
 		    ebuf.e_info = i;
 		    ebuf.e_dist = tdist;
 		    if (intruder)
@@ -825,8 +866,11 @@ get_nearest()
     if (pcount == 0) {
 	return NOENEMY;    /* no players in game */
     } else if (ebuf.e_info == me->p_no) {
-	return 0;			/* no hostile players in the game */
+	log_target(-1, 0);
+	return 0;		/* no hostile player we can see */
     } else {
+	log_target(ebuf.e_info, ebuf.e_dist);
+
 	j = &players[ebuf.e_info];
 
 	/* Get torpedo course to nearest enemy */

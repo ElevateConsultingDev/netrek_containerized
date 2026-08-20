@@ -20,6 +20,7 @@
 
 void response(char *buf);
 void setlog(char *dir);
+extern int logging;
 void R_ProcMessage(char *message, int flags, int from, int to, int std, int config);
 
 static char *randbye();
@@ -1789,6 +1790,7 @@ void setlog(dir)
    test = freopen(buf, "w", stderr);
    if(!test)
       perror("freopen");
+   logging = 1;
    sprintf(buf, "logging (%d)", getpid());
 }
 

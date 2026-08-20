@@ -417,6 +417,25 @@ void updateFlagsAll(int offset)
     sendClientPacket(&flags_all);
 }
 
+/* Can this bot client see pl with its own eyes?  PFSEEN is galaxy-wide: one
+   ship within detection range of a cloaked enemy sets it, and thereafter
+   every client is told that enemy's position (fuzzed by only +/-1000 on a
+   100000 galaxy).  For humans that is the intended galactic team-sighting.
+   The og bots have no eyes but these packets and act on the position
+   tactically, so one bot brushing past a cloaked carrier pulls all fifteen
+   of them in from across the map.  Judge sight from the bot's own ship
+   instead, using the daemon's ranges (udplayersight(), daemon.c). */
+
+static int bot_can_see(struct player *pl)
+{
+    int dx = pl->p_x - me->p_x;
+    int dy = pl->p_y - me->p_y;
+    int max = (pl->p_flags & PFCLOAK) ? GWIDTH/7 : GWIDTH/3;
+
+    if (dx > max || dx < -max || dy > max || dy < -max) return 0;
+    return ((double)dx*dx + (double)dy*dy) <= ((double)max*max);
+}
+
 static int observed_status(struct player *pl)
 {
     if (pl->p_status != POBSERV) return pl->p_status;
@@ -1319,6 +1338,21 @@ updateShips(void)
 	    if (me!=pl)
 		sndFlags(flags, pl, UPDT_MOST);
 
+	    sndPlayer(cpl, pl, UPDT_LEAST);
+	    continue;
+	}
+
+	/* Cloaked and beyond a bot's own detection range?  Then as far as
+	   that bot is concerned the ship is not there.  Orbiting ships are
+	   exempt: parking on a planet gets you noticed, cloaked or not,
+	   which is the same call udplayersight() makes. */
+
+	if ((me->p_flags & PFBPROBOT) && pl != me
+	    && pl->p_team != me->p_team
+	    && (pl->p_flags & PFCLOAK)
+	    && !(pl->p_flags & PFORBIT)
+	    && !bot_can_see(pl)) {
+	    sndFlags(flags, pl, UPDT_MOST);
 	    sndPlayer(cpl, pl, UPDT_LEAST);
 	    continue;
 	}

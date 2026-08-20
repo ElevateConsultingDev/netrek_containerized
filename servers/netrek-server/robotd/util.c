@@ -20,11 +20,34 @@ static void emergency();
 
 struct distress *loaddistress(enum dist_type i);
 
-void mprintf(char *format, ...)
+/* Set by setlog(): stdout is a log file, so trace even when blind (-b).
+   read_stdin means "accept typed commands", which has nothing to do with
+   whether the decision trace is wanted, but it was the only gate here, so
+   every bot the newbie manager spawns (always -b) ran silent. */
+int logging = 0;
+
+/* Per-packet transport chatter: every send, wakeup and update tick.  Useless
+   for working out what a bot is DOING and voluminous enough to bury it, so
+   this goes to an interactive session only, never to the -l log file. */
+
+void pktprintf(char *format, ...)
 {
    va_list	ap;
 
    if(!read_stdin)
+      return;
+
+   va_start(ap, format);
+   (void)vprintf(format, ap);
+   fflush(stdout);
+   va_end(ap);
+}
+
+void mprintf(char *format, ...)
+{
+   va_list	ap;
+
+   if(!read_stdin && !logging)
       return;
    
    va_start(ap, format);
