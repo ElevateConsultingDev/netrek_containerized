@@ -1355,6 +1355,26 @@ char   *whydeadmess[] =
  "[zapped plasma]", "", "[team det]", "[team explosion]"};
 
 
+/* Copy the text of a variable-length warning packet into out[], terminated.
+ * pad3 carries the length of the whole packet, so only pad3-4 bytes of text
+ * are actually present; anything past that belongs to the next packet in the
+ * receive buffer (or is off the end of it entirely). Returns the length. */
+static int warntext(struct warning_spacket *warn, char *out, int outsize)
+{
+  int len = (unsigned char) warn->pad3 - 4;
+
+  if (len < 0)
+    len = 0;
+  if (len > outsize - 1)
+    len = outsize - 1;
+  if (len > (int) sizeof(warn->mesg))
+    len = (int) sizeof(warn->mesg);
+
+  memcpy(out, warn->mesg, len);
+  out[len] = '\0';
+  return len;
+}
+
 void    handleSWarning(struct warning_s_spacket *packet)
 {
   char    buf[80];
@@ -1932,28 +1952,44 @@ void    handleSWarning(struct warning_s_spacket *packet)
 	}
       break;
     case STEXTE:
-      warning(s_texte[(unsigned char) packet->argument]);
+      /* s_texte entries start NULL and are only filled by STEXTE_STRING */
+      if (s_texte[(unsigned char) packet->argument] != NULL)
+	warning(s_texte[(unsigned char) packet->argument]);
       break;
     case SHORT_WARNING:
       {
 	struct warning_spacket *warn = (struct warning_spacket *) packet;
+	char    text[80];
 
-	warning(warn->mesg);
+	warntext(warn, text, sizeof(text));
+	warning(text);
       }
       break;
     case STEXTE_STRING:
       {
 	struct warning_spacket *warn = (struct warning_spacket *) packet;
+	int     slot = (unsigned char) warn->pad2;
+	char    text[80];
+	int     len;
+	char   *dst;
 
-	warning(warn->mesg);
-	s_texte[(unsigned char) warn->pad2] = (char *) malloc(warn->pad3 - 4);
-	if (s_texte[(unsigned char) warn->pad2] == NULL)
+	len = warntext(warn, text, sizeof(text));
+	warning(text);
+
+	dst = (char *) malloc(len + 1);
+	if (dst == NULL)
 	  {
-	    s_texte[(unsigned char) warn->pad2] = no_memory;
+	    s_texte[slot] = no_memory;
 	    warning("Could not add warning! (No memory!)");
 	  }
 	else
-	  strcpy(s_texte[(unsigned char) warn->pad2], warn->mesg);
+	  {
+	    memcpy(dst, text, len + 1);
+	    /* replacing an entry we allocated earlier; no_memory is static */
+	    if (s_texte[slot] != NULL && s_texte[slot] != no_memory)
+	      free(s_texte[slot]);
+	    s_texte[slot] = dst;
+	  }
       }
       break;
     default:
