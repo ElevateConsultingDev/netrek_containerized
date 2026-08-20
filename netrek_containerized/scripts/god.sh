@@ -16,7 +16,8 @@
 #   ./god.sh player F0                   show a player's kills, rank, stats
 #   ./god.sh player F0 kills 5           set kills (fractions allowed)
 #   ./god.sh player F0 rank 8            set rank index
-#   ./god.sh player F0 stat tkills 200   set a stat; DI is derived from these
+#   ./god.sh player F0 stat kills 200    set a stat; DI is derived from these
+#                                        (kills deaths armsbomb planets ticks)
 #   ./god.sh upgrades F0                 print sturgeon upgrades held
 #   ./god.sh upgrade F0 8 3              grant upgrade 8 (engine cool) x3
 #   ./god.sh upgrade F0 8 -1             take one back
@@ -104,7 +105,9 @@ case "$cmd" in
     run "./lib/tools/setship $s show-player" ;;
 
   ""|-h|--help|help)
-    sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//' ;;
+    # whole leading comment block, with the name the user actually invoked
+    sed -n '2,/^set -e/p' "$0" | sed '/^set -e/d' | \
+      sed -e 's/^# \{0,1\}//' -e "s|\./god\.sh|$(basename "$0")|g" ;;
 
   *) echo "unknown command '$cmd' (try: ./god.sh help)" >&2; exit 1 ;;
 esac
