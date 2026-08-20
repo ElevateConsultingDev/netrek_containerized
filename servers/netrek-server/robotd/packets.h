@@ -73,6 +73,7 @@
 
 
 #define SP_MASTER_COMM	47
+#define SP_FEATURE	60		/* server feature announcement */
 
 
 /* packets sent from remote client to xtrek server */
@@ -724,6 +725,20 @@ struct planet_loc_spacket {
 
 struct mastercomm_spacket {     /* master command */
     char type;
+};
+
+/* The server announces its features unprompted at login.  robotd does not
+   use them, but the packet must be in the handler table with the right size:
+   an unknown type makes readFromServer() discard the whole read buffer, and
+   the initial planet burst travels in that buffer. */
+
+struct feature_spacket {	/* SP_FEATURE py-struct "!bcbbi80s" #60 */
+   char			type;
+   char			feature_type;	/* either 'C' or 'S' */
+   char			arg1,
+			arg2;
+   int			value;
+   char			name[80];
 };
 
 struct oggv_cpacket {

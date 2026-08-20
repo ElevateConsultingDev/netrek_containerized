@@ -37,11 +37,29 @@ static int is_bot(struct player *p)
     return (p->p_flags & PFBPROBOT) || !strcmp(p->p_login, "robot!");
 }
 
-int main(void)
+int main(int argc, char **argv)
 {
     int i, k;
+    int show_planets = (argc > 1 && !strcmp(argv[1], "-p"));
 
     openmem(0);
+
+    if (show_planets) {
+	/* pl_info is the per-team scouted bitmask: a bot treats a planet it
+	   has no bit in as "unknown" (unknownpl(), robotd/engage.c:483). */
+	for (i = 0; i < MAXPLANETS; i++) {
+	    struct planet *pl = &planets[i];
+
+	    printf("%2d %-12s owner=%-2d armies=%3d info=0x%02x%s%s%s%s flags=0x%x\n",
+		   i, pl->pl_name, pl->pl_owner, pl->pl_armies, pl->pl_info,
+		   (pl->pl_info & FED) ? " F" : "  ",
+		   (pl->pl_info & ROM) ? " R" : "  ",
+		   (pl->pl_info & KLI) ? " K" : "  ",
+		   (pl->pl_info & ORI) ? " O" : "  ",
+		   pl->pl_flags);
+	}
+	return 0;
+    }
     printf("tourn=%d\n", status->tourn);
 
     for (i = 0; i < MAXPLAYER; i++) {
@@ -52,6 +70,7 @@ int main(void)
 	double ndist = 0;
 
 	if (p->p_status == PFREE) continue;
+	if (!p->p_name[0]) continue;	/* unused daemon slot */
 
 	printf("%2d %-12s %-4s team=%d flags=0x%08x%s%s x=%6d y=%6d arm=%d seen=%d",
 	       i, p->p_name, mgr ? "mgr" : bot ? "bot" : "HUMAN",
