@@ -1,8 +1,11 @@
 services:
   server:
     build:
-      context: .
-      dockerfile: docker/Dockerfile
+      # Repo root, so the Dockerfile can COPY servers/netrek-server over the
+      # upstream clone. Keeping the context at netrek_containerized/ put our
+      # own server sources out of reach and forced the post-start patch.
+      context: ..
+      dockerfile: netrek_containerized/docker/Dockerfile
     image: vanilla-netrek-image
     container_name: vanilla-netrek-server
     ports:

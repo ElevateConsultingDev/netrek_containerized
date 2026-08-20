@@ -6,9 +6,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 
 EXPOSE 2592 2591 3521 2593 2596 3592 4000 4566 4577 5000
 
-# Install build-essential (C compiler, dev tools), vim, and other utilities
-# clone the netrek repo from quozl
-# Rename configure.in to configure.ac and create m4 directory
+# Install build-essential (C compiler, dev tools), vim, and other utilities.
+# Source is COPYed in from this repo further down, not cloned.
 RUN apt-get update && \
 apt-get install -y \
     atop \
@@ -46,20 +45,30 @@ apt-get install -y \
     xauth && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/* && \
-    git clone --recursive https://github.com/quozl/netrek.git /usr/local/src/netrek && \
-    mv /usr/local/src/netrek/netrek-server/configure.in /usr/local/src/netrek/netrek-server/configure.ac && \
-    mkdir -p /usr/local/src/netrek/netrek-server/m4 && \
-    mkdir -p /usr/local/src/netrek/.vscode  && \
+    mkdir -p /usr/local/src/netrek/.vscode && \
     wget -P ~ https://github.com/cyrus-and/gdb-dashboard/raw/master/.gdbinit && \
     pip3 install --upgrade pip && \
     pip3 install --upgrade setuptools && \
     pip3 install --upgrade wheel && \
     pip3 install pygments
 
+# Server and client sources come from THIS repo, not an upstream clone.
+# Previously the image did `git clone https://github.com/quozl/netrek.git`,
+# unpinned, and our own changes were pushed into the running container
+# afterwards by scripts/patch-bot-sight.sh. That made two things true and both
+# were bad: a rebuild could silently pick up upstream drift, and any container
+# recreate reverted the bots to upstream behaviour until someone re-ran the
+# patch. Now what is committed here is exactly what runs.
+COPY servers/netrek-server        /usr/local/src/netrek/netrek-server
+COPY clients/netrek-client-cow    /usr/local/src/netrek/netrek-client-cow
+COPY netrek_containerized/docker/build /usr/local/src/netrek/build
+RUN chmod +x /usr/local/src/netrek/build && \
+    mkdir -p /usr/local/src/netrek/netrek-server/m4
+
 # Copy custom configuration files to make my life easier
-COPY docker/dev/.bashrc /root/.bashrc
-COPY docker/dev/.vimrc /root/.vimrc
-COPY docker/dev/launch.json /usr/local/src/netrek/.vscode/launch.json
+COPY netrek_containerized/docker/dev/.bashrc /root/.bashrc
+COPY netrek_containerized/docker/dev/.vimrc /root/.vimrc
+COPY netrek_containerized/docker/dev/launch.json /usr/local/src/netrek/.vscode/launch.json
 
 # Enable X11 forwarding by exporting DISPLAY inside the container
 ENV DISPLAY=host.docker.internal:0
@@ -72,8 +81,8 @@ ENV SDL_AUDIODRIVER=pulse
 WORKDIR /usr/local/src/netrek
 
 #add some helper scripts
-COPY docker/dev/netrek-server-temp/start_server.sh ./start_server.sh
-COPY docker/dev/netrek-server-temp/start_client.sh ./start_client.sh
+COPY netrek_containerized/docker/dev/netrek-server-temp/start_server.sh ./start_server.sh
+COPY netrek_containerized/docker/dev/netrek-server-temp/start_client.sh ./start_client.sh
 RUN chmod +x ./start_server.sh && chmod +x ./start_client.sh
 
 #server changes to overcome discovered issues after running libtoolize
@@ -95,8 +104,13 @@ RUN echo "ACLOCAL_AMFLAGS = -I m4" > netrek-client-cow/Makefile.am
 
 RUN ./build
 
+# peek: dump live server state (scripts/peek.c), used by botstate.sh/botmon
+COPY netrek_containerized/scripts/peek.c /tmp/peek.c
+RUN cd netrek-server && \
+    gcc -I include -I . -o /tmp/peek /tmp/peek.c ntserv/libnetrek.a -lgdbm -lresolv -lm
+
 #add a config file for the client
-COPY docker/cow-x11/config/.xtrekrc /usr/local/src/netrek/netrek-client-cow/
+COPY netrek_containerized/docker/cow-x11/config/.xtrekrc /usr/local/src/netrek/netrek-client-cow/
 
 # Download and install sound files from netrek.org
 RUN mkdir -p netrek-client-cow/sounds && \

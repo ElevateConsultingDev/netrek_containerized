@@ -1,11 +1,17 @@
-# Build context for the paradise-server image is the repo root (..).
-# Keep it lean: only servers/netrek-server-paradise and
-# netrek_containerized/docker are needed. Exclude everything large/unrelated.
+# Build context for both server images is the repo root (..), so this keeps
+# the context lean while still shipping what the Dockerfiles actually COPY.
+#
+# servers/netrek-server and netrek_containerized/scripts are deliberately NOT
+# excluded: the vanilla server image builds our own server sources over the
+# upstream clone and compiles scripts/peek.c. Excluding them silently breaks
+# that COPY.
 **/.git
 reference_repos
+# the X11 client tree is built into the image; the SDL2 client is Mac-side
 clients
-servers/netrek-server
-netrek_containerized/scripts
+!clients/netrek-client-cow
+clients/netrek-client-cow/pixmaps-hr
+netrek_containerized/scripts/botmon/node_modules
 netrek_containerized/.github
 netrek_containerized/.claude
 netrek_containerized/README.md

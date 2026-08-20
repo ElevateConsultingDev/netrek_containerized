@@ -1,10 +1,14 @@
 #!/bin/bash
-# Install the bot-sight fix into a running container and rebuild.
+# NO LONGER NEEDED FOR NORMAL USE.
 #
-# The vanilla image builds the server from a github clone, not from this
-# repo, so these changes live only in the container's writable layer and are
-# lost whenever the container is recreated (docker compose down/up, rebuild).
-# Re-run this after any recreate.
+# The image now builds from this repo's own sources (see docker/Dockerfile),
+# so a plain `start-server.sh` already runs our server and bots. You do not
+# need to run this after a container recreate any more.
+#
+# It is kept for the fast inner loop only: pushing a source edit into a
+# RUNNING container and rebuilding in place, which is quicker than a full
+# image rebuild while iterating on bot behaviour. Anything it installs is
+# still lost on the next recreate, and the image is the source of truth.
 #
 # Usage: ./patch-bot-sight.sh [container]   (default: vanilla-netrek-server)
 
