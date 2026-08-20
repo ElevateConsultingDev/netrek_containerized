@@ -2181,7 +2181,22 @@ static void udtorps(void)
                         }
 
                         /* do rest of work on torp at normal rate */
-                        if (t->t_fuse % T_FUSE_SCALE != 0) continue;
+                        if (t->t_fuse % T_FUSE_SCALE != 0) {
+                                /* A torp moves every tick but is only checked
+                                 * for a hit every T_FUSE_SCALE ticks, so it
+                                 * covers t_gspeed game units between checks.
+                                 * Once that exceeds EXPDIST it can step clean
+                                 * over a ship and carry on, which is what fast
+                                 * torps do. Check those every tick instead.
+                                 * Ordinary torps (gspeed 240 at speed 12, well
+                                 * under EXPDIST) take the original path, so
+                                 * normal play is unchanged. */
+                                if (t->t_gspeed > EXPDIST && t_near(t)) {
+                                        t_hit_ship_credit(t);
+                                        t_explosion(t);
+                                }
+                                continue;
+                        }
 
                         /* wobble the torp, changing direction */
                         if (t->t_attribute & TWOBBLE)
