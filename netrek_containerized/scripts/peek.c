@@ -24,6 +24,19 @@
 #define CLOAK_RANGE (GWIDTH/7)		/* 14285, matches udplayersight() */
 #define OPEN_RANGE  (GWIDTH/3)		/* 33333 */
 
+/* A fighting bot: the og robots, which log in as "robot!" and set PFBPROBOT
+   once their first OggV packet arrives a second after connecting.  NOT the
+   newbie manager (Merlin, PFROBOT, parked at galactic centre): it never
+   fights, and udplayersight() skips PFROBOT seers, so it cannot set PFSEEN
+   on anyone.  Counting it as a bot made it the "nearest bot" for half the
+   galaxy and gave a bogus range verdict. */
+
+static int is_bot(struct player *p)
+{
+    if (p->p_flags & PFROBOT) return 0;
+    return (p->p_flags & PFBPROBOT) || !strcmp(p->p_login, "robot!");
+}
+
 int main(void)
 {
     int i, k;
@@ -33,17 +46,16 @@ int main(void)
 
     for (i = 0; i < MAXPLAYER; i++) {
 	struct player *p = &players[i];
-	/* login check as well as the flags: a bot is not PFBPROBOT until it
-	   sends its first OggV packet, a second or two after connecting */
-	int bot = (p->p_flags & (PFROBOT | PFBPROBOT)) != 0 ||
-		  !strcmp(p->p_login, "robot!");
+	int bot = is_bot(p);
+	int mgr = (p->p_flags & PFROBOT) != 0;
 	int nearest = -1;
 	double ndist = 0;
 
 	if (p->p_status == PFREE) continue;
 
 	printf("%2d %-12s %-4s team=%d flags=0x%08x%s%s x=%6d y=%6d arm=%d seen=%d",
-	       i, p->p_name, bot ? "bot" : "HUMAN", p->p_team, p->p_flags,
+	       i, p->p_name, mgr ? "mgr" : bot ? "bot" : "HUMAN",
+	       p->p_team, p->p_flags,
 	       (p->p_flags & PFCLOAK) ? " CLOAK" : "",
 	       (p->p_flags & PFORBIT) ? " ORBIT" : "",
 	       p->p_x, p->p_y, p->p_armies,
@@ -57,8 +69,7 @@ int main(void)
 	    double d;
 
 	    if (q->p_status != PALIVE || q == p) continue;
-	    if (!(q->p_flags & (PFROBOT | PFBPROBOT)) &&
-		strcmp(q->p_login, "robot!")) continue;
+	    if (!is_bot(q)) continue;
 	    if (q->p_team == p->p_team) continue;
 	    d = hypot((double)(q->p_x - p->p_x), (double)(q->p_y - p->p_y));
 	    if (nearest < 0 || d < ndist) { nearest = k; ndist = d; }
