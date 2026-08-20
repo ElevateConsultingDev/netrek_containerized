@@ -61,7 +61,7 @@ int main(void)
 	       p->p_x, p->p_y, p->p_armies,
 	       (p->p_flags & PFSEEN) ? 1 : 0);
 
-	if (bot || p->p_status != PALIVE) { printf("\n"); continue; }
+	if (bot || mgr || p->p_status != PALIVE) { printf("\n"); continue; }
 
 	/* human: how close is the nearest enemy bot, and can it see him? */
 	for (k = 0; k < MAXPLAYER; k++) {
