@@ -131,7 +131,6 @@ void redraw(void) {
 
 	W_FlushWindow(w);
 	W_ProbeLatency(w);
-	W_Flush();
 
 	/* XFIX: last since its least accurate information */
 	map();

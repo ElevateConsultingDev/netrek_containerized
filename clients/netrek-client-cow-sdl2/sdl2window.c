@@ -100,19 +100,39 @@ static int LOGICAL_H = 768;
 /* Pipe for W_Socket() integration with select() */
 static int socket_pipe[2] = {-1, -1};
 
+/* Which window texture the renderer is currently pointed at (NULL = screen),
+ * and whether anything has been drawn since the last present. Every drawing
+ * primitive goes through winTarget(), so these two cover all of them. */
+static struct window *cur_target = NULL;
+static int render_dirty = 0;
+
+/* Really switch back to the screen at 1:1 scale, and forget the cached
+ * target. Also the invalidation hook for anything that retargets or frees a
+ * texture behind winTarget()'s back. */
+void forceScreenTarget(void)
+{
+    SDL_RenderSetScale(sdl_renderer, 1.0f, 1.0f);
+    SDL_SetRenderTarget(sdl_renderer, NULL);
+    cur_target = NULL;
+}
+
 /* Target a window's (supersampled) texture: draw calls use logical coords and
  * are scaled up by RENDER_SCALE into the RS-sized backing texture. */
 void winTarget(struct window *win)
 {
+    render_dirty = 1;
+    if (cur_target == win) return;
     SDL_SetRenderTarget(sdl_renderer, win->texture);
     SDL_RenderSetScale(sdl_renderer, (float)RENDER_SCALE, (float)RENDER_SCALE);
+    cur_target = win;
 }
 
-/* Return to the screen target at 1:1 scale (the compositor sets its own). */
+/* Deferred: a primitive finishing does not switch back to the screen. The
+ * target is only reset when the compositor actually needs it, so a run of
+ * draws into one window costs a single render-pass switch instead of two per
+ * primitive (which on Metal is two pass switches per call). */
 void screenTarget(void)
 {
-    SDL_RenderSetScale(sdl_renderer, 1.0f, 1.0f);
-    SDL_SetRenderTarget(sdl_renderer, NULL);
 }
 
 /* Map an SDL mouse-event point (window-point space) to logical canvas coords.
@@ -184,7 +204,11 @@ static int evq_full(void)  { return ((evq_head + 1) % EVQ_SIZE) == evq_tail; }
 
 static void evq_push(W_Event *ev)
 {
-    if (evq_full()) return;  /* drop oldest if full (shouldn't happen) */
+    /* On overflow drop the OLDEST, not this one: in a game the newest input
+     * is the one that still matters (the comment here used to claim oldest
+     * while the code dropped the new event). */
+    if (evq_full())
+        evq_tail = (evq_tail + 1) % EVQ_SIZE;
     evq_buf[evq_head] = *ev;
     evq_head = (evq_head + 1) % EVQ_SIZE;
 }
@@ -1641,7 +1665,15 @@ void W_Flush(void)
 {
     if (!sdl_renderer) return;
 
-    screenTarget();
+    /* Nothing drawn since the last present: the composite would be identical,
+     * so skip it. This is what lets the idle poll path call W_Flush freely. */
+    if (!render_dirty) {
+        sdl2_pump_events();
+        return;
+    }
+    render_dirty = 0;
+
+    forceScreenTarget();
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
     SDL_RenderClear(sdl_renderer);
 
@@ -1701,6 +1733,8 @@ void W_TileWindow(W_Window window, W_Icon bit)
         win->width * RENDER_SCALE, win->height * RENDER_SCALE);
     if (!win->background) return;
 
+    /* retargets outside winTarget(), so the cache must not be trusted after */
+    cur_target = NULL;
     SDL_SetRenderTarget(sdl_renderer, win->background);
     SDL_RenderSetScale(sdl_renderer, (float)RENDER_SCALE, (float)RENDER_SCALE);
     SDL_SetRenderDrawColor(sdl_renderer, 0, 0, 0, 255);
@@ -1715,7 +1749,7 @@ void W_TileWindow(W_Window window, W_Icon bit)
             SDL_RenderCopy(sdl_renderer, ic->texture, NULL, &dst);
         }
     }
-    screenTarget();
+    forceScreenTarget();
 }
 
 void W_UnTileWindow(W_Window window)
@@ -1767,6 +1801,7 @@ void W_DestroyWindow(W_Window window)
     struct window *win = W_Void2Window(window);
     if (!win || win == &myroot) return;
 
+    if (cur_target == win) forceScreenTarget();
     if (win->texture) { SDL_DestroyTexture(win->texture); win->texture = NULL; }
     if (win->background) { SDL_DestroyTexture(win->background); win->background = NULL; }
     if (win->name) { free(win->name); win->name = NULL; }
@@ -1820,6 +1855,7 @@ void W_ResizeWindow(W_Window window, int neww, int newh)
     win->width = neww;
     win->height = newh;
 
+    if (cur_target == win) forceScreenTarget();
     if (win->texture) SDL_DestroyTexture(win->texture);
     win->texture = SDL_CreateTexture(sdl_renderer,
         SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET,
@@ -2098,7 +2134,7 @@ void W_CameraSnap(W_Window window)
         SDL_PIXELFORMAT_RGBA8888);
     if (!surf) return;
 
-    screenTarget();
+    forceScreenTarget();
     SDL_RenderReadPixels(sdl_renderer, NULL, SDL_PIXELFORMAT_RGBA8888,
                          surf->pixels, surf->pitch);
 

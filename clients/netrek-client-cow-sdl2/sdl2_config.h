@@ -173,7 +173,11 @@ extern void sdl2_pump_events(void);  /* defined in sdl2window.c */
 static inline int sdl2_select(int nfds, fd_set *r, fd_set *w, fd_set *e,
                                struct timeval *tv) {
     sdl2_pump_events();
-    struct timeval cap = {0, 16000}; /* 16ms ~ 60Hz */
+    /* Upper bound on how long a keypress can sit unnoticed: events arriving
+     * while select() blocks do not wake it, so this is added input latency.
+     * Cheap to lower now that W_Flush skips the composite when nothing has
+     * been drawn. */
+    struct timeval cap = {0, 4000}; /* 4ms */
     if (!tv || tv->tv_sec > 0 || tv->tv_usec > cap.tv_usec)
         tv = &cap;
     return select(nfds, r, w, e, tv);

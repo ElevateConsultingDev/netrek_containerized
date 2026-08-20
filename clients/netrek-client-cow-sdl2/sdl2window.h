@@ -131,6 +131,7 @@ struct S_Object {
  * to the screen at 1:1. Defined in sdl2window.c. */
 void winTarget(struct window *win);
 void screenTarget(void);
+void forceScreenTarget(void);
 
 /* Global SDL2 state (defined in sdl2window.c) */
 extern SDL_Window   *sdl_window;
