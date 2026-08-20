@@ -22,10 +22,16 @@
 #   ./god.sh player F0 rank 8            set rank index
 #   ./god.sh player F0 stat kills 200    set a stat; DI is derived from these
 #                                        (kills deaths armsbomb planets ticks)
+#   ./god.sh ship F0                     torp/phaser/hull stats for a ship
+#   ./god.sh ship F0 torpdamage 60       set one live (torps in flight are
+#                                        capped at 8 by the protocol)
+#
 #   ./god.sh upgrades                    the upgrade table and its costs
 #   ./god.sh upgrades F0                 the same, plus what F0 holds
 #   ./god.sh upgrade F0 8 3              grant upgrade 8 (engine cool) x3
 #   ./god.sh upgrade F0 8 -1             take one back
+#   ./god.sh upgrade_all F0 20           add 20 of every upgrade at once
+#   ./god.sh upgrade_all F0 -99          strip every upgrade
 #   ./god.sh di F0 25                    rough DI bump (see note below)
 #
 # DI is not a stored value. The client shows ratings * (ticks/36000), where
@@ -111,6 +117,12 @@ case "$cmd" in
     run "./lib/tools/setship $s $*"
     run "./lib/tools/setship $s show-player" ;;
 
+  ship)
+    s=$(slot_of "${1:?player slot or id}"); shift || true
+    if [ $# -eq 0 ]; then run "./lib/tools/setship $s show-ship"; exit 0; fi
+    run "./lib/tools/setship $s ship $*"
+    run "./lib/tools/setship $s show-ship" ;;
+
   upgrades)
     # no player given: the table alone, which needs nobody in the game
     if [ $# -eq 0 ]; then run "./lib/tools/setship menu"; exit 0; fi
@@ -121,6 +133,22 @@ case "$cmd" in
     s=$(slot_of "${1:?player slot or id}")
     t="${2:?upgrade index, see 'upgrades'}"; n="${3:-1}"
     run "./lib/tools/setship $s upgrade $t $n"
+    run "./lib/tools/setship $s show-upgrades" ;;
+
+  upgrade_all)
+    s=$(slot_of "${1:?player slot or id}"); n="${2:?how many of each}"
+    # 17 and 18 are one-shot upgrades (fire while cloaked, det own torps), so
+    # they get one rather than N; a stack of a yes/no flag means nothing.
+    cmd=""
+    for t in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16; do
+      cmd="$cmd upgrade $t $n"
+    done
+    if [ "$n" -gt 0 ] 2>/dev/null; then
+      cmd="$cmd upgrade 17 1 upgrade 18 1"
+    else
+      cmd="$cmd upgrade 17 $n upgrade 18 $n"
+    fi
+    run "./lib/tools/setship $s $cmd"
     run "./lib/tools/setship $s show-upgrades" ;;
 
   di)

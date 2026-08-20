@@ -39,6 +39,11 @@ fuel n                      set fuel remaining to n\n\
 kills n                     set kills to n (accepts fractions, e.g. 2.5)\n\
 rank n                      set rank index to n (server may recompute it)\n\
 show-player                 print slot, name, kills, rank, armies and stats\n\
+show-ship                   print this ship's torp/phaser/hull stats\n\
+ship NAME VALUE             set a ship stat live, e.g. ship torpdamage 60,\n\
+                            ship torpfuse 60, ship wpncoolrate 20.\n\
+                            Torps IN FLIGHT are capped at 8 by the protocol\n\
+                            and cannot be raised.\n\
 show-upgrades               print sturgeon upgrades held by this ship\n\
 upgrade TYPE N              grant sturgeon upgrade TYPE N times, free.\n\
                             Negative N takes them back. TYPE is the index\n\
@@ -179,6 +184,66 @@ int setship(const char *cmds)
     goto state_1;
   }
 #endif
+
+  /* Live ship stats. MAXTORP is 8 everywhere and cannot be raised here: it
+   * sizes the shared-memory torp array, the torp addressing macros, and the
+   * short-packet format, which carries one bit per torp in a single byte.
+   * What you can do is make the eight better. */
+  if (!strcmp(token, "ship")) {
+    char *name;
+    double v;
+    struct ship *sh = &me->p_ship;
+    if (!(name  = strtok (NULL, delimiters))) return 0;
+    if (!(token = strtok (NULL, delimiters))) return 0;
+    v = atof(token);
+#define SHIPSTAT(n, f) else if (!strcmp(name, n)) sh->f = (short) v
+    if (0) ;
+    SHIPSTAT("torpdamage",  s_torpdamage);
+    SHIPSTAT("torpspeed",   s_torpspeed);
+    SHIPSTAT("torpfuse",    s_torpfuse);
+    SHIPSTAT("torpturns",   s_torpturns);
+    SHIPSTAT("torpcost",    s_torpcost);
+    SHIPSTAT("phaserdamage",s_phaserdamage);
+    SHIPSTAT("phaserfuse",  s_phaserfuse);
+    SHIPSTAT("phasercost",  s_phasercost);
+    SHIPSTAT("plasmadamage",s_plasmadamage);
+    SHIPSTAT("plasmaspeed", s_plasmaspeed);
+    SHIPSTAT("plasmafuse",  s_plasmafuse);
+    SHIPSTAT("maxspeed",    s_maxspeed);
+    SHIPSTAT("maxfuel",     s_maxfuel);
+    SHIPSTAT("maxshield",   s_maxshield);
+    SHIPSTAT("maxdamage",   s_maxdamage);
+    SHIPSTAT("maxarmies",   s_maxarmies);
+    SHIPSTAT("recharge",    s_recharge);
+    SHIPSTAT("repair",      s_repair);
+    SHIPSTAT("egncoolrate", s_egncoolrate);
+    SHIPSTAT("wpncoolrate", s_wpncoolrate);
+    SHIPSTAT("tractstr",    s_tractstr);
+    SHIPSTAT("tractrng",    s_tractrng);
+    SHIPSTAT("warpcost",    s_warpcost);
+    SHIPSTAT("cloakcost",   s_cloakcost);
+    else { fprintf(stderr, "unknown ship stat '%s'\n", name); return 0; }
+#undef SHIPSTAT
+    goto state_1;
+  }
+
+  if (!strcmp(token, "show-ship")) {
+    struct ship *sh = &me->p_ship;
+    printf("slot %d name '%s' ship-type %d  (MAXTORP is 8, fixed)\n",
+           me->p_no, me->p_name, sh->s_type);
+    printf("  torp:   damage %d speed %d fuse %d turns %d cost %d\n",
+           sh->s_torpdamage, sh->s_torpspeed, sh->s_torpfuse,
+           sh->s_torpturns, sh->s_torpcost);
+    printf("  phaser: damage %d fuse %d cost %d\n",
+           sh->s_phaserdamage, sh->s_phaserfuse, sh->s_phasercost);
+    printf("  hull:   maxspeed %d maxfuel %d maxshield %d maxdamage %d"
+           " maxarmies %d\n",
+           sh->s_maxspeed, sh->s_maxfuel, sh->s_maxshield,
+           sh->s_maxdamage, sh->s_maxarmies);
+    printf("  rates:  recharge %d repair %d egncool %d wpncool %d\n",
+           sh->s_recharge, sh->s_repair, sh->s_egncoolrate, sh->s_wpncoolrate);
+    goto state_1;
+  }
 
   if (!strcmp(token, "show-player")) {
     printf("slot %d name '%s' kills %.2f rank %d armies %d",

@@ -561,6 +561,7 @@ void resetdefaults(void)
   showArmy = intDefault("showArmy", showArmy);
   viewRange = intDefault("viewRange", viewRange);
   viewBox = booleanDefault("viewBox", viewBox);
+  weaponsOnMap = booleanDefault("weaponsOnMap", weaponsOnMap);
   extrapolate = booleanDefault("extrapolate", extrapolate);
   colorPlanets = booleanDefault("colorPlanets", colorPlanets);
   newDashboard = intDefault("newDashboard", newDashboard);

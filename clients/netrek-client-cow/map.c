@@ -507,7 +507,7 @@ static void gu_update()
    * galactic repaint whenever it's shown -- the incremental redraw can't
    * cleanly erase a large circle, which otherwise leaves holes in the map. */
   if ((viewRange && me->p_ship.s_type != STARBASE
-       && !(me->p_armies == 0 && viewRange == 2)) || viewBox)
+       && !(me->p_armies == 0 && viewRange == 2)) || viewBox || weaponsOnMap)
     redrawall = 1;
 
   old_flags = me->p_flags & PFOBSERV;
@@ -797,6 +797,53 @@ void
 
 	  if (px > 0 && px < GWINSIDE && py > 0 && py < GWINSIDE)
 	    W_MakeLine(mapw, px - 1, py, px + 1, py, W_White);
+	}
+    }
+
+  /* Netrek COM: weaponsOnMap (from netrekxp) -- torps and plasmas as points
+   * on the galactic, so you can see a fight developing off-screen.
+   *
+   * Draw only: the tactical owns weapon ageing (t_updateFuse is decremented
+   * in local.c), and doing it here as well would retire every torp in half
+   * the time. Nothing is drawn for a weapon we have no position for.
+   *
+   * Piggybacks on the redrawall forced above, so no erase bookkeeping. */
+  if (weaponsOnMap)
+    {
+      int k;
+
+      for (k = 0; k < MAXPLAYER * MAXTORP; k++)
+	{
+	  struct torp *t = &torps[k];
+	  int tx, ty;
+
+	  if (t->t_status == TFREE) continue;
+	  if (t->t_x < 0 || t->t_x >= GWIDTH) continue;
+	  if (t->t_y < 0 || t->t_y >= GWIDTH) continue;
+	  if (t->t_owner < 0 || t->t_owner >= MAXPLAYER) continue;
+
+	  tx = t->t_x * GWINSIDE / GWIDTH;
+	  ty = t->t_y * GWINSIDE / GWIDTH;
+	  W_MakeLine(mapw, tx, ty, tx, ty, playerColor(&players[t->t_owner]));
+	}
+
+      for (k = 0; k < MAXPLAYER * MAXPLASMA; k++)
+	{
+	  struct plasmatorp *pt = &plasmatorps[k];
+	  int tx, ty;
+
+	  if (pt->pt_status == PTFREE) continue;
+	  if (pt->pt_x < 0 || pt->pt_x >= GWIDTH) continue;
+	  if (pt->pt_y < 0 || pt->pt_y >= GWIDTH) continue;
+	  if (pt->pt_owner < 0 || pt->pt_owner >= MAXPLAYER) continue;
+
+	  /* plasma is bigger, so a short cross rather than a point */
+	  tx = pt->pt_x * GWINSIDE / GWIDTH;
+	  ty = pt->pt_y * GWINSIDE / GWIDTH;
+	  W_MakeLine(mapw, tx - 1, ty, tx + 1, ty,
+		     playerColor(&players[pt->pt_owner]));
+	  W_MakeLine(mapw, tx, ty - 1, tx, ty + 1,
+		     playerColor(&players[pt->pt_owner]));
 	}
     }
 

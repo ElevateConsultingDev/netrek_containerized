@@ -421,6 +421,7 @@ int     agriCAPS = 1;     /* uppercase AGRI planet names on the galactic */
 int     agriColor = 0;    /* 0=owning race colour (default) 1=white 2=yellow 3=grey */
 int     showArmy = 1;     /* army count by planets: 0 none 1 local 2 gal 3 both */
 int     viewRange = 1;    /* enemy-detection ring on galactic: 0 off 1 on 2 when carrying */
+int     weaponsOnMap = 0; /* draw torps and plasmas on the galactic (netrekxp) */
 int     viewBox = 1;      /* 4 dots on galactic marking the tactical view corners (netrekxp) */
 int     extrapolate = 0;  /* dead-reckon ships between server updates; opt-in,
                              see the known artifacts in redraw.c */

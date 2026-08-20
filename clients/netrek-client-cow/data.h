@@ -350,6 +350,7 @@ extern int agriColor;
 extern int showArmy;
 extern int viewRange;
 extern int viewBox;
+extern int weaponsOnMap;
 extern int extrapolate;
 extern unsigned long last_update_ms;
 extern int colorPlanets;
