@@ -9,6 +9,9 @@
  * decision log for what it decided and how fast it is deciding it.
  *
  * Keys:  left/right sort column   r reverse   t team   / search   q quit
+ *
+ * The ID column is the ship as players say it: team letter plus slot, so
+ * F8, Ra, Ff. Sorting by it groups a team together in slot order.
  */
 
 const blessed = require('blessed');
@@ -27,6 +30,11 @@ const STATE_SH = path.join(__dirname, '..', 'botstate.sh');
 const FROM = flag('from');   /* replay a captured sample instead of sampling */
 
 const TEAM = { 0: '-', 1: 'F', 2: 'R', 4: 'K', 8: 'O' };
+/* a ship's id as players say it: team letter + slot, slots past 9 continue
+ * into letters, so slot 10 on Romulan is "Ra". Same table the client uses. */
+const SHIPNOS = '0123456789abcdefghijklmnopqrstuvwxyz';
+const shipId = (team, slot) =>
+  (team || '?') + (SHIPNOS[slot] !== undefined ? SHIPNOS[slot] : '?');
 const TEAMCOL = { F: 'yellow', R: 'red', K: 'green', O: 'cyan', '-': 'white' };
 const TEAMS = ['ALL', 'F', 'R', 'K', 'O'];
 
@@ -36,7 +44,7 @@ const isReset = a => /RESET/.test(a) || /^UN/.test(a);
 /* sortable columns, in display order; dir is the default direction */
 const SORTS = [
   { key: 'bot',    label: 'BOT',    dir:  1, get: r => r.name.toLowerCase() },
-  { key: 'team',   label: 'T',      dir:  1, get: r => (r.ship || {}).team || '' },
+  { key: 'team',   label: 'ID',     dir:  1, get: r => (r.ship || {}).id || '' },
   { key: 'action', label: 'ACTION', dir:  1, get: r => r.sum.cur.action },
   { key: 'target', label: 'TARGET', dir:  1, get: r => r.sum.cur.detail },
   { key: 'for',    label: 'FOR',    dir: -1, get: r => r.sum.dwell },
@@ -123,6 +131,7 @@ function parse(out) {
     if (!m) continue;
     const s = {
       slot: Number(m[1]), name: m[2], kind: m[3], team: TEAM[Number(m[4])] || '?',
+      id: shipId(TEAM[Number(m[4])], Number(m[1])),
       cloak: /CLOAK/.test(m[6]), orbit: /ORBIT/.test(m[6]),
       x: Number(m[7]), y: Number(m[8]), arm: Number(m[9]), seen: Number(m[10]),
       tail: m[11].trim(),
@@ -217,7 +226,7 @@ function buildLines(data) {
 
   /* header, with the active sort column marked */
   const head = [
-    pad('BOT', 13), pad('T', 2), pad('ACTION', 14), pad('TARGET', 17),
+    pad('BOT', 13), pad('ID', 4), pad('ACTION', 14), pad('TARGET', 17),
     pad('FOR', 7), pad('RATE', 7), pad('ARM', 4),
   ];
   const arrow = ((col.dir || 1) * (view.reverse ? -1 : 1)) > 0 ? '+' : '-';
@@ -233,7 +242,7 @@ function buildLines(data) {
     const rate = r.sum.rate >= 0.1 ? r.sum.rate.toFixed(1) + '/s' : '';
     L.push(
       pad(r.name, 13) +
-      '{' + tcol + '-fg}' + pad(s.team || '?', 2) + '{/}' +
+      '{' + tcol + '-fg}' + pad(s.id || '?', 4) + '{/}' +
       pad(r.sum.cur.action, 14) +
       pad(r.sum.cur.detail, 17) +
       pad(dur(r.sum.dwell), 7) +
@@ -262,7 +271,7 @@ function buildLines(data) {
         sight = '{green-fg}{bold}HIDDEN{/}  nearest ' + n.name + ' at ' + n.dist +
                 ', needs ' + n.range;
       }
-      L.push(pad(h.name, 13) + '{' + TEAMCOL[h.team] + '-fg}' + pad(h.team, 2) + '{/}' +
+      L.push(pad(h.name, 13) + '{' + TEAMCOL[h.team] + '-fg}' + pad(h.id || h.team, 4) + '{/}' +
              /* pad the visible text, then wrap it: tags are not characters */
              (h.cloak ? '{cyan-fg}' : '') + pad(h.cloak ? 'CLOAKED' : 'uncloaked', 10) +
              (h.cloak ? '{/}' : '') +
