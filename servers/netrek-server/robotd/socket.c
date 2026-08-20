@@ -1380,7 +1380,7 @@ void sendServerPacket(void_packet)
          * business as usual
          * (or player has turned off UDP transmission)
          */
-	 mprintf("non-udp client send.\n");
+	 pktprintf("non-udp client send.\n");
         if (gwrite(sock, (char *)packet, size) != size) {
             mprintf("gwrite failed.  Server must be dead\n");
             serverDead=1;

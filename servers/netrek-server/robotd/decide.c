@@ -4,6 +4,7 @@
 #include <sys/types.h>
 #include <sys/time.h>
 #include <sys/timeb.h>
+#include <time.h>
 #include "defs.h"
 #include "struct.h"
 #include "data.h"
@@ -1098,6 +1099,20 @@ void decideNotify(com, s, s2)
    if(read_stdin){
       sprintf(buf, "%s (%s) \"%s\"", com,s?s:"",s2?s2:"");
       warning(buf, 1);
+   }
+
+   /* Every state transition passes through here with what it decided, what
+      it decided about, and why.  It only ever reached an interactive
+      warning() line, so none of it survived into a log.  Stamped, because
+      the useful question about a bot sitting on a planet is how long it has
+      been sitting there. */
+   {
+      time_t	now = time(NULL);
+      struct tm	*tm = localtime(&now);
+
+      mprintf("%02d:%02d:%02d DECIDE %-13s %-16s %s\n",
+	      tm->tm_hour, tm->tm_min, tm->tm_sec,
+	      com, s?s:"", s2?s2:"");
    }
 }
 

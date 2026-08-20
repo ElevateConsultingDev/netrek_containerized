@@ -2072,7 +2072,7 @@ void _reset_initial(team_r, ship_r, login)
 
 void send_initial()
 {
-   mprintf("sending update %d\n", (int)(_state.timer_delay_ms * 100000.));
+   pktprintf("sending update %d\n", (int)(_state.timer_delay_ms * 100000.));
 
    sendUpdatePacket((int)(_state.timer_delay_ms * 100000.));
    init_comm();

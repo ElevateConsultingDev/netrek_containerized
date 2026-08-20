@@ -26,6 +26,23 @@ struct distress *loaddistress(enum dist_type i);
    every bot the newbie manager spawns (always -b) ran silent. */
 int logging = 0;
 
+/* Per-packet transport chatter: every send, wakeup and update tick.  Useless
+   for working out what a bot is DOING and voluminous enough to bury it, so
+   this goes to an interactive session only, never to the -l log file. */
+
+void pktprintf(char *format, ...)
+{
+   va_list	ap;
+
+   if(!read_stdin)
+      return;
+
+   va_start(ap, format);
+   (void)vprintf(format, ap);
+   fflush(stdout);
+   va_end(ap);
+}
+
 void mprintf(char *format, ...)
 {
    va_list	ap;
