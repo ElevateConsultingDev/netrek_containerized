@@ -1082,17 +1082,52 @@ int
   return size;
 }
 
-static int doRead(int asock)
+/* Read more bytes onto the end of buf[], never past BUFSIZE. Blocks (with a
+ * timeout) for at least one more byte; returns 0 if the server died. Used to
+ * gather the rest of a packet that was split across reads. */
+static int readMoreBytes(int asock, int *count)
 {
   struct timeval timeout;
   fd_set  readfds;
+  int     temp;
+
+  if (*count >= BUFSIZE)
+    {
+      fprintf(stderr, "netrek receive buffer full, dropping link\n");
+      serverDead = 1;
+      close(sock);
+      return 0;
+    }
+
+  timeout.tv_sec = 20;
+  timeout.tv_usec = 0;
+  FD_ZERO(&readfds);
+  FD_SET(asock, &readfds);
+  if (SELECT(max_fd, &readfds, 0, 0, &timeout) == 0)
+    {
+      printf("Packet fragment.  Server must be dead\n");
+      serverDead = 1;
+      close(sock);
+      return 0;
+    }
+
+  temp = read(asock, buf + *count, BUFSIZE - *count);
+  if (temp <= 0)
+    {
+      printf("Got read() of %d.  Server is dead\n", temp);
+      serverDead = 1;
+      close(sock);
+      return 0;
+    }
+  *count += temp;
+  return 1;
+}
+
+static int doRead(int asock)
+{
   char   *bufptr;
   int     size;
   int     count;
-  int     temp;
-
-  timeout.tv_sec = 0;
-  timeout.tv_usec = 0;
 
   count = read(asock, buf, BUFSIZE);
 
@@ -1165,8 +1200,6 @@ static int doRead(int asock)
   bufptr = buf;
   while (bufptr < buf + count)
     {
-      /* this goto label for a bug w/ short packets */
-    computesize:
       if (*bufptr < 1 ||
           *bufptr > NUM_PACKETS ||
           handlers[(unsigned char) *bufptr].size == 0) {
@@ -1205,45 +1238,34 @@ static int doRead(int asock)
 	}
 #endif /* SHORT_PACKETS */
 
-      if (size == 0)
-	fprintf(stderr, "Variable packet has 0 length! type=%d Trying to read more!\n", *bufptr);
-      /* read broke in the middle of a packet, wait until we get the rest */
-      while (size > count + (buf - bufptr) || size == 0)
+      /* Reject any packet that cannot fit in the receive buffer before trying
+       * to read the rest of it. A hostile or corrupt length byte lands here
+       * (getvpsize can return values well over BUFSIZE). */
+      if (size <= 0 || size > BUFSIZE)
 	{
-	  /* We wait for up to ten seconds for rest of packet. If we don't *
-	   * * get it, we assume the server died. */
-	  timeout.tv_sec = 20;
-	  timeout.tv_usec = 0;
-	  FD_ZERO(&readfds);
-	  FD_SET(asock, &readfds);
-	  /* readfds=1<<asock; */
-	  if ((temp = SELECT(max_fd, &readfds, 0, 0, &timeout)) == 0)
-	    {
-	      printf("Packet fragment.  Server must be dead\n");
-	      serverDead = 1;
-	      close(sock);
-	      return 0;
-	    }
+	  fprintf(stderr, "netrek packet size %d out of range (buffer %d), "
+		  "dropping link\n", size, BUFSIZE);
+	  serverDead = 1;
+	  close(sock);
+	  return 0;
+	}
 
-	  /* 88=largest short packet, messages */
-	  if (size == 0)
+      /* read broke in the middle of a packet, wait until we get the rest */
+      if (size > count - (bufptr - buf))
+	{
+	  /* Compact the partial packet to the front of buf[] first, so the
+	   * refill reads cannot write past the end of the buffer. */
+	  if (bufptr > buf)
 	    {
-	      temp = read(asock, buf + count, 88);
+	      memmove(buf, bufptr, count - (bufptr - buf));
+	      count -= (bufptr - buf);
+	      bufptr = buf;
 	    }
-	  else
-	    temp = read(asock, buf + count, size - (count + (buf - bufptr)));
-	  count += temp;
-	  if (temp <= 0)
+	  while (size > count)
 	    {
-	      printf("2) Got read() of %d.  Server is dead\n", temp);
-	      serverDead = 1;
-	      close(sock);
-	      return 0;
+	      if (!readMoreBytes(asock, &count))
+		return 0;
 	    }
-	  /* go back to the size computation, hopefully with the rest of the */
-	  /* aborted packet in the buffer. */
-	  if (size == 0)
-	    goto computesize;
 	}
       if (handlers[(unsigned char) *bufptr].handler != NULL)
 	{
@@ -1302,40 +1324,6 @@ static int doRead(int asock)
 	}
 
       bufptr += size;
-
-#ifdef nodef
-      if (bufptr > buf + BUFSIZ)
-	{
-	  MCOPY(buf + BUFSIZ, buf, BUFSIZ);
-	  if (count == BUFSIZ * 2)
-	    {
-	      FD_ZERO(&readfds);
-	      FD_SET(asock, &readfds);
-	      /* readfds = 1<<asock; */
-	      if ((temp = SELECT(max_fd, &readfds, 0, 0, &timeout)) > 0)
-		{
-		  temp = read(asock, buf + BUFSIZ, BUFSIZ);
-		  count = BUFSIZ + temp;
-		  if (temp <= 0)
-		    {
-		      printf("3) Got read() of %d.  Server is dead\n", temp);
-		      serverDead = 1;
-		      close(sock);
-		      return 0;
-		    }
-		}
-	      else
-		{
-		  count = BUFSIZ;
-		}
-	    }
-	  else
-	    {
-	      count -= BUFSIZ;
-	    }
-	  bufptr -= BUFSIZ;
-	}
-#endif
     }
   return 1;
 }
