@@ -38,6 +38,7 @@ fuel n                      set fuel remaining to n\n\
 kills n                     set kills to n (accepts fractions, e.g. 2.5)\n\
 rank n                      set rank index to n (server may recompute it)\n\
 show-player                 print slot, name, kills, rank, armies and stats\n\
+show-upgrades               print sturgeon upgrades held by this ship\n\
 stat NAME VALUE             set a career stat. NAME is one of\n\
                             kills deaths armsbomb planets ticks maxkills\n\
                             DI is derived from these, not stored.\n\
@@ -76,6 +77,31 @@ int setship(const char *cmds)
 
  state_1:
   if (!(token = strtok (NULL, delimiters))) return 0;
+
+#ifdef STURGEON
+  /* Sturgeon upgrades. p_upgradelist is indexed by the UPG_* constants and
+   * upgradename[] runs parallel to it, so index 8 is engine cooling in both.
+   * The name table has one entry fewer than NUMUPGRADES, hence the bound. */
+  if (!strcmp(token, "show-upgrades")) {
+    /* upgradename[] is extern, so its size is not visible here. It has one
+     * entry per UPG_* constant, UPG_TEMPSHIELD(0) through UPG_DETDMG(18),
+     * which is one fewer than NUMUPGRADES. Keep the loop inside it. */
+    const int names = UPG_DETDMG + 1;
+    int i, any = 0;
+    printf("slot %d name '%s' ship %d\n", me->p_no, me->p_name,
+           me->p_ship.s_type);
+    printf("  kills spent %.2f  rank credit %.2f  free %d  undo %d\n",
+           me->p_upgrades, me->p_rankcredit,
+           me->p_free_upgrade, me->p_undo_upgrade);
+    for (i = 0; i < NUMUPGRADES && i < names; i++) {
+      if (!me->p_upgradelist[i]) continue;
+      printf("  [%2d] %-26s %d\n", i, upgradename[i], me->p_upgradelist[i]);
+      any = 1;
+    }
+    if (!any) printf("  (no upgrades)\n");
+    goto state_1;
+  }
+#endif
 
   if (!strcmp(token, "show-player")) {
     printf("slot %d name '%s' kills %.2f rank %d armies %d",

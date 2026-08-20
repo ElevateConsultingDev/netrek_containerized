@@ -422,7 +422,8 @@ int     agriColor = 0;    /* 0=owning race colour (default) 1=white 2=yellow 3=g
 int     showArmy = 1;     /* army count by planets: 0 none 1 local 2 gal 3 both */
 int     viewRange = 1;    /* enemy-detection ring on galactic: 0 off 1 on 2 when carrying */
 int     viewBox = 1;      /* 4 dots on galactic marking the tactical view corners (netrekxp) */
-int     extrapolate = 1;  /* dead-reckon ships and torps between server updates */
+int     extrapolate = 0;  /* dead-reckon ships between server updates; opt-in,
+                             see the known artifacts in redraw.c */
 int     colorPlanets = 0; /* 0 = default COW Map bitmaps, 1 = netrekxp color/owner-tinted */
 
 /* tried to automate this as much as possible... the entries are * the

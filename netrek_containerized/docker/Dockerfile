@@ -132,6 +132,7 @@ RUN sed -i 's/127.0.0.1/localhost/g' netrek-server/here/etc/sysdef && \
     sed -i 's/MAX_NEWBIE_PLAYERS=8/MAX_NEWBIE_PLAYERS=16/' netrek-server/here/etc/sysdef && \
     sed -i 's/STURGEON_LITE=0/STURGEON_LITE=1/' netrek-server/here/etc/sysdef && \
     sed -i 's/STURGEON_PLANETUPGRADES=0/STURGEON_PLANETUPGRADES=1/' netrek-server/here/etc/sysdef && \
+    sed -i 's/STURGEON_MAXUPGRADES=100/STURGEON_MAXUPGRADES=0/' netrek-server/here/etc/sysdef && \
     sed -i 's/PRET=1/PRET=0/' netrek-server/here/etc/sysdef
 
 # Enable newbie queues in ports file:

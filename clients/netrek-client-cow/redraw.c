@@ -47,6 +47,19 @@ static unsigned long lastredraw = 0;
  * Velocity is speed * WARP1 per update along p_dir; the trig tables are
  * indexed by the direction byte directly (Cos[0]=0, Sin[0]=-1, so 0 is up).
  *
+ * OFF BY DEFAULT (`extrapolate: on` to try it). It does smooth ship motion
+ * between updates, but it also re-derives every frame things that are really
+ * snapshots taken at the moment of an update, and that shows:
+ *
+ *   - Phaser beams shake. A PHHIT2 beam runs from the shooter to a fixed
+ *     absolute point (ph_x/ph_y), so reckoning the shooter forward while the
+ *     endpoint stays put makes the beam pivot during its brief life.
+ *   - Short packets carry ship direction quantised to 16 steps, so a reckoned
+ *     position can drift and then snap when the real update lands.
+ *
+ * Doing this properly means interpolating toward known positions rather than
+ * predicting past them, and holding weapon geometry fixed for its lifetime.
+ *
  * Ships only. Torps are deliberately left alone: the short-packet torp
  * handler (handleVTorp) sends position deltas and never sets t_dir, so a
  * torp's stored direction is stale or belongs to whatever previously used

@@ -17,6 +17,7 @@
 #   ./god.sh player F0 kills 5           set kills (fractions allowed)
 #   ./god.sh player F0 rank 8            set rank index
 #   ./god.sh player F0 stat tkills 200   set a stat; DI is derived from these
+#   ./god.sh upgrades F0                 print sturgeon upgrades held
 #   ./god.sh di F0 25                    rough DI bump (see note below)
 #
 # DI is not a stored value. The client shows ratings * (ticks/36000), where
@@ -82,6 +83,10 @@ case "$cmd" in
     if [ $# -eq 0 ]; then run "./lib/tools/setship $s show-player"; exit 0; fi
     run "./lib/tools/setship $s $*"
     run "./lib/tools/setship $s show-player" ;;
+
+  upgrades)
+    s=$(slot_of "${1:?player slot or id}")
+    run "./lib/tools/setship $s show-upgrades" ;;
 
   di)
     # DI = ratings * (tticks/36000); ratings rise with tournament kills, so
