@@ -12,6 +12,10 @@
 #   ./god.sh planet Earth 30             set armies to exactly 30
 #   ./god.sh planet Earth owner Klingon  hand the planet to a team
 #
+#   ./god.sh bots                        live bot monitor (botmon TUI)
+#   ./god.sh bots --plain                one snapshot, no TUI
+#   ./god.sh botlog -d                   follow every bot's decisions
+#
 #   ./god.sh who                         list occupied slots
 #   ./god.sh player F0                   show a player's kills, rank, stats
 #   ./god.sh player F0 kills 5           set kills (fractions allowed)
@@ -31,6 +35,15 @@
 #
 # Player is a slot number, or the id as shown in botmon (F0, Ra).
 set -e
+
+# Resolve through any symlink: this is usually run as ~/bin/netrek_god, and
+# $0's directory would then be ~/bin rather than the scripts directory.
+SELF="$0"
+while [ -L "$SELF" ]; do
+  L="$(readlink "$SELF")"
+  case "$L" in /*) SELF="$L" ;; *) SELF="$(dirname "$SELF")/$L" ;; esac
+done
+HERE="$(cd "$(dirname "$SELF")" && pwd)"
 
 C="${CONTAINER:-vanilla-netrek-server}"
 H=/usr/local/src/netrek/netrek-server/here
@@ -78,6 +91,16 @@ case "$cmd" in
         run "./lib/tools/setplanet '$p' verbose $*" ;;
     esac ;;
 
+  bots)
+    # botmon needs its own node_modules; it is gitignored, so each worktree
+    # installs once. Do it here rather than making the user find out.
+    d="$HERE/botmon"
+    [ -d "$d/node_modules" ] || (cd "$d" && npm install --silent >/dev/null 2>&1)
+    exec node "$d/botmon.js" "$@" ;;
+
+  botlog)
+    exec "$HERE/bot-log.sh" "$@" ;;
+
   who)
     run "/tmp/peek" 2>/dev/null | grep -vE "^tourn=" || true ;;
 
@@ -106,7 +129,7 @@ case "$cmd" in
 
   ""|-h|--help|help)
     # whole leading comment block, with the name the user actually invoked
-    sed -n '2,/^set -e/p' "$0" | sed '/^set -e/d' | \
+    sed -n '2,/^# Resolve through any symlink/p' "$SELF" | sed '/^# Resolve/d'  | sed '/^set -e/d' | \
       sed -e 's/^# \{0,1\}//' -e "s|\./god\.sh|$(basename "$0")|g" ;;
 
   *) echo "unknown command '$cmd' (try: ./god.sh help)" >&2; exit 1 ;;
