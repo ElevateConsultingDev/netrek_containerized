@@ -161,7 +161,8 @@ case "$cmd" in
   ""|-h|--help|help)
     # whole leading comment block, with the name the user actually invoked
     sed -n '2,/^# Resolve through any symlink/p' "$SELF" | sed '/^# Resolve/d'  | sed '/^set -e/d' | \
-      sed -e 's/^# \{0,1\}//' -e "s|\./god\.sh|$(basename "$0")|g" ;;
+      sed -e 's/^# \{0,1\}//' \
+          -e "s|\./god\.sh|${NETREK_CMD:-$(basename "$0")}|g" ;;
 
   *) echo "unknown command '$cmd' (try: ./god.sh help)" >&2; exit 1 ;;
 esac
