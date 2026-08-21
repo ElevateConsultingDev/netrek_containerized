@@ -4,7 +4,13 @@
 #   ./prod-allow-ip.sh <ip> <name>   -> a specific IP (e.g. Ron's)
 # Replaces any prior rule carrying the same <name> description, so a changing
 # IP never leaves stale holes. "me" also opens SSH (22); others get game only.
-cd "$(dirname "$0")" && source prod-env.sh
+# Resolve through any symlink so this works from ~/bin.
+SELF="$0"
+while [ -L "$SELF" ]; do
+  L="$(readlink "$SELF")"
+  case "$L" in /*) SELF="$L" ;; *) SELF="$(dirname "$SELF")/$L" ;; esac
+done
+cd "$(dirname "$SELF")" && source prod-env.sh
 arg="$1"; name="${2:-me}"
 if [ "$arg" = me ]; then ip=$(curl -s https://checkip.amazonaws.com); name="${2:-dave}"; ssh_too=1; else ip="$arg"; ssh_too=0; fi
 [ -z "$ip" ] && { echo "no IP"; exit 1; }

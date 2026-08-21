@@ -14,7 +14,13 @@
 # on nothing but ssh, at the cost of a few minutes of t3 CPU.
 set -e
 
-cd "$(dirname "$0")" && source prod-env.sh
+# Resolve through any symlink so this works from ~/bin.
+SELF="$0"
+while [ -L "$SELF" ]; do
+  L="$(readlink "$SELF")"
+  case "$L" in /*) SELF="$L" ;; *) SELF="$(dirname "$SELF")/$L" ;; esac
+done
+cd "$(dirname "$SELF")" && source prod-env.sh
 REPO="$(cd ../.. && pwd)"
 SSH_OPTS="-i $HOME/.ssh/netrek-prod.pem -o StrictHostKeyChecking=no
           -o UserKnownHostsFile=/dev/null -o ConnectTimeout=15"

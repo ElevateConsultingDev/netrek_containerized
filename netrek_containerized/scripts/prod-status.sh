@@ -1,5 +1,11 @@
 #!/bin/bash
-cd "$(dirname "$0")" && source prod-env.sh
+# Resolve through any symlink so this works from ~/bin.
+SELF="$0"
+while [ -L "$SELF" ]; do
+  L="$(readlink "$SELF")"
+  case "$L" in /*) SELF="$L" ;; *) SELF="$(dirname "$SELF")/$L" ;; esac
+done
+cd "$(dirname "$SELF")" && source prod-env.sh
 state=$(aws_ ec2 describe-instances --instance-ids "$NETREK_IID" \
   --query "Reservations[0].Instances[0].State.Name" --output text)
 echo "instance $NETREK_IID: $state"

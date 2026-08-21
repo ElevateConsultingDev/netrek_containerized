@@ -4,7 +4,13 @@
 # Auto-enrolls your CURRENT public IP in the server firewall first, so a
 # changing/remote IP never locks you out -- then connects. Pass a host to
 # override (defaults to the DNS name, falls back to the Elastic IP).
-REPO_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+# Resolve through any symlink so this works from ~/bin.
+SELF="$0"
+while [ -L "$SELF" ]; do
+  L="$(readlink "$SELF")"
+  case "$L" in /*) SELF="$L" ;; *) SELF="$(dirname "$SELF")/$L" ;; esac
+done
+REPO_DIR="$(cd "$(dirname "$SELF")/.." && pwd)"
 source "$REPO_DIR/scripts/prod-env.sh"
 HOST="${1:-${NETREK_HOST:-$NETREK_EIP}}"
 

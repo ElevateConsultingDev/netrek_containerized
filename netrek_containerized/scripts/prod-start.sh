@@ -1,6 +1,12 @@
 #!/bin/bash
 # Start the ephemeral server and make sure the Elastic IP is attached.
-cd "$(dirname "$0")" && source prod-env.sh
+# Resolve through any symlink so this works from ~/bin.
+SELF="$0"
+while [ -L "$SELF" ]; do
+  L="$(readlink "$SELF")"
+  case "$L" in /*) SELF="$L" ;; *) SELF="$(dirname "$SELF")/$L" ;; esac
+done
+cd "$(dirname "$SELF")" && source prod-env.sh
 echo "starting $NETREK_IID ..."
 aws_ ec2 start-instances --instance-ids "$NETREK_IID" >/dev/null
 aws_ ec2 wait instance-running --instance-ids "$NETREK_IID"
