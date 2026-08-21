@@ -5,8 +5,11 @@
 services:
   server:
     build:
-      context: .
-      dockerfile: docker/Dockerfile
+      # Repo root, matching docker-compose.yml: the Dockerfile COPYs
+      # servers/netrek-server and clients/netrek-client-cow, which sit
+      # outside netrek_containerized.
+      context: ..
+      dockerfile: netrek_containerized/docker/Dockerfile
     image: vanilla-netrek-image
     container_name: vanilla-netrek-server
     ports:
