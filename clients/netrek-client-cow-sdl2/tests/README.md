@@ -62,3 +62,17 @@ only and never sets `t_dir`. A torp's stored direction is therefore stale, or
 belongs to whatever previously occupied that slot, and reckoning along it
 sends torps off at visibly wrong angles. Smoothing torps properly means
 deriving velocity from successive reported positions instead.
+
+
+## Font advance test (tests/font_advance_test.c)
+
+    cc -o /tmp/ft tests/font_advance_test.c $(pkg-config --cflags --libs sdl2 SDL2_ttf)
+    /tmp/ft
+
+Bold must have the same advance as regular. The player list draws some rows
+bold and some not, so if the two disagree the columns drift apart across the
+line. SDL_ttf's TTF_STYLE_BOLD is synthetic emboldening and widens every
+glyph: measured on Menlo, 20 characters come to 240px regular and 280px
+synthetic bold, 2px of drift per character. The real bold face in the
+collection measures 240px, the same as regular, so that is what the client
+opens.

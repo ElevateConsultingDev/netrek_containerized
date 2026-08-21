@@ -413,10 +413,47 @@ void W_Initialize(char *str)
                 TTF_CloseFont(test);
                 sdl_fonts[1] = TTF_OpenFont(*fp, sz * RENDER_SCALE);
                 sdl_fonts[0] = TTF_OpenFont(*fp, sz * 3 * RENDER_SCALE); /* big */
-                sdl_fonts[2] = TTF_OpenFont(*fp, sz * RENDER_SCALE);     /* bold */
                 sdl_fonts[3] = TTF_OpenFont(*fp, sz * RENDER_SCALE);     /* underline */
-                if (sdl_fonts[2]) TTF_SetFontStyle(sdl_fonts[2], TTF_STYLE_BOLD);
                 if (sdl_fonts[3]) TTF_SetFontStyle(sdl_fonts[3], TTF_STYLE_UNDERLINE);
+
+                /* Bold must keep the same advance as regular, or rows drawn
+                 * in different fonts stop lining up: the player list draws
+                 * some rows bold and some not, and TTF_STYLE_BOLD is
+                 * synthetic emboldening, which widens every glyph by about a
+                 * pixel. The drift accumulates across the line, which is why
+                 * the columns only visibly separated toward the right.
+                 *
+                 * Prefer a real bold face. A .ttc collection (Menlo) carries
+                 * one at index 1; a plain .ttf usually has a -Bold sibling.
+                 * Accept it only if it measures the same as regular, and
+                 * otherwise fall back to the regular face, since losing the
+                 * emphasis costs less than losing the grid. */
+                {
+                    int adv_r = 0, adv_b = 0;
+                    char probe[] = "MMMMMMMMMM";
+                    int h;
+                    TTF_SizeText(sdl_fonts[1], probe, &adv_r, &h);
+
+                    sdl_fonts[2] = TTF_OpenFontIndex(*fp, sz * RENDER_SCALE, 1);
+                    if (!sdl_fonts[2]) {
+                        char bold_path[1024];
+                        const char *dot = strrchr(*fp, '.');
+                        if (dot && !strcmp(dot, ".ttf")) {
+                            snprintf(bold_path, sizeof(bold_path), "%.*s-Bold.ttf",
+                                     (int)(dot - *fp), *fp);
+                            sdl_fonts[2] = TTF_OpenFont(bold_path, sz * RENDER_SCALE);
+                        }
+                    }
+                    if (sdl_fonts[2]) {
+                        TTF_SizeText(sdl_fonts[2], probe, &adv_b, &h);
+                        if (adv_b != adv_r) {       /* not the same grid */
+                            TTF_CloseFont(sdl_fonts[2]);
+                            sdl_fonts[2] = NULL;
+                        }
+                    }
+                    if (!sdl_fonts[2])
+                        sdl_fonts[2] = TTF_OpenFont(*fp, sz * RENDER_SCALE);
+                }
                 break;
             }
             TTF_CloseFont(test);
