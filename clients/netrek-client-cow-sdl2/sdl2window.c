@@ -1384,7 +1384,17 @@ static unsigned char sdl_key_to_wlib(SDL_Keycode sym, SDL_Keymod mod)
         int shifted = (mod & KMOD_SHIFT) != 0;
         int caps = (mod & KMOD_CAPS) != 0;
         if (shifted ^ caps) base -= 32; /* uppercase if shift XOR caps */
-        if (mod & KMOD_CTRL) base = (base & 0x1f); /* ctrl-a = 1, etc */
+        /* COW encodes a control key as the PLAIN character plus 96, not as
+         * the ASCII control code: x11window.c strips ControlMask before the
+         * keysym lookup and then adds 96, so ctrl-o is 'o'(111)+96 = 207.
+         * That is what the distress macro table holds ('\xcf' for ^o) and
+         * what the macro dispatch matches on. Sending 0x0f instead landed in
+         * keyaction(), which only accepts 32 and up, hence
+         * "keyaction() key 15 outside range". */
+        if (mod & KMOD_CTRL) {
+            char plain = sym - SDLK_a + 'a';   /* unshifted, as X11 sees it */
+            return (unsigned char) (plain + 96);
+        }
         return base;
     }
 
