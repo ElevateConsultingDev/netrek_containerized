@@ -22,6 +22,8 @@
 #   netrek admin upgrades
 #   netrek admin help            the full admin reference
 #
+#   netrek check                 verify the toolchain after a move or re-clone
+#
 # Run with no arguments for this list.
 set -e
 
@@ -51,6 +53,7 @@ case "$cmd" in
 
   # the admin tool, and its two monitors promoted to the top level
   admin)        NETREK_CMD="netrek admin" exec "$HERE/god.sh" "$@" ;;
+  check)        exec "$HERE/selfcheck.sh"          "$@" ;;
   bots)         exec "$HERE/god.sh" bots          "$@" ;;
   botlog)       exec "$HERE/god.sh" botlog        "$@" ;;
 
