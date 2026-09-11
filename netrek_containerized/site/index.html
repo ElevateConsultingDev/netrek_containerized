@@ -115,12 +115,7 @@
         <h3>Netrek COM</h3>
         <p>Netrek <em>Client of Mac</em> — native retina SDL2 client, a modernized COW. Unzip, drag to Applications, play. No Homebrew needed.</p>
         <a class="btn" href="https://github.com/ElevateConsultingDev/netrek-clients/releases/latest/download/netrek-com-0.9-macos-arm64.zip">Download for macOS →</a>
-        <p class="note" style="margin:10px 0 0; min-height:0">Apple Silicon, macOS 11+. The app is not notarized, so macOS blocks a downloaded copy
-        (&ldquo;Apple could not verify&hellip;&rdquo;). Paste this in Terminal instead and it installs clean, no warning:</p>
-        <pre style="margin:8px 0 0; padding:10px; background:#060c12; border:1px solid var(--edge); border-radius:8px;
-        font-size:11.5px; color:var(--amber); overflow-x:auto; white-space:pre-wrap; word-break:break-all">curl -L https://github.com/ElevateConsultingDev/netrek-clients/releases/latest/download/netrek-com-0.9-macos-arm64.zip -o /tmp/netrek.zip &amp;&amp; ditto -x -k /tmp/netrek.zip /Applications &amp;&amp; xattr -cr "/Applications/Netrek COM.app" &amp;&amp; open "/Applications/Netrek COM.app"</pre>
-        <p class="note" style="margin:8px 0 0; min-height:0">Already downloaded it the normal way? Run
-        <code style="color:var(--amber)">xattr -cr "/Applications/Netrek COM.app"</code> and open it again.
+        <p class="note" style="margin:10px 0 0; min-height:0">Apple Silicon, macOS 11+.
         <a href="https://github.com/ElevateConsultingDev/netrek-clients" target="_blank" rel="noopener">Source</a></p>
       </div>
       <div class="client">
@@ -130,6 +125,22 @@
         <a class="btn" href="https://netrek.org/downloads/clients/" target="_blank" rel="noopener">All clients →</a>
       </div>
     </div>
+    <div style="margin-top:18px; padding:16px; background:#0a1017; border:1px solid var(--edge); border-radius:12px">
+      <div class="os" style="color:var(--amber); font-size:12px; letter-spacing:.14em; text-transform:uppercase">macOS &mdash; if the app will not open</div>
+      <p class="note" style="margin:8px 0 10px">Netrek COM is not notarized by Apple, so a copy downloaded in a browser gets blocked with
+      &ldquo;Apple could not verify &lsquo;Netrek COM.app&rsquo; is free of malware&rdquo;. Nothing is wrong with the app; macOS simply refuses to run
+      software that has not paid for an Apple Developer ID. Paste this into Terminal and it installs with no warning at all:</p>
+      <pre style="margin:0; padding:12px 14px; background:#060c12; border:1px solid var(--edge); border-radius:8px;
+      font-size:12.5px; line-height:1.6; color:var(--amber); overflow-x:auto">curl -L https://github.com/ElevateConsultingDev/netrek-clients/releases/latest/download/netrek-com-0.9-macos-arm64.zip -o /tmp/netrek.zip \
+  &amp;&amp; ditto -x -k /tmp/netrek.zip /Applications \
+  &amp;&amp; xattr -cr "/Applications/Netrek COM.app" \
+  &amp;&amp; open "/Applications/Netrek COM.app"</pre>
+      <p class="note" style="margin:10px 0 0">Already downloaded it the usual way? Run
+      <code style="color:var(--amber)">xattr -cr "/Applications/Netrek COM.app"</code> and open it again. If that reports
+      <i>Operation not permitted</i>, give Terminal Full Disk Access in System Settings &rarr; Privacy &amp; Security, or run it on the copy in
+      Downloads before moving it to Applications.</p>
+    </div>
+
     <p class="note" style="margin-top:16px">All of the above speak the standard Netrek protocol and work with this server.
     Netrek is free and open source — see <a href="https://www.netrek.org/" target="_blank" rel="noopener">netrek.org</a> for more clients and docs.</p>
   </div>
