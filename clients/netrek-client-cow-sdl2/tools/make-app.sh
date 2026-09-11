@@ -11,9 +11,13 @@
 set -e
 
 HERE="$(cd "$(dirname "$0")/.." && pwd)"
-VERSION="${1:-0.9}"
+# The client prints its own version in game; take the bundle version from the
+# same place so the two can never disagree.
+VERSION="${1:-$(sed -n 's/^#define mvers "\(.*\)"/\1/p' "$(dirname "$0")/../../netrek-client-cow/version.h")}"
 APP="$HERE/build/Netrek COM.app"
-ZIP="$HERE/build/netrek-com-$VERSION-macos-arm64.zip"
+# The asset name carries no version: releases/latest/download/<name> then keeps
+# working across releases, so the site and README never need editing again.
+ZIP="$HERE/build/netrek-com-macos-arm64.zip"
 
 make -C "$HERE"
 
