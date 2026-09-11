@@ -18,7 +18,7 @@ HERE = pathlib.Path(__file__).resolve().parent.parent
 
 # Which section each default key belongs to. Keys absent here land in "Other".
 SECTIONS = [
-    ("Speed & course",   "0)!@%#<>k"),
+    ("Speed & course",   "0123456789)!@%#<>k"),
     ("Weapons",          "ptfdD"),
     ("Defense",          "][usc{}R"),
     ("Tractor & pressor","Ty_^$"),
@@ -159,7 +159,7 @@ TEMPLATE = """<!doctype html><meta charset="utf-8"><title>{title}</title>
 <style>
   @page {{ size: letter; margin: 12mm 10mm; }}
   * {{ box-sizing: border-box; }}
-  body {{ margin:0; font:10.5px/1.35 -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+  body {{ background:#fff; margin:0; font:10.5px/1.35 -apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
          color:#11181c; }}
   header {{ border-bottom:2px solid #11181c; padding-bottom:6px; margin-bottom:10px;
            display:flex; align-items:baseline; justify-content:space-between; gap:12px; }}
