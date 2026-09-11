@@ -115,9 +115,12 @@
         <h3>Netrek COM</h3>
         <p>Netrek <em>Client of Mac</em> — native retina SDL2 client, a modernized COW. Unzip, drag to Applications, play. No Homebrew needed.</p>
         <a class="btn" href="https://github.com/ElevateConsultingDev/netrek-clients/releases/latest/download/netrek-com-0.9-macos-arm64.zip">Download for macOS →</a>
-        <p class="note" style="margin:10px 0 0; min-height:0">Apple Silicon, macOS 11+. macOS blocks it on first launch because it is not notarized:
-        open <b>System Settings &rarr; Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b>. Or in Terminal:
-        <code style="color:var(--amber)">xattr -dr com.apple.quarantine "/Applications/Netrek COM.app"</code>.
+        <p class="note" style="margin:10px 0 0; min-height:0">Apple Silicon, macOS 11+. The app is not notarized, so macOS blocks a downloaded copy
+        (&ldquo;Apple could not verify&hellip;&rdquo;). Paste this in Terminal instead and it installs clean, no warning:</p>
+        <pre style="margin:8px 0 0; padding:10px; background:#060c12; border:1px solid var(--edge); border-radius:8px;
+        font-size:11.5px; color:var(--amber); overflow-x:auto; white-space:pre-wrap; word-break:break-all">curl -L https://github.com/ElevateConsultingDev/netrek-clients/releases/latest/download/netrek-com-0.9-macos-arm64.zip -o /tmp/netrek.zip &amp;&amp; ditto -x -k /tmp/netrek.zip /Applications &amp;&amp; xattr -cr "/Applications/Netrek COM.app" &amp;&amp; open "/Applications/Netrek COM.app"</pre>
+        <p class="note" style="margin:8px 0 0; min-height:0">Already downloaded it the normal way? Run
+        <code style="color:var(--amber)">xattr -cr "/Applications/Netrek COM.app"</code> and open it again.
         <a href="https://github.com/ElevateConsultingDev/netrek-clients" target="_blank" rel="noopener">Source</a></p>
       </div>
       <div class="client">
