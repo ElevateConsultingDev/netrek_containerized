@@ -115,7 +115,9 @@
         <h3>Netrek COM</h3>
         <p>Netrek <em>Client of Mac</em> — native retina SDL2 client, a modernized COW. Unzip, drag to Applications, play. No Homebrew needed.</p>
         <a class="btn" href="https://github.com/ElevateConsultingDev/netrek-clients/releases/latest/download/netrek-com-0.9-macos-arm64.zip">Download for macOS →</a>
-        <p class="note" style="margin:10px 0 0; min-height:0">Apple Silicon, macOS 11+. On first launch, right-click the app and choose Open.
+        <p class="note" style="margin:10px 0 0; min-height:0">Apple Silicon, macOS 11+. macOS blocks it on first launch because it is not notarized:
+        open <b>System Settings &rarr; Privacy &amp; Security</b>, scroll down and click <b>Open Anyway</b>. Or in Terminal:
+        <code style="color:var(--amber)">xattr -dr com.apple.quarantine "/Applications/Netrek COM.app"</code>.
         <a href="https://github.com/ElevateConsultingDev/netrek-clients" target="_blank" rel="noopener">Source</a></p>
       </div>
       <div class="client">
