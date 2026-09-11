@@ -11,6 +11,7 @@
 # PROD (the EC2 server)
 #   netrek start_prod            start the instance
 #   netrek stop_prod             stop it (it bills while running)
+#   netrek restart_prod          restart just the game server, machine stays up
 #   netrek status_prod           instance and container state
 #   netrek play_prod             join prod, enrolling your IP first
 #   netrek deploy_prod           ship this working tree to prod and rebuild
@@ -47,6 +48,7 @@ case "$cmd" in
 
   start_prod)   exec "$HERE/prod-start.sh"        "$@" ;;
   stop_prod)    exec "$HERE/prod-stop.sh"         "$@" ;;
+  restart_prod) exec "$HERE/prod-restart.sh"      "$@" ;;
   status_prod)  exec "$HERE/prod-status.sh"       "$@" ;;
   play_prod)    exec "$HERE/start-prod-client.sh" "$@" ;;
   deploy_prod)  exec "$HERE/prod-deploy.sh"       "$@" ;;
