@@ -29,20 +29,9 @@ SECTIONS = [
     ("Session",          "Qq=&-|"),
 ]
 MAC_KEYS = [("\u2318F", "Fullscreen on/off")]
-RC_SAMPLE = """name:       yourname
-password:   yourpassword
-login:      yourlogin
-server:     sturgeon.elevateconsulting.dev
-port:       2592
-tryShort:   off
-agriCAPS:   on
-showArmy:   on
-autoSetWar: 1
-autoQuit:   600
-macroKey:   TAB
-keymap:     qs
-buttonmap:  1t2p3k
-"""
+RC_SAMPLE = chr(10).join(                  # the file the app ships and seeds
+    l for l in (HERE / "netrekrc.sample").read_text().splitlines()
+    if l.strip() and not l.startswith("#"))
 MOUSE = [("Left button", "Fire photon torpedo"),
          ("Middle button", "Fire phaser"),
          ("Right button", "Set course")]

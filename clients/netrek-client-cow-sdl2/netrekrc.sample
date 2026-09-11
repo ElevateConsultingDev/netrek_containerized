@@ -1,0 +1,25 @@
+# ~/.netrekrc — Netrek COM
+# Netrek COM copies this file to ~/.netrekrc the first time it runs, and never
+# touches it again. Edit it freely; press & in game to reread it without
+# restarting. Every option: https://netrek.elevateconsulting.dev/netrekrc.html
+
+name:       yourname
+password:   yourpassword
+login:      yourlogin
+
+server:     sturgeon.elevateconsulting.dev
+port:       2592
+
+# Required on this server.
+tryShort:   off
+
+agriCAPS:   on
+showArmy:   on
+autoSetWar: 1
+autoQuit:   600
+macroKey:   TAB
+
+# keymap pairs are "newkey defaultkey", buttonmap pairs are "button key".
+# A remapped key is added, not moved: the default keeps working.
+# keymap:     qs
+# buttonmap:  1t2p3k

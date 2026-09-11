@@ -23,10 +23,12 @@ mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources" "$APP/Contents/Framewor
 cp "$HERE/build/netrek-sdl2" "$APP/Contents/MacOS/netrek-sdl2"
 # pixmaps and sounds are symlinks into sibling repos; -L copies the real files.
 cp -RL "$HERE/pixmaps" "$HERE/pixmaps-hr" "$HERE/sounds" "$APP/Contents/Resources/"
+cp "$HERE/netrekrc.sample" "$APP/Contents/Resources/netrekrc.sample"
+rm -f "$APP/Contents/Resources/Log_me.txt"   # runtime artifact from the asset dirs
 
 # The assets the game silently runs without: a missing ship sprite only shows up
 # as blank ships mid-game, so fail the build here instead.
-for asset in pixmaps/Fed/CA.png pixmaps-hr/Fed/CA.png sounds/nt_explosion.wav; do
+for asset in pixmaps/Fed/CA.png pixmaps-hr/Fed/CA.png sounds/nt_explosion.wav netrekrc.sample; do
   [ -f "$APP/Contents/Resources/$asset" ] || { echo "FAIL: missing $asset in bundle" >&2; exit 1; }
 done
 
@@ -34,6 +36,9 @@ cat > "$APP/Contents/MacOS/netrek-com" <<'LAUNCHER'
 #!/bin/sh
 BIN="$(cd "$(dirname "$0")" && pwd)/netrek-sdl2"
 cd "$(dirname "$BIN")/../Resources"
+# First run on a fresh Mac: seed a config so the player starts with the settings
+# this server needs. Never touches an existing one.
+[ -f "$HOME/.netrekrc" ] || cp netrekrc.sample "$HOME/.netrekrc"
 # A server named on the command line beats ~/.netrekrc, so only supply our
 # default when the player has not set one of their own.
 if grep -qE '^[[:space:]]*server:' "$HOME/.netrekrc" 2>/dev/null; then
