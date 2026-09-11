@@ -131,7 +131,7 @@
       &ldquo;Apple could not verify &lsquo;Netrek COM.app&rsquo; is free of malware&rdquo;. Nothing is wrong with the app; macOS simply refuses to run
       software that has not paid for an Apple Developer ID. Paste this into Terminal and it installs with no warning at all:</p>
       <pre style="margin:0; padding:12px 14px; background:#060c12; border:1px solid var(--edge); border-radius:8px;
-      font-size:12.5px; line-height:1.6; color:var(--amber); overflow-x:auto">curl -L https://github.com/ElevateConsultingDev/netrek-clients/releases/latest/download/netrek-com-0.9-macos-arm64.zip -o /tmp/netrek.zip \
+      font-size:12.5px; line-height:1.6; color:var(--amber); white-space:pre-wrap; word-break:break-all">curl -L https://github.com/ElevateConsultingDev/netrek-clients/releases/latest/download/netrek-com-0.9-macos-arm64.zip -o /tmp/netrek.zip \
   &amp;&amp; ditto -x -k /tmp/netrek.zip /Applications \
   &amp;&amp; xattr -cr "/Applications/Netrek COM.app" \
   &amp;&amp; open "/Applications/Netrek COM.app"</pre>
