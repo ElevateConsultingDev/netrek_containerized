@@ -132,13 +132,16 @@
       software that has not paid for an Apple Developer ID. Paste this into Terminal and it installs with no warning at all:</p>
       <pre style="margin:0; padding:12px 14px; background:#060c12; border:1px solid var(--edge); border-radius:8px;
       font-size:12.5px; line-height:1.6; color:var(--amber); white-space:pre-wrap; word-break:break-all">curl -L https://github.com/ElevateConsultingDev/netrek-clients/releases/latest/download/netrek-com-macos-arm64.zip -o /tmp/netrek.zip \
-  &amp;&amp; ditto -x -k /tmp/netrek.zip /Applications \
-  &amp;&amp; xattr -cr "/Applications/Netrek COM.app" \
-  &amp;&amp; open "/Applications/Netrek COM.app"</pre>
-      <p class="note" style="margin:10px 0 0">Already downloaded it the usual way? Run
-      <code style="color:var(--amber)">xattr -cr "/Applications/Netrek COM.app"</code> and open it again. If that reports
-      <i>Operation not permitted</i>, give Terminal Full Disk Access in System Settings &rarr; Privacy &amp; Security, or run it on the copy in
-      Downloads before moving it to Applications.</p>
+  &amp;&amp; mkdir -p ~/Applications \
+  &amp;&amp; rm -rf ~/Applications/"Netrek COM.app" \
+  &amp;&amp; ditto -x -k /tmp/netrek.zip ~/Applications \
+  &amp;&amp; xattr -cr ~/Applications/"Netrek COM.app" \
+  &amp;&amp; open ~/Applications/"Netrek COM.app"</pre>
+      <p class="note" style="margin:10px 0 0">This installs into <code style="color:var(--amber)">~/Applications</code>, your own
+      applications folder, which needs no admin rights. Installing into the system
+      <code style="color:var(--amber)">/Applications</code> fails on recent macOS with <i>Operation not permitted</i> unless Terminal is
+      given App Management permission. Already downloaded it the usual way? Run
+      <code style="color:var(--amber)">xattr -cr "/path/to/Netrek COM.app"</code> and open it again.</p>
     </div>
 
     <p class="note" style="margin-top:16px">All of the above speak the standard Netrek protocol and work with this server.

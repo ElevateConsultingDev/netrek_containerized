@@ -98,6 +98,8 @@ if [ -n "$leaks" ]; then
   exit 1
 fi
 
-ditto -c -k --sequesterRsrc --keepParent "$APP" "$ZIP"
+# No --sequesterRsrc: it writes AppleDouble files into a __MACOSX folder that
+# unpacks alongside the app and litters wherever the player installs it.
+ditto -c -k --keepParent "$APP" "$ZIP"
 echo "built $APP"
 echo "zipped $ZIP"
