@@ -40,6 +40,9 @@
 # the result with 'player' and adjust the individual stats if you need a
 # specific figure.
 #
+# Add --prod to any command to run it against the EC2 server instead of a
+# local container:  ./god.sh --prod player O0 rank 8
+#
 # Player is a slot number, or the id as shown in botmon (F0, Ra).
 set -e
 
@@ -52,9 +55,24 @@ while [ -L "$SELF" ]; do
 done
 HERE="$(cd "$(dirname "$SELF")" && pwd)"
 
+# --prod (or NETREK_PROD=1) runs every command against the EC2 server instead
+# of a local container. Without it, admin commands need a server running here.
+PROD=${NETREK_PROD:-0}
+args=(); for a in "$@"; do
+  case "$a" in --prod) PROD=1 ;; *) args+=("$a") ;; esac
+done
+set -- "${args[@]}"
+
 C="${CONTAINER:-vanilla-netrek-server}"
 H=/usr/local/src/netrek/netrek-server/here
-run() { docker exec "$C" bash -lc "cd $H && $*"; }
+if [ "$PROD" = 1 ]; then
+  source "$HERE/prod-env.sh"
+  SSH="ssh -i $HOME/.ssh/netrek-prod.pem -o StrictHostKeyChecking=no
+       -o UserKnownHostsFile=/dev/null -o ConnectTimeout=15 ec2-user@$NETREK_EIP"
+  run() { $SSH "sudo docker exec $C bash -lc \"cd $H && $*\"" 2>/dev/null; }
+else
+  run() { docker exec "$C" bash -lc "cd $H && $*"; }
+fi
 
 # botmon-style id (F0, Ra) -> slot number
 slot_of() {

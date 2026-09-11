@@ -22,6 +22,7 @@
 #   netrek admin player F0 kills 5
 #   netrek admin upgrades
 #   netrek admin help            the full admin reference
+#   netrek admin --prod <cmd>    run an admin command against the EC2 server
 #
 #   netrek check                 verify the toolchain after a move or re-clone
 #
